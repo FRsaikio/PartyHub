@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PartyHub - Qui est le plus susceptible ?</title>
+
+  <!-- CSS GLOBAL -->
+  <link rel="stylesheet" href="../../global-ui.css" />
+  <link rel="stylesheet" href="../../style.css" />
+
+  <!-- CSS DU JEU -->
+  <link rel="stylesheet" href="most-likely.css" />
+</head>
+
+<body>
+
+  <div class="background"></div>
+
+  <main class="app">
+
+    <section class="screen active">
+
+      <div class="game-header">
+
+        <button id="backToLobbyBtn" class="btn danger small">
+          Retour lobby
+        </button>
+
+        <div>
+          <span id="roomBadge" class="badge">
+            Room
+          </span>
+
+          <h2>
+            Qui est le plus susceptible ?
+          </h2>
+
+          <p class="muted">
+            Vote pour la personne la plus concernée.
+            La personne désignée boit.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="game-layout">
+
+        <div class="main-game">
+
+          <div class="round-info">
+
+            <span id="gameModeBadge" class="badge">
+              Mode Party
+            </span>
+
+            <span id="roundBadge" class="badge">
+              Manche 1/10
+            </span>
+
+            <span id="progressBadge" class="badge">
+              Progression 0%
+            </span>
+
+          </div>
+
+          <div class="question-card">
+
+            <small id="questionCategory">
+              🍺 Question de soirée
+            </small>
+
+            <h3 id="questionText">
+              Chargement...
+            </h3>
+
+          </div>
+
+          <div id="voteGrid" class="vote-grid"></div>
+
+          <div id="resultBox" class="result-box hidden">
+
+            <h3 id="resultText"></h3>
+
+            <p id="drinkPenalty"></p>
+
+            <small id="resultHint"></small>
+
+          </div>
+
+          <div class="game-actions">
+
+            <button id="nextQuestionBtn" class="btn primary full big-btn">
+              Question suivante 🍻
+            </button>
+
+            <button id="skipQuestionBtn" class="btn secondary full">
+              Passer la question
+            </button>
+
+            <button id="finishGameBtn" class="btn danger full">
+              Finir la partie
+            </button>
+
+          </div>
+
+        </div>
+
+        <aside class="score-panel">
+
+          <h3>
+            🏆 Classement
+          </h3>
+
+          <p class="score-hint">
+            Le joueur le plus voté devient la cible de la soirée.
+          </p>
+
+          <ul id="scoreList" class="score-list"></ul>
+
+        </aside>
+
+      </div>
+
+      <div id="endScreen" class="end-screen hidden">
+
+        <div class="end-card">
+
+          <span class="badge">
+            Résumé final
+          </span>
+
+          <h2>
+            Fin de partie 🍻
+          </h2>
+
+          <p id="winnerText"></p>
+
+          <div id="finalScores"></div>
+
+          <button id="restartGameBtn" class="btn primary full">
+            Rejouer
+          </button>
+
+          <button id="finalBackBtn" class="btn danger full">
+            Retour lobby
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- JS DU JEU -->
+  <script src="../../partyhub-fx.js"></script>
+<script type="module" src="most-likely.js"></script>
+
+</body>
+
+</html>

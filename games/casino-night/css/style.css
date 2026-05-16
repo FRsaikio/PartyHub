@@ -1,0 +1,630 @@
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  min-height:100vh;
+  background:#050505;
+  color:white;
+  font-family:Arial, Helvetica, sans-serif;
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(255,0,85,0.35), transparent 35%),
+    radial-gradient(circle at 80% 10%, rgba(112,0,255,0.25), transparent 35%),
+    radial-gradient(circle at 50% 100%, rgba(255,190,0,0.16), transparent 35%);
+  overflow-x:hidden;
+}
+
+.bg-noise{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:0.12;
+  background-image:linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size:22px 22px;
+}
+
+.topbar{
+  width:min(95%,1050px);
+  margin:auto;
+  padding:26px 0 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+}
+
+.topbar h1{
+  color:#ff0055;
+  font-size:clamp(1.8rem,5vw,3rem);
+  text-shadow:0 0 20px #ff0055;
+}
+
+.topbar p{
+  color:#d7d7d7;
+  margin-top:8px;
+}
+
+.wallet{
+  min-width:135px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:18px;
+  padding:14px;
+  text-align:center;
+  box-shadow:0 0 20px rgba(255,190,0,0.15);
+}
+
+.wallet span{
+  display:block;
+  color:#ffd166;
+  font-size:0.85rem;
+}
+
+.wallet strong{
+  display:block;
+  margin-top:4px;
+  font-size:1.5rem;
+}
+
+.container{
+  width:min(95%,1050px);
+  margin:auto;
+  padding-bottom:50px;
+}
+
+.card{
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:24px;
+  padding:24px;
+  margin-bottom:24px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 0 35px rgba(255,0,85,0.12);
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:20px;
+}
+
+h2{
+  color:#ff4d6d;
+}
+
+.badge{
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(255,0,85,0.15);
+  color:#ffd166;
+  font-size:0.8rem;
+}
+
+.economy-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:12px;
+}
+
+label{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  color:#ffd166;
+  font-weight:bold;
+}
+
+input{
+  width:100%;
+  padding:15px;
+  background:#111;
+  color:white;
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:14px;
+  font-weight:bold;
+  font-size:1rem;
+}
+
+.inventory{
+  margin-top:16px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.inventory span{
+  background:#111;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:12px 14px;
+}
+
+button{
+  width:100%;
+  border:none;
+  border-radius:15px;
+  padding:16px;
+  background:linear-gradient(135deg,#ff0055,#7000ff);
+  color:white;
+  font-size:1rem;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(255,0,85,0.25);
+  transition:transform 0.12s ease, filter 0.12s ease;
+}
+
+button:active{
+  transform:scale(0.97);
+  filter:brightness(1.25);
+}
+
+.danger-btn{
+  background:linear-gradient(135deg,#ff2a00,#ff0055);
+}
+
+.slot-machine{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin:20px 0;
+}
+
+.reel{
+  width:105px;
+  height:115px;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,#181818,#050505);
+  border:2px solid rgba(255,0,85,0.9);
+  box-shadow:
+    inset 0 0 18px rgba(255,255,255,0.08),
+    0 0 25px rgba(255,0,85,0.45);
+  overflow:hidden;
+}
+
+.slot{
+  font-size:3.4rem;
+  transition:transform 0.2s ease, filter 0.2s ease;
+}
+
+.spinning .slot{
+  animation:slotShake 0.08s infinite;
+  filter:blur(1px);
+}
+
+.jackpot{
+  animation:jackpotPulse 0.8s ease-in-out infinite;
+}
+
+.rare{
+  animation:rareShake 0.16s ease-in-out 8;
+}
+
+@keyframes slotShake{
+  0%{transform:translateY(-8px) scale(1.03);}
+  100%{transform:translateY(8px) scale(0.98);}
+}
+
+@keyframes jackpotPulse{
+  0%,100%{box-shadow:0 0 22px rgba(255,0,85,0.45);}
+  50%{box-shadow:0 0 55px rgba(255,209,102,0.95);}
+}
+
+@keyframes rareShake{
+  0%,100%{transform:translateX(0);}
+  25%{transform:translateX(-4px);}
+  75%{transform:translateX(4px);}
+}
+
+.result{
+  margin-top:20px;
+  background:#111;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  padding:18px;
+  line-height:1.65;
+  text-align:center;
+  min-height:70px;
+}
+
+.result-hot{
+  border-color:rgba(255,0,85,0.35);
+}
+
+.blackjack-table{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.player-zone{
+  background:rgba(0,0,0,0.36);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:20px;
+  padding:18px;
+  text-align:center;
+}
+
+.player-zone h3{
+  color:#ffd166;
+  margin-bottom:14px;
+}
+
+.cards-row{
+  min-height:126px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.playing-card{
+  width:70px;
+  height:98px;
+  border-radius:12px;
+  background:#f7f7f7;
+  color:#111;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:8px;
+  box-shadow:0 8px 18px rgba(0,0,0,0.35);
+  animation:flipIn 0.34s ease;
+  transform-origin:center;
+  font-weight:900;
+}
+
+.playing-card.red{
+  color:#d90032;
+}
+
+.card-center{
+  font-size:1.8rem;
+  text-align:center;
+}
+
+.card-top,
+.card-bottom{
+  font-size:0.95rem;
+}
+
+.card-bottom{
+  transform:rotate(180deg);
+}
+
+@keyframes flipIn{
+  0%{transform:rotateY(90deg) translateY(-12px); opacity:0;}
+  100%{transform:rotateY(0) translateY(0); opacity:1;}
+}
+
+.controls{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+@media(max-width:760px){
+  .topbar{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .economy-grid,
+  .blackjack-table,
+  .controls{
+    grid-template-columns:1fr;
+  }
+
+  .slot-machine{
+    gap:8px;
+  }
+
+  .reel{
+    width:86px;
+    height:96px;
+  }
+
+  .slot{
+    font-size:2.7rem;
+  }
+
+  .playing-card{
+    width:62px;
+    height:88px;
+  }
+}
+
+
+/* =======================
+FULLSCREEN CINEMATIC FX
+======================= */
+
+.fx-overlay{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  background:rgba(0,0,0,0.75);
+  z-index:9999;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.25s ease;
+}
+
+.fx-overlay.active{
+  opacity:1;
+}
+
+.fx-overlay.red{
+  background:rgba(120,0,0,0.85);
+}
+
+.fx-title{
+  font-size:min(14vw,5rem);
+  font-weight:900;
+  color:#ffd166;
+  text-shadow:
+    0 0 20px #ff0055,
+    0 0 40px #ff0055;
+  animation:fxPulse 0.7s infinite;
+  text-align:center;
+  padding:20px;
+}
+
+.fx-sub{
+  margin-top:10px;
+  font-size:1.3rem;
+  color:white;
+  text-align:center;
+}
+
+.glitch{
+  animation:glitchAnim 0.15s infinite;
+}
+
+.shake-screen{
+  animation:shakeScreen 0.08s infinite;
+}
+
+.gold-rain{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  z-index:9998;
+  pointer-events:none;
+}
+
+.coin{
+  position:absolute;
+  top:-60px;
+  font-size:2rem;
+  animation:fall linear forwards;
+}
+
+@keyframes fall{
+  to{
+    transform:translateY(120vh) rotate(720deg);
+  }
+}
+
+@keyframes fxPulse{
+  0%,100%{
+    transform:scale(1);
+  }
+  50%{
+    transform:scale(1.08);
+  }
+}
+
+@keyframes glitchAnim{
+  0%{
+    transform:translate(0);
+  }
+  25%{
+    transform:translate(-3px,2px);
+  }
+  50%{
+    transform:translate(3px,-2px);
+  }
+  75%{
+    transform:translate(-2px,-3px);
+  }
+  100%{
+    transform:translate(0);
+  }
+}
+
+@keyframes shakeScreen{
+  0%{transform:translate(0);}
+  25%{transform:translate(-4px,2px);}
+  50%{transform:translate(4px,-2px);}
+  75%{transform:translate(-3px,-3px);}
+  100%{transform:translate(0);}
+}
+
+
+/* PREMIUM FX */
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,0,85,0.08), transparent 25%),
+    radial-gradient(circle at 80% 10%, rgba(255,209,102,0.06), transparent 20%);
+  animation:neonMove 8s linear infinite alternate;
+}
+
+@keyframes neonMove{
+  from{transform:translateY(-10px);}
+  to{transform:translateY(10px);}
+}
+
+.particles{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:1;
+}
+
+.particle{
+  position:absolute;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:#ffd166;
+  opacity:0.5;
+  animation:floatParticle linear infinite;
+}
+
+@keyframes floatParticle{
+  from{
+    transform:translateY(110vh) scale(0.5);
+  }
+  to{
+    transform:translateY(-20vh) scale(1.2);
+  }
+}
+
+.smoke{
+  position:fixed;
+  bottom:-100px;
+  width:220px;
+  height:220px;
+  background:radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%);
+  border-radius:50%;
+  filter:blur(20px);
+  animation:smokeRise 12s linear infinite;
+  pointer-events:none;
+  z-index:0;
+}
+
+@keyframes smokeRise{
+  from{
+    transform:translateY(0) scale(0.8);
+    opacity:0;
+  }
+  20%{
+    opacity:0.4;
+  }
+  to{
+    transform:translateY(-120vh) scale(1.5);
+    opacity:0;
+  }
+}
+
+.falling-card{
+  position:fixed;
+  top:-120px;
+  width:70px;
+  height:100px;
+  background:white;
+  border-radius:12px;
+  color:black;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2rem;
+  font-weight:900;
+  z-index:9997;
+  pointer-events:none;
+  animation:fallCard linear forwards;
+}
+
+@keyframes fallCard{
+  to{
+    transform:translateY(120vh) rotate(720deg);
+    opacity:0;
+  }
+}
+
+.card-back{
+  background:linear-gradient(135deg,#7000ff,#ff0055);
+  color:white;
+}
+
+
+.back-partyhub{
+  position:fixed;
+  top:14px;
+  left:14px;
+  z-index:10000;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 13px;
+  border-radius:999px;
+  color:#fff;
+  text-decoration:none;
+  font-weight:900;
+  background:rgba(0,0,0,0.55);
+  border:1px solid rgba(255,255,255,0.14);
+  box-shadow:0 0 18px rgba(255,0,85,0.24);
+  backdrop-filter:blur(10px);
+}
+
+.back-partyhub:hover{
+  transform:translateY(-1px);
+  box-shadow:0 0 22px rgba(255,209,102,0.34);
+}
+
+@media(max-width:760px){
+  .back-partyhub{
+    position:static;
+    margin:12px 12px 0;
+  }
+}
+
+
+/* CASINO MENU / DICE */
+
+.casino-menu-text{
+  color:#d7d7d7;
+  line-height:1.6;
+  margin-bottom:16px;
+  text-align:center;
+}
+
+.casino-link-btn{
+  width:100%;
+  display:block;
+  text-align:center;
+  text-decoration:none;
+  border:none;
+  border-radius:15px;
+  padding:16px;
+  background:linear-gradient(135deg,#00c27a,#7000ff);
+  color:white;
+  font-size:1rem;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 0 22px rgba(0,255,170,0.25);
+}
+
+.devil-dice{
+  display:flex;
+  justify-content:center;
+  gap:22px;
+  margin:20px 0;
+  font-size:4rem;
+}
+
+.dice-critical{
+  animation:rareShake 0.12s ease-in-out 12;
+  color:#ff0055;
+  text-shadow:0 0 20px #ff0055;
+}

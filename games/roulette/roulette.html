@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PartyHub - Roulette Chaos</title>
+
+  <link rel="stylesheet" href="../../global-ui.css" />
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="roulette.css" />
+</head>
+
+<body>
+
+  <div class="background"></div>
+  <div id="confettiLayer" class="confetti-layer"></div>
+
+  <main class="app">
+
+    <section class="screen active">
+
+      <div class="roulette-header">
+        <button id="backToLobbyBtn" class="btn danger small">
+          Retour lobby
+        </button>
+
+        <div>
+          <span id="roomBadge" class="badge">Room</span>
+          <h2>Roulette Chaos</h2>
+          <p class="muted">
+            Lance la roulette. Un joueur, une catégorie, une action finale.
+          </p>
+        </div>
+      </div>
+
+      <div class="roulette-layout">
+
+        <div class="roulette-zone">
+
+          <div class="roulette-pointer">▼</div>
+
+          <div id="wheel" class="wheel">
+            <div class="segment-label label-1">BOIS</div>
+            <div class="segment-label label-2">DISTRIBUE</div>
+            <div class="segment-label label-3">GAGE</div>
+            <div class="segment-label label-4">DUEL</div>
+            <div class="segment-label label-5">TOUS</div>
+            <div class="segment-label label-6">CHANCE</div>
+            <div class="segment-label label-7">CHAOS</div>
+            <div class="segment-label label-8">SECRET</div>
+
+            <div class="wheel-center">SPIN</div>
+          </div>
+
+          <button id="spinBtn" class="btn primary big-btn">
+            Lancer la roulette 🎡
+          </button>
+
+        </div>
+
+        <aside class="roulette-panel">
+
+          <h3>🔥 Résultat</h3>
+
+          <div id="eventBanner" class="event-banner hidden"></div>
+
+          <div id="resultBox" class="roulette-result hidden">
+            <span id="targetPlayer"></span>
+            <small id="categoryText"></small>
+            <h4 id="challengeText"></h4>
+            <p id="penaltyText"></p>
+          </div>
+
+          <div class="info-box">
+            <p><strong>Mode :</strong> <span id="modeText">Party</span></p>
+            <p><strong>Niveau :</strong> <span id="drinkLevelText">Normal</span></p>
+            <p><strong>Joueurs :</strong> <span id="playersText">0</span></p>
+          </div>
+
+          <div class="stats-box">
+            <h4>📊 Stats live</h4>
+
+            <p>
+              🎯 Plus ciblé :
+              <span id="mostTargeted">-</span>
+            </p>
+
+            <p>
+              🔥 Catégorie dominante :
+              <span id="topCategory">-</span>
+            </p>
+
+            <p>
+              🎡 Spins :
+              <span id="spinCount">0</span>
+            </p>
+          </div>
+
+          <button id="rerollBtn" class="btn secondary full">
+            Relancer 🎲
+          </button>
+
+          <div class="history-box">
+            <h4>📜 Historique</h4>
+            <ul id="historyList"></ul>
+          </div>
+
+        </aside>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="../../partyhub-fx.js"></script>
+<script type="module" src="roulette.js"></script>
+</body>
+</html>

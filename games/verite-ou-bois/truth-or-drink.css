@@ -1,0 +1,144 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: white;
+  background: #0f172a;
+}
+
+.app {
+  max-width: 1300px;
+  margin: auto;
+  padding: 25px;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.truth-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 25px;
+}
+
+.truth-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.question-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px;
+  padding: 40px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.question-card h3 {
+  font-size: 2rem;
+  margin: 15px 0;
+}
+
+.truth-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.truth-panel {
+  background: rgba(255,255,255,0.05);
+  border-radius: 24px;
+  padding: 20px;
+  height: fit-content;
+}
+
+.info-box,
+.stats-box,
+.history-box {
+  margin-top: 20px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 15px;
+}
+
+.big-btn {
+  width: 100%;
+  padding: 18px;
+  font-size: 1rem;
+}
+
+.history-box ul {
+  padding-left: 18px;
+}
+
+.history-box li {
+  margin-bottom: 8px;
+}
+
+.drink-effect {
+  animation: pulse 0.5s ease;
+}
+
+.answer-effect {
+  animation: shake 0.4s ease;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@media (max-width: 950px) {
+
+  .truth-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .truth-buttons {
+    flex-direction: column;
+  }
+
+}
+
+
+.truth-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 5px;
+}
+
+.target-pill,
+.punishment-pill {
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.punishment-pill {
+  color: #ffd166;
+}
+
+.result-line {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  font-weight: 800;
+}

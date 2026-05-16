@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PartyHub TV Mode</title>
+  <link rel="stylesheet" href="tv.css" />
+</head>
+<body>
+  <div class="tv-bg"></div>
+
+  <main class="tv-app">
+    <header class="tv-header">
+      <div>
+        <span class="tv-badge">📺 PartyHub TV Mode</span>
+        <button id="tvCinemaBtn" class="tv-cinema-btn" type="button">⛶ Plein écran live</button>
+        <h1>Room <span id="tvRoomCode">----</span></h1>
+        <p id="tvStatus">Écran central de soirée — les joueurs rejoignent avec leur téléphone.</p>
+      </div>
+
+      <div class="tv-qr-card">
+        <img id="tvQr" alt="QR code room" />
+        <strong>Scanne pour rejoindre</strong>
+      </div>
+    </header>
+
+    <section class="tv-grid">
+      <div class="tv-panel tv-main-panel">
+        <h2>🎮 Jeu en cours</h2>
+        <div class="tv-current-game" id="tvCurrentGame">En attente...</div>
+        <div class="tv-phase" id="tvPhase">Lobby</div>
+      </div>
+
+      <div class="tv-panel tv-live-panel">
+        <h2>📡 Partie en direct</h2>
+        <div id="tvLiveGame" class="tv-live-game">
+          <div class="tv-live-empty">Lance un jeu pour afficher la vue spectateur.</div>
+        </div>
+      </div>
+
+      <div class="tv-panel">
+        <h2>👥 Joueurs connectés</h2>
+        <div id="tvPlayers" class="tv-players"></div>
+      </div>
+
+      <div class="tv-panel">
+        <h2>📢 Activité live</h2>
+        <ul id="tvActivity" class="tv-activity"></ul>
+      </div>
+
+      <div class="tv-panel">
+        <h2>🏆 Ambiance</h2>
+        <div class="tv-awards">
+          <div><span>Mode</span><strong id="tvMode">Chill</strong></div>
+          <div><span>Alcool</span><strong id="tvAlcohol">Activé</strong></div>
+          <div><span>Niveau</span><strong id="tvDrink">Normal</strong></div>
+        </div>
+      </div>
+
+      <div class="tv-panel tv-host-panel">
+        <h2>🎛️ Contrôle TV Host</h2>
+
+        <div class="tv-control-grid">
+          <label>
+            Jeu
+            <select id="tvGameSelect">
+              <option value="most-likely">Qui est le plus susceptible ?</option>
+              <option value="roulette">Roulette Chaos</option>
+              <option value="never-have-i-ever">Je n’ai jamais</option>
+              <option value="chaos-kings">Chaos Kings</option>
+              <option value="survivor">Survivor</option>
+              <option value="bomb">Bomb Timer</option>
+              <option value="truth-or-drink">Vérité ou Bois</option>
+              <option value="traitor">Mission Traître</option>
+              <option value="monopolit">Monopoly</option>
+              <option value="casino-night">Casino Night</option>
+            </select>
+          </label>
+
+          <label>
+            Ambiance
+            <select id="tvModeSelect">
+              <option value="chill">Chill</option>
+              <option value="party">Party</option>
+              <option value="chaos">Chaos</option>
+              <option value="hardcore">Hardcore</option>
+            </select>
+          </label>
+
+          <label>
+            Niveau alcool
+            <select id="tvDrinkSelect">
+              <option value="soft">Soft</option>
+              <option value="normal">Normal</option>
+              <option value="hard">Hard</option>
+              <option value="extreme">Extrême</option>
+            </select>
+          </label>
+
+          <label>
+            Durée
+            <select id="tvDurationSelect">
+              <option value="short">Courte</option>
+              <option value="medium">Moyenne</option>
+              <option value="long">Longue</option>
+              <option value="infinite">Infinie</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="tv-toggle-row">
+          <button id="tvAlcoholBtn" class="tv-control-btn">🍻 Alcool ON</button>
+          <button id="tvSoundBtn" class="tv-control-btn">🔊 Sons ON</button>
+        </div>
+
+        <div class="tv-host-actions">
+          <button id="tvApplySettingsBtn" class="tv-control-btn">Appliquer réglages</button>
+          <button id="tvLaunchGameBtn" class="tv-control-btn primary">🚀 Lancer le jeu</button>
+          <button id="tvBackLobbyBtn" class="tv-control-btn">↩ Retour lobby</button>
+          <button id="tvEndSummaryBtn" class="tv-control-btn danger">🏁 Bilan soirée</button>
+        </div>
+
+        <div id="tvHostStatus" class="tv-host-status">Contrôles prêts.</div>
+      </div>
+
+      <div class="tv-panel tv-summary-panel">
+        <h2>🏁 Bilan rapide</h2>
+        <div id="tvSummaryBox" class="tv-summary-box">
+          Lance le bilan depuis le panneau host.
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+
+  <section id="tvEventOverlay" class="tv-event-overlay hidden">
+    <div class="tv-event-card">
+      <div id="tvEventIcon" class="tv-event-icon">🎉</div>
+      <h2 id="tvEventTitle">Événement PartyHub</h2>
+      <p id="tvEventText">La soirée continue...</p>
+    </div>
+  </section>
+
+  <div id="tvGoldRain" class="tv-gold-rain"></div>
+
+  <script src="partyhub-fx.js"></script>
+  <script type="module" src="tv.js"></script>
+</body>
+</html>

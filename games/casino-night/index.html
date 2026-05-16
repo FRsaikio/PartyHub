@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Casino Night Extreme V4</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<a class="back-partyhub" id="backPartyHub" href="../../index.html">← Retour PartyHub</a>
+
+<div class="bg-noise"></div>
+
+<header class="topbar">
+  <div>
+    <h1>🎰 CASINO NIGHT EXTREME</h1>
+    <p>Slots infernales, blackjack premium, jetons et sanctions rares.</p>
+  </div>
+
+  <div class="wallet">
+    <span>💰 Jetons</span>
+    <strong id="chips">1000</strong>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="card economy-card">
+    <h2>💰 Casino Bank</h2>
+
+    <div class="economy-grid">
+      <label>
+        Mise
+        <input id="betInput" type="number" min="50" step="50" value="100" />
+      </label>
+
+      <button id="allInBtn" class="danger-btn">ALL IN</button>
+      <button id="buyShieldBtn">Acheter protection - 300</button>
+    </div>
+
+    <div class="inventory">
+      <span>🛡️ Protections : <strong id="shields">0</strong></span>
+      <span>🔥 Statut : <strong id="status">En vie</strong></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-title">
+      <h2>🎰 Machine à Sous Infernale</h2>
+      <span class="badge">Rare combos</span>
+    </div>
+
+    <div class="slot-machine" id="slotMachine">
+      <div class="reel"><div class="slot" id="slot1">❓</div></div>
+      <div class="reel"><div class="slot" id="slot2">❓</div></div>
+      <div class="reel"><div class="slot" id="slot3">❓</div></div>
+    </div>
+
+    <button id="spinBtn">SPIN</button>
+
+    <div class="result result-hot" id="slotResult">
+      Choisis ta mise puis lance la machine...
+    </div>
+  </section>
+
+
+  <section class="card casino-menu-card">
+    <div class="section-title">
+      <h2>♠️ Poker Night</h2>
+      <span class="badge">Table dédiée multi</span>
+    </div>
+
+    <p class="casino-menu-text">
+      Ouvre une vraie table poker connectée à la même room PartyHub.
+    </p>
+
+    <a id="pokerNightBtn" class="casino-link-btn" href="poker/index.html">
+      ♠️ Entrer dans Poker Night
+    </a>
+  </section>
+
+  <section class="card">
+    <div class="section-title">
+      <h2>🎲 Dés du Diable</h2>
+      <span class="badge">Chaos rapide</span>
+    </div>
+
+    <div class="devil-dice">
+      <div id="dice1">🎲</div>
+      <div id="dice2">🎲</div>
+    </div>
+
+    <button id="rollDiceBtn">Lancer les Dés</button>
+
+    <div class="result" id="diceResult">
+      Les dés attendent...
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-title">
+      <h2>🃏 Blackjack Extreme</h2>
+      <span class="badge">Cartes visuelles</span>
+    </div>
+
+    <div class="blackjack-table">
+
+      <div class="player-zone">
+        <h3>👤 Joueur</h3>
+        <div class="cards-row" id="playerCards"></div>
+        <p>Total : <strong id="playerTotal">0</strong></p>
+      </div>
+
+      <div class="player-zone dealer">
+        <h3>🏦 Banque</h3>
+        <div class="cards-row" id="dealerCards"></div>
+        <p>Total : <strong id="dealerTotal">0</strong></p>
+      </div>
+
+    </div>
+
+    <div class="controls">
+      <button id="startBtn">Nouvelle manche</button>
+      <button id="hitBtn">Hit</button>
+      <button id="standBtn">Stand</button>
+      <button id="doubleBtn" class="danger-btn">Double</button>
+    </div>
+
+    <div class="result" id="blackjackResult">
+      Le casino attend sa victime...
+    </div>
+  </section>
+
+</main>
+
+<script src="../../partyhub-fx.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

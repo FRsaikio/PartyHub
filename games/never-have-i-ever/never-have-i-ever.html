@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PartyHub - Je n’ai jamais</title>
+
+  <link rel="stylesheet" href="../../global-ui.css" />
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="never-have-i-ever.css" />
+</head>
+
+<body>
+
+  <div class="background"></div>
+  <div id="confettiLayer" class="confetti-layer"></div>
+
+  <main class="app">
+
+    <section class="screen active">
+
+      <div class="never-header">
+        <button id="backToLobbyBtn" class="btn danger small">
+          Retour lobby
+        </button>
+
+        <div>
+          <span id="roomBadge" class="badge">Room</span>
+          <h2>Je n’ai jamais</h2>
+          <p class="muted">
+            Si tu as déjà fait l’action affichée, tu bois.
+          </p>
+        </div>
+      </div>
+
+      <div class="never-layout">
+
+        <div class="never-main">
+
+          <div class="round-info">
+            <span id="modeBadge" class="badge">Mode Party</span>
+            <span id="roundBadge" class="badge">Question 1</span>
+            <span id="levelBadge" class="badge">Normal</span>
+          </div>
+
+          <div id="questionCard" class="never-card">
+            <small id="categoryText">🥂 Question</small>
+            <h3 id="questionText">Chargement...</h3>
+            <p id="instructionText">Ceux qui l’ont déjà fait boivent.</p>
+          </div>
+
+          <div class="never-actions">
+            <button id="didItBtn" class="btn primary big-btn">
+              Je l’ai déjà fait 🍻
+            </button>
+
+            <button id="safeBtn" class="btn secondary big-btn">
+              Jamais 😇
+            </button>
+
+            <button id="nextQuestionBtn" class="btn primary full">
+              Question suivante →
+            </button>
+          </div>
+
+        </div>
+
+        <aside class="never-panel">
+
+          <h3>🔥 Infos</h3>
+
+          <div class="info-box">
+            <p><strong>Mode :</strong> <span id="modeText">Party</span></p>
+            <p><strong>Niveau :</strong> <span id="drinkLevelText">Normal</span></p>
+            <p><strong>Joueurs :</strong> <span id="playersText">0</span></p>
+            <p><strong>Questions :</strong> <span id="questionCountText">0</span></p>
+          </div>
+
+          <div class="stats-box">
+            <h4>📊 Stats</h4>
+            <p>🍻 Ont bu : <span id="drinkCounter">0</span></p>
+            <p>😇 Sauvés : <span id="safeCounter">0</span></p>
+          </div>
+
+          <div class="history-box">
+            <h4>📜 Historique</h4>
+            <ul id="historyList"></ul>
+          </div>
+
+        </aside>
+
+      </div>
+
+    </section>
+
+  </main>
+
+ <script src="../../partyhub-fx.js"></script>
+<script type="module" src="never-have-i-ever.js"></script>
+</body>
+</html>

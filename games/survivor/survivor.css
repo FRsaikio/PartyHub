@@ -1,0 +1,246 @@
+.survivor-header {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 35px 0;
+}
+
+.survivor-header h2 {
+  font-size: clamp(40px, 7vw, 76px);
+  margin: 8px 0;
+}
+
+.survivor-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+.round-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.challenge-card {
+  min-height: 360px;
+  padding: 42px 34px;
+  border-radius: 32px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
+  border: 1px solid rgba(255,255,255,0.22);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 25px 90px rgba(0,0,0,0.45);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.challenge-card.pop {
+  animation: popIn 0.4s ease;
+}
+
+.challenge-card small {
+  color: #d8d8ec;
+  font-weight: 900;
+  margin-bottom: 16px;
+}
+
+.challenge-card h3 {
+  font-size: clamp(34px, 7vw, 72px);
+  line-height: 1.05;
+  margin: 0;
+}
+
+.challenge-card p {
+  margin-top: 22px;
+  font-size: 20px;
+  color: #eeeeff;
+  font-weight: bold;
+}
+
+.result-box {
+  margin-top: 22px;
+  padding: 24px;
+  border-radius: 24px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255,0,120,0.28), rgba(123,44,255,0.24));
+  border: 1px solid rgba(255,0,150,0.55);
+  box-shadow: 0 0 35px rgba(255,0,150,0.3);
+}
+
+.result-box h3 {
+  margin: 0 0 10px;
+  font-size: 32px;
+}
+
+.result-box p {
+  font-size: 24px;
+  font-weight: 900;
+  margin: 0;
+}
+
+.survivor-actions {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.survivor-panel {
+  padding: 24px;
+  border-radius: 26px;
+  background: rgba(255,255,255,0.11);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  position: sticky;
+  top: 20px;
+}
+
+.survivor-panel h3 {
+  margin-top: 0;
+  font-size: 26px;
+}
+
+.info-box,
+.history-box {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(0,0,0,0.24);
+  margin-bottom: 18px;
+}
+
+.info-box p {
+  margin: 10px 0;
+}
+
+.survivor-list,
+#historyList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.survivor-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  margin-bottom: 10px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.09);
+}
+
+.survivor-list li.dead {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.life {
+  color: #ff4fc3;
+  font-weight: 900;
+}
+
+#historyList li {
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.end-screen {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(12px);
+  z-index: 80;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.end-card {
+  width: 100%;
+  max-width: 520px;
+  padding: 32px;
+  border-radius: 30px;
+  background: rgba(20,20,35,0.96);
+  border: 1px solid rgba(255,255,255,0.18);
+  text-align: center;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.55);
+}
+
+.end-card h2 {
+  font-size: 48px;
+  margin: 14px 0;
+}
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 90;
+}
+
+.confetti {
+  position: absolute;
+  top: -20px;
+  width: 10px;
+  height: 16px;
+  border-radius: 3px;
+  animation: confettiFall 1.8s linear forwards;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.screen-shake {
+  animation: screenShake 0.35s ease;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+@keyframes confettiFall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .survivor-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .survivor-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .survivor-panel {
+    position: static;
+  }
+}

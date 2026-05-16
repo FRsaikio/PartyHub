@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PartyHub - Mission Traître</title>
+
+  <link rel="stylesheet" href="../../global-ui.css" />
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="mission-traitre.css" />
+</head>
+
+<body>
+
+  <div class="background"></div>
+  <div id="confettiLayer" class="confetti-layer"></div>
+
+  <main class="app">
+
+    <section class="screen active">
+
+      <div class="traitor-header">
+        <button id="backToLobbyBtn" class="btn danger small">
+          Retour lobby
+        </button>
+
+        <div>
+          <span id="roomBadge" class="badge">Room</span>
+          <h2>🕵️ Mission Traître</h2>
+          <p class="muted">
+            Un traître se cache parmi vous. Sa mission : réussir sans se faire griller.
+          </p>
+        </div>
+      </div>
+
+      <div class="traitor-layout">
+
+        <div class="traitor-main">
+
+          <div class="round-info">
+            <span id="modeBadge" class="badge">Mode Party</span>
+            <span id="levelBadge" class="badge">Normal</span>
+            <span id="phaseBadge" class="badge">Phase préparation</span>
+          </div>
+
+          <div id="roleCard" class="role-card">
+            <small id="roleLabel">🎭 Rôle secret</small>
+            <h3 id="roleTitle">Prêt à distribuer les rôles ?</h3>
+            <p id="roleDescription">
+              Chaque joueur passe devant l’écran pour voir son rôle sans le montrer aux autres.
+            </p>
+          </div>
+
+          <div class="traitor-actions">
+            <button id="revealRoleBtn" class="btn primary big-btn">
+              Voir le rôle du joueur actuel 👀
+            </button>
+
+            <button id="nextPlayerBtn" class="btn secondary big-btn hidden">
+              Joueur suivant →
+            </button>
+
+            <button id="startDebateBtn" class="btn primary full hidden">
+              Lancer le débat 🔥
+            </button>
+
+            <button id="endGameBtn" class="btn danger full hidden">
+              Révéler le traître 🕵️
+            </button>
+          </div>
+
+        </div>
+
+        <aside class="traitor-panel">
+
+          <h3>🔥 Infos</h3>
+
+          <div class="info-box">
+            <p><strong>Mode :</strong> <span id="modeText">Party</span></p>
+            <p><strong>Niveau :</strong> <span id="drinkLevelText">Normal</span></p>
+            <p><strong>Joueurs :</strong> <span id="playersText">0</span></p>
+            <p><strong>Joueur actuel :</strong> <span id="currentPlayerText">-</span></p>
+          </div>
+
+          <div id="missionBox" class="mission-box hidden">
+            <h4>🎯 Mission du traître</h4>
+            <p id="missionText"></p>
+          </div>
+
+          <div id="resultBox" class="result-box hidden">
+            <h4 id="resultTitle"></h4>
+            <p id="resultText"></p>
+          </div>
+
+          <div class="history-box">
+            <h4>📜 Historique</h4>
+            <ul id="historyList"></ul>
+          </div>
+
+        </aside>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="../../partyhub-fx.js"></script>
+<script type="module" src="mission-traitre.js"></script>
+</body>
+</html>

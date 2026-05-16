@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PartyHub - Survivor</title>
+
+  <link rel="stylesheet" href="../../global-ui.css" />
+  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="survivor.css" />
+</head>
+
+<body>
+  <div class="background"></div>
+  <div id="confettiLayer" class="confetti-layer"></div>
+
+  <main class="app">
+    <section class="screen active">
+
+      <div class="survivor-header">
+        <button id="backToLobbyBtn" class="btn danger small">Retour lobby</button>
+
+        <div>
+          <span id="roomBadge" class="badge">Room</span>
+          <h2>⚡ Survivor</h2>
+          <p class="muted">Réagis vite. Le perdant perd une vie et prend une punition.</p>
+        </div>
+      </div>
+
+      <div class="survivor-layout">
+
+        <div class="survivor-main">
+
+          <div class="round-info">
+            <span id="modeBadge" class="badge">Mode Party</span>
+            <span id="levelBadge" class="badge">Normal</span>
+            <span id="roundBadge" class="badge">Round 1</span>
+          </div>
+
+          <div id="challengeCard" class="challenge-card">
+            <small id="challengeType">⚡ Défi réflexe</small>
+            <h3 id="challengeText">Prêt ?</h3>
+            <p id="instructionText">Lance un défi. Le dernier perd une vie.</p>
+          </div>
+
+          <div id="resultBox" class="result-box hidden">
+            <h3 id="resultTitle"></h3>
+            <p id="punishmentText"></p>
+          </div>
+
+          <div class="survivor-actions">
+            <button id="newChallengeBtn" class="btn primary big-btn">Nouveau défi ⚡</button>
+            <button id="chooseLoserBtn" class="btn secondary big-btn">Choisir le perdant 💔</button>
+            <button id="resetGameBtn" class="btn danger full">Reset la partie</button>
+          </div>
+
+        </div>
+
+        <aside class="survivor-panel">
+
+          <h3>❤️ Survivants</h3>
+
+          <div class="info-box">
+            <p><strong>Mode :</strong> <span id="modeText">Party</span></p>
+            <p><strong>Niveau :</strong> <span id="drinkLevelText">Normal</span></p>
+            <p><strong>Joueurs :</strong> <span id="playersText">0</span></p>
+          </div>
+
+          <ul id="playersList" class="survivor-list"></ul>
+
+          <div class="history-box">
+            <h4>📜 Historique</h4>
+            <ul id="historyList"></ul>
+          </div>
+
+        </aside>
+
+      </div>
+
+      <div id="endScreen" class="end-screen hidden">
+        <div class="end-card">
+          <span class="badge">👑 Survivor</span>
+          <h2>Victoire</h2>
+          <p id="winnerText"></p>
+
+          <button id="restartBtn" class="btn primary full">Rejouer</button>
+          <button id="finalBackBtn" class="btn danger full">Retour lobby</button>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="../../partyhub-fx.js"></script>
+<script type="module" src="survivor.js"></script>
+</body>
+</html>

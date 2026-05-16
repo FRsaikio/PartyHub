@@ -1,0 +1,286 @@
+.bomb-header {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 35px 0;
+}
+
+.bomb-header h2 {
+  font-size: clamp(40px, 7vw, 72px);
+  margin: 8px 0;
+}
+
+.bomb-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+.bomb-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bomb-wrapper {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin-bottom: 30px;
+}
+
+.bomb-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    rgba(255, 0, 80, 0.55),
+    transparent 70%
+  );
+  animation: pulseGlow 1s infinite alternate;
+}
+
+.bomb {
+  position: absolute;
+  inset: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at top, #3d3d3d, #101010);
+  border: 8px solid rgba(255,255,255,0.12);
+  box-shadow:
+    0 0 50px rgba(255,0,80,0.45),
+    inset 0 0 35px rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bomb-top {
+  position: absolute;
+  top: -24px;
+  width: 70px;
+  height: 34px;
+  border-radius: 12px;
+  background: #5c5c5c;
+  border: 4px solid rgba(255,255,255,0.15);
+}
+
+.timer-text {
+  font-size: 78px;
+  font-weight: 900;
+  color: white;
+  text-shadow:
+    0 0 15px rgba(255,255,255,0.5),
+    0 0 30px rgba(255,0,80,0.8);
+}
+
+.question-card {
+  width: 100%;
+  max-width: 760px;
+  padding: 34px;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.16);
+  backdrop-filter: blur(18px);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.question-card small {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #d8d8ec;
+}
+
+.question-card h3 {
+  font-size: clamp(26px, 5vw, 48px);
+  margin: 0;
+  line-height: 1.15;
+}
+
+.question-card p {
+  margin-top: 18px;
+  color: #cfcfe6;
+}
+
+#passBombBtn {
+  max-width: 420px;
+}
+
+.bomb-panel {
+  padding: 24px;
+  border-radius: 26px;
+  background: rgba(255,255,255,0.11);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(18px);
+  position: sticky;
+  top: 20px;
+}
+
+.info-box,
+.player-box,
+.history-box,
+.result-box {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(0,0,0,0.22);
+  margin-bottom: 18px;
+}
+
+.current-player {
+  font-size: 28px;
+  font-weight: 900;
+  text-align: center;
+  margin-top: 12px;
+  color: #ff4fc3;
+}
+
+#historyList {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+#historyList li {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.result-box {
+  border: 1px solid rgba(255,0,80,0.4);
+  box-shadow: 0 0 25px rgba(255,0,80,0.25);
+}
+
+.explosion-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,0,0,0.18);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.explosion-overlay h1 {
+  font-size: clamp(48px, 10vw, 120px);
+  color: white;
+  text-shadow:
+    0 0 30px rgba(255,0,0,0.9),
+    0 0 60px rgba(255,120,0,0.9);
+  animation: explodeText 0.5s infinite alternate;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 90;
+}
+
+.confetti {
+  position: absolute;
+  top: -20px;
+  width: 10px;
+  height: 16px;
+  border-radius: 4px;
+  animation: confettiFall 2s linear forwards;
+}
+
+.screen-shake {
+  animation: shake 0.4s ease;
+}
+
+.bomb-danger .bomb {
+  animation: bombDanger 0.4s infinite alternate;
+}
+
+@keyframes bombDanger {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes pulseGlow {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  to {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes explodeText {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes confettiFall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shake {
+  0%,100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-10px);
+  }
+
+  40% {
+    transform: translateX(10px);
+  }
+
+  60% {
+    transform: translateX(-7px);
+  }
+
+  80% {
+    transform: translateX(7px);
+  }
+}
+
+@media (max-width: 900px) {
+
+  .bomb-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .bomb-panel {
+    position: static;
+  }
+
+  .bomb-wrapper {
+    width: 220px;
+    height: 220px;
+  }
+
+  .timer-text {
+    font-size: 58px;
+  }
+
+}

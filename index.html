@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PartyHub</title>
+  <link rel="stylesheet" href="global-ui.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="background"></div>
+
+  <main class="app">
+
+    <section id="home" class="screen active">
+      <div class="hero">
+        <span class="badge">🍻 Multiplayer Party Games</span>
+        <h1>PartyHub</h1>
+        <p>La plateforme de soirée pour créer une room, inviter tes potes et lancer des mini-jeux en temps réel.</p>
+
+        <div class="hero-stats">
+          <span>⚡ Rooms live</span>
+          <span>🎮 Mini-jeux</span>
+          <span>🔥 XP & badges</span>
+        </div>
+
+        <div class="home-grid">
+          <div class="card">
+          <label for="pseudo">Ton pseudo</label>
+          <input type="text" id="pseudo" placeholder="Ex: Alex" maxlength="14" autocomplete="nickname" />
+
+         <label for="avatarSelect">Ton avatar</label>
+
+<div class="avatar-picker-row">
+  <select id="avatarSelect" class="avatar-select">
+    <option value="🦊">🦊 Avatar 🦊</option>
+    <option value="🐼">🐼 Avatar 🐼</option>
+    <option value="🐸">🐸 Avatar 🐸</option>
+    <option value="🙉">🙉 Avatar 🙉</option>
+    <option value="🐯">🐯 Avatar 🐯</option>
+    <option value="🦄">🦄 Avatar 🦄</option>
+    <option value="👻">👻 Avatar 👻</option>
+    <option value="🤖">🤖 Avatar 🤖</option>
+    <option value="😈">😈 Avatar 😈</option>
+    <option value="🍻">🍻 Avatar 🍻</option>
+    <option value="🔥">🔥 Avatar 🔥</option>
+    <option value="👑">👑 Avatar 👑</option>
+  </select>
+
+  <button id="avatarUploadBtn" type="button" class="btn secondary avatar-upload-btn">
+    Photo
+  </button>
+</div>
+
+<input id="avatarFileInput" type="file" accept="image/*" hidden />
+            
+          <button id="createRoomBtn" class="btn primary">Créer une room</button>
+          <button id="createTvRoomBtn" class="btn secondary">Créer écran TV</button>
+
+          <div class="separator">ou</div>
+
+          <input type="text" id="roomCodeInput" placeholder="Code room ex: AB12" maxlength="4" autocomplete="off" />
+          <button id="joinRoomBtn" class="btn secondary">Rejoindre</button>
+
+          <p id="errorMsg" class="error"></p>
+        </div>
+
+        <aside class="profile-card">
+          <div class="profile-top">
+            <div id="profileAvatarPreview" class="profile-avatar">🍻</div>
+            <div>
+              <small>Profil Firebase</small>
+              <h3 id="profileNamePreview">Player</h3>
+              <p id="profileSyncText">Synchronisation en cours...</p>
+            </div>
+          </div>
+          <div class="xp-track">
+            <div id="profileXpBar" class="xp-bar"></div>
+          </div>
+          <div class="profile-stats">
+            <span class="stat-chip"><strong id="profileLevel">1</strong><small>Niveau</small></span>
+            <span class="stat-chip"><strong id="profileXp">0</strong><small>XP</small></span>
+            <span class="stat-chip"><strong id="profileRooms">0</strong><small>Rooms</small></span>
+          </div>
+          <div id="profileBadges" class="badges-list"></div>
+        </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="lobby" class="screen">
+  <div class="lobby-hero">
+    <div>
+      <span class="badge">🍻 PartyHub Lobby</span>
+      <h2>Room <span id="roomCodeDisplay">AB12</span></h2>
+      <p class="muted">Invite tes potes, choisis l’ambiance, lance les mini-jeux.</p>
+    </div>
+
+    <div class="room-actions">
+      <button id="copyCodeBtn" class="btn secondary small">Copier le code</button>
+      <button id="copyInviteBtn" class="btn secondary small">Lien invite</button>
+      <button id="toggleQrBtn" class="btn secondary small">QR Code</button>
+      <button id="openTvBtn" class="btn secondary small">Mode TV</button>
+      <button id="soundToggleBtn" class="btn secondary small">🔊 Sons</button>
+      <button id="leaveBtn" class="btn danger small">Quitter</button>
+    </div>
+  </div>
+
+  <div class="lobby-status-row">
+    <div id="syncStatus" class="sync-status">🟢 Room synchronisée en direct</div>
+    <div id="lobbyProfileMini" class="lobby-profile-mini">🍻 Player · Niv. 1</div>
+  </div>
+
+  <div class="v22-dashboard">
+    <div class="v22-stat-card"><span>⭐ Niveau</span><strong id="v22Level">1</strong><small id="v22XpText">0 XP</small></div>
+    <div class="v22-stat-card"><span>🏆 Titre</span><strong id="v22Title">Nouveau joueur</strong><small>progression globale</small></div>
+    <div class="v22-stat-card"><span>🎖️ Badges</span><strong id="v22BadgeCount">0</strong><small id="v22BadgePreview">Aucun badge</small></div>
+  </div>
+
+
+  <div id="qrInvitePanel" class="qr-invite-panel" hidden>
+    <div>
+      <h3>📲 Invite rapide</h3>
+      <p>Scanne le QR code ou partage le lien pour rejoindre directement la room.</p>
+      <input id="inviteLinkInput" readonly />
+    </div>
+    <img id="roomQrImage" alt="QR code de la room PartyHub" />
+  </div>
+
+  <div class="party-modes">
+    <button class="mode-card selected" data-mode="chill">😇<strong>Chill</strong><small>soirée tranquille</small></button>
+    <button class="mode-card" data-mode="party">🍻<strong>Party</strong><small>fun + alcool</small></button>
+    <button class="mode-card" data-mode="chaos">💀<strong>Chaos</strong><small>questions sales</small></button>
+    <button class="mode-card" data-mode="hardcore">☠️<strong>Hardcore</strong><small>pour les vrais</small></button>
+  </div>
+
+  <div class="lobby-layout ultimate">
+
+    <div class="panel">
+      <div class="panel-title">
+        <h3>👥 Joueurs</h3>
+        <span id="playerCount">0/20</span>
+      </div>
+
+      <ul id="playersList" class="players"></ul>
+
+      <div class="fake-add">
+        <input id="fakePlayerInput" type="text" placeholder="Ajouter un joueur test" maxlength="14">
+        <button id="addFakePlayerBtn" class="btn secondary">Ajouter</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <h3>🎮 Mini-jeux</h3>
+        <span class="host-label">Host</span>
+      </div>
+
+      <div class="game-list">
+        <button class="game-card selected" data-game="most-likely">
+          <span>🍺</span>
+          <div>
+            <strong>Qui est le plus susceptible ?</strong>
+            <small>Le plus voté boit</small>
+          </div>
+        </button>
+
+        <button class="game-card" data-game="roulette">
+          <span>🎡</span>
+          <div>
+            <strong>Roulette Chaos</strong>
+            <small>défis, shots, malus</small>
+          </div>
+        </button>
+
+        <button class="game-card" data-game="never-have-i-ever">
+         <span>🥂</span>
+         <div>
+           <strong>Je n’ai jamais</strong>
+           <small>avoues ou bois</small>
+         </div>
+        </button>
+        
+        <button class="game-card" data-game="chaos-kings">
+         <span>👑</span>
+         <div>
+            <strong>Chaos Kings</strong>
+            <small>king’s cup + cartes chaos</small>
+         </div>
+        </button>
+        
+        <button class="game-card" data-game="survivor">
+          <span>⚡</span>
+          <div>
+            <strong>Survivor</strong>
+            <small>réflexes + vies + punitions</small>
+          </div>
+          </button>
+
+        <button class="game-card" data-game="bomb">
+          <span>💣</span>
+          <div>
+            <strong>Bomb Timer</strong>
+            <small>réponds ou bois</small>
+          </div>
+        </button>
+        
+        <button class="game-card" data-game="truth-or-drink">
+          <span>🍺</span>
+          <div>
+            <strong>Vérité ou Bois</strong>
+            <small>Réponds honnêtement… ou bois</small>
+          </div>
+        </button>
+        
+        <button class="game-card" data-game="traitor">
+          <span>🕵️</span>
+          <div>
+            <strong>Mission Traître</strong>
+            <small>secret + alcool</small>
+          </div>
+        </button>
+
+        <button class="game-card" data-game="monopolit">
+          <span>🍻</span>
+          <div>
+            <strong>Monopoly</strong>
+            <small>plateau + alcool + chaos</small>
+          </div>
+        </button>
+
+        <button class="game-card casino-card" data-game="casino-night">
+          <span>🎰</span>
+          <div>
+            <strong>Casino Night</strong>
+            <small>Blackjack • Slots • All In</small>
+          </div>
+          <em>EXTREME</em>
+        </button>
+
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>⚙️ Réglages soirée</h3>
+
+      <div class="setting-row">
+        <span>Mode alcool</span>
+        <label class="switch">
+          <input id="alcoholMode" type="checkbox" checked>
+          <span></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <span>Niveau alcool</span>
+        <select id="drinkLevel">
+          <option value="soft">Soft</option>
+          <option value="normal" selected>Normal</option>
+          <option value="hard">Hard</option>
+          <option value="extreme">Extrême</option>
+        </select>
+      </div>
+
+      <div class="setting-row">
+        <span>Durée</span>
+        <select id="gameDuration">
+          <option value="short">Courte</option>
+          <option value="medium" selected>Moyenne</option>
+          <option value="long">Longue</option>
+          <option value="infinite">Infinie</option>
+        </select>
+      </div>
+
+      <div class="setting-row">
+        <span>Rotation jeux</span>
+        <label class="switch">
+          <input id="autoRotation" type="checkbox">
+          <span></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="panel preview-panel">
+      <h3>🔥 Aperçu</h3>
+
+      <div class="preview-box">
+        <p><strong>Ambiance :</strong> <span id="partyModeText">Chill</span></p>
+        <p><strong>Mini-jeu :</strong> <span id="selectedGameText">Qui est le plus susceptible ?</span></p>
+        <p><strong>Alcool :</strong> <span id="modeText">Activé</span></p>
+        <p><strong>Niveau :</strong> <span id="drinkText">Normal</span></p>
+        <p><strong>Durée :</strong> <span id="durationText">Moyenne</span></p>
+        <p><strong>Rotation :</strong> <span id="rotationText">Désactivée</span></p>
+      </div>
+
+      <button id="startGameBtn" class="btn primary full big-btn">Lancer la soirée 🚀</button>
+      <button id="endPartyBtn" class="btn secondary full">🏁 Bilan fin de soirée</button>
+    </div>
+
+    <div class="panel activity-panel">
+      <h3>📢 Activité live</h3>
+      <ul id="activityList" class="activity-list"></ul>
+    </div>
+
+  </div>
+</section>
+  
+    <section id="endPartyOverlay" class="v22-end-overlay hidden">
+      <div class="v22-end-card">
+        <button id="closeEndPartyBtn" class="v22-end-close">×</button>
+        <span class="badge">🏁 Fin de soirée</span>
+        <h2>Résumé PartyHub</h2>
+        <div id="endPartyStats" class="v22-end-stats"></div>
+        <div id="endPartyAwards" class="v22-awards"></div>
+        <button id="copyEndSummaryBtn" class="btn primary full">Copier le résumé</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="partyhub-fx.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

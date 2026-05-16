@@ -1,0 +1,848 @@
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  color:white;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#050510;
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.tv-bg{
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 15% 20%,rgba(255,0,150,.38),transparent 30%),
+    radial-gradient(circle at 85% 5%,rgba(0,200,255,.34),transparent 34%),
+    radial-gradient(circle at 50% 100%,rgba(140,0,255,.35),transparent 40%),
+    #050510;
+  z-index:-1;
+  animation:tvGlow 8s ease-in-out infinite alternate;
+}
+@keyframes tvGlow{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(22deg)}}
+.tv-app{width:min(1500px,96vw);margin:auto;padding:34px 0}
+.tv-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:26px;
+  margin-bottom:28px;
+}
+.tv-badge{
+  display:inline-block;
+  padding:10px 16px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  margin-bottom:16px;
+}
+h1{font-size:clamp(70px,10vw,150px);line-height:.9;text-shadow:0 0 38px rgba(255,0,170,.8)}
+h1 span{color:#fbbf24}
+.tv-header p{font-size:22px;color:#dbe3ff;margin-top:16px}
+.tv-qr-card{
+  width:230px;
+  padding:18px;
+  border-radius:28px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  text-align:center;
+  backdrop-filter:blur(14px);
+}
+.tv-qr-card img{width:190px;height:190px;border-radius:18px;background:white;margin-bottom:10px}
+.tv-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}
+.tv-panel{
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.09);
+  border-radius:28px;
+  padding:24px;
+  backdrop-filter:blur(18px);
+  box-shadow:0 20px 70px rgba(0,0,0,.34);
+}
+.tv-panel h2{font-size:28px;margin-bottom:18px;color:#fbbf24}
+.tv-main-panel{min-height:330px}
+.tv-current-game{font-size:clamp(44px,7vw,92px);font-weight:900;text-shadow:0 0 30px rgba(0,200,255,.5)}
+.tv-phase{
+  display:inline-block;
+  margin-top:18px;
+  padding:12px 18px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  color:#dbe3ff;
+  font-size:20px;
+}
+.tv-players{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.tv-player{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border-radius:18px;
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.10);
+}
+.tv-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;background:rgba(255,255,255,.10);overflow:hidden}
+.tv-avatar img{width:100%;height:100%;object-fit:cover}
+.tv-player strong{display:block}
+.tv-player small{color:#bfc6d9}
+.tv-activity{list-style:none;display:grid;gap:10px}
+.tv-activity li{padding:12px 14px;border-radius:16px;background:rgba(0,0,0,.28);color:#e9edff}
+.tv-awards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tv-awards div{padding:18px;border-radius:18px;background:rgba(0,0,0,.26);border:1px solid rgba(255,255,255,.10)}
+.tv-awards span{display:block;color:#bfc6d9}
+.tv-awards strong{font-size:26px;color:white}
+@media(max-width:900px){
+  body{overflow:auto}
+  .tv-header,.tv-grid{grid-template-columns:1fr;display:grid}
+  .tv-qr-card{width:100%}
+  .tv-qr-card img{width:180px;height:180px}
+  .tv-players,.tv-awards{grid-template-columns:1fr}
+}
+
+
+/* =========================
+V23 TV UPGRADE + SCROLL FIX
+========================= */
+
+html,
+body{
+  height:auto !important;
+  max-height:none !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+}
+
+.tv-app{
+  min-height:100vh;
+  padding-bottom:90px;
+}
+
+.tv-panel{
+  position:relative;
+  overflow:hidden;
+}
+
+.tv-panel::after{
+  content:"";
+  position:absolute;
+  inset:-80px;
+  background:radial-gradient(circle,rgba(255,255,255,.08),transparent 45%);
+  transform:translateX(-70%);
+  animation:tvPanelShine 7s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes tvPanelShine{
+  0%,75%{transform:translateX(-75%) rotate(0deg)}
+  100%{transform:translateX(75%) rotate(12deg)}
+}
+
+.tv-current-game{
+  animation:tvGamePulse 2.8s ease-in-out infinite;
+}
+
+@keyframes tvGamePulse{
+  0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(251,191,36,0))}
+  50%{transform:scale(1.025);filter:drop-shadow(0 0 24px rgba(251,191,36,.35))}
+}
+
+.tv-player{
+  animation:tvPlayerIn .35s ease both;
+}
+
+@keyframes tvPlayerIn{
+  from{opacity:0;transform:translateY(8px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.tv-event-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(12px);
+  pointer-events:none;
+  opacity:1;
+  transition:opacity .25s ease;
+}
+
+.tv-event-overlay.hidden{
+  opacity:0;
+}
+
+.tv-event-card{
+  width:min(760px,92vw);
+  border:1px solid rgba(255,255,255,.18);
+  background:
+    radial-gradient(circle at top left,rgba(255,0,150,.32),transparent 40%),
+    radial-gradient(circle at bottom right,rgba(251,191,36,.22),transparent 45%),
+    rgba(10,10,22,.96);
+  border-radius:34px;
+  padding:42px;
+  text-align:center;
+  box-shadow:0 30px 120px rgba(0,0,0,.68);
+  animation:tvEventPop .42s cubic-bezier(.2,1.5,.4,1);
+}
+
+.tv-event-icon{
+  font-size:86px;
+  margin-bottom:10px;
+  filter:drop-shadow(0 0 24px rgba(251,191,36,.6));
+}
+
+.tv-event-card h2{
+  font-size:clamp(36px,7vw,86px);
+  margin-bottom:14px;
+  color:#fbbf24;
+  text-shadow:0 0 34px rgba(251,191,36,.55);
+}
+
+.tv-event-card p{
+  font-size:clamp(18px,3vw,30px);
+  color:#fff;
+}
+
+@keyframes tvEventPop{
+  from{opacity:0;transform:scale(.88) translateY(18px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+
+.tv-gold-rain{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.tv-coin{
+  position:absolute;
+  top:-60px;
+  font-size:34px;
+  animation:tvCoinFall linear forwards;
+}
+
+@keyframes tvCoinFall{
+  to{transform:translateY(120vh) rotate(720deg);opacity:0}
+}
+
+.tv-status-hot{
+  color:#fbbf24 !important;
+  text-shadow:0 0 22px rgba(251,191,36,.6);
+}
+
+@media(max-width:900px){
+  body{
+    overflow-y:auto !important;
+  }
+
+  .tv-app{
+    padding-bottom:120px;
+  }
+
+  .tv-header{
+    align-items:stretch;
+  }
+
+  .tv-current-game{
+    font-size:clamp(34px,12vw,62px);
+  }
+}
+
+
+/* =========================
+V24 TV HOST CONTROL
+========================= */
+
+.tv-host-panel{
+  grid-column:1 / -1;
+}
+
+.tv-summary-panel{
+  grid-column:1 / -1;
+}
+
+.tv-control-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.tv-control-grid label{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  color:#fbbf24;
+  font-weight:900;
+}
+
+.tv-control-grid select{
+  width:100%;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.42);
+  color:#fff;
+  border-radius:16px;
+  padding:14px;
+  font-size:16px;
+  font-weight:800;
+}
+
+.tv-toggle-row,
+.tv-host-actions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:12px;
+}
+
+.tv-toggle-row{
+  grid-template-columns:repeat(2,1fr);
+}
+
+.tv-control-btn{
+  border:none;
+  border-radius:16px;
+  padding:16px 18px;
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+  background:linear-gradient(135deg,#00b894,#5b21ff);
+  box-shadow:0 0 22px rgba(0,255,170,.16);
+}
+
+.tv-control-btn.primary{
+  background:linear-gradient(135deg,#f59e0b,#ef0075);
+}
+
+.tv-control-btn.danger{
+  background:linear-gradient(135deg,#ff2a00,#ff0055);
+}
+
+.tv-host-status{
+  margin-top:14px;
+  padding:14px 16px;
+  border-radius:16px;
+  background:rgba(0,0,0,.32);
+  border:1px solid rgba(255,255,255,.10);
+  color:#dbe3ff;
+}
+
+.tv-summary-box{
+  line-height:1.7;
+  white-space:pre-line;
+  color:#e9edff;
+  background:rgba(0,0,0,.26);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:18px;
+  padding:18px;
+}
+
+.tv-host-lock{
+  opacity:.45;
+  pointer-events:none;
+}
+
+@media(max-width:900px){
+  .tv-control-grid,
+  .tv-toggle-row,
+  .tv-host-actions{
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* =========================
+V26 LIVE GAME SPECTATOR VIEW
+========================= */
+.tv-live-panel{
+  grid-column:1 / -1;
+  min-height:520px;
+}
+.tv-live-game{position:relative;z-index:2}
+.tv-live-empty,
+.tv-live-generic{
+  min-height:340px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:14px;
+  border-radius:24px;
+  background:rgba(0,0,0,.24);
+  border:1px solid rgba(255,255,255,.10);
+  color:#e9edff;
+  font-size:24px;
+}
+.tv-live-generic strong{font-size:clamp(42px,7vw,86px);color:#fbbf24}
+.tv-roulette-live{
+  display:grid;
+  grid-template-columns:minmax(420px, .95fr) 1fr;
+  gap:28px;
+  align-items:center;
+  min-height:440px;
+}
+.tv-roulette-stage{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding-top:34px;
+}
+.tv-roulette-pointer{
+  position:absolute;
+  top:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:5;
+  color:#ff4fc3;
+  font-size:56px;
+  line-height:1;
+  filter:drop-shadow(0 0 18px rgba(255,0,150,.95));
+}
+.tv-live-wheel{
+  width:min(44vw,520px);
+  height:min(44vw,520px);
+  min-width:390px;
+  min-height:390px;
+  border-radius:50%;
+  position:relative;
+  background:conic-gradient(
+    #ff007a 0deg 45deg,
+    #7b2cff 45deg 90deg,
+    #00b7ff 90deg 135deg,
+    #ffb000 135deg 180deg,
+    #ff3b3b 180deg 225deg,
+    #00d084 225deg 270deg,
+    #9b5cff 270deg 315deg,
+    #ff6ec7 315deg 360deg
+  );
+  border:12px solid rgba(255,255,255,.18);
+  box-shadow:0 0 70px rgba(255,0,150,.45),0 22px 90px rgba(0,0,0,.62);
+  transition:transform 4.3s cubic-bezier(.12,.78,.18,1);
+  overflow:hidden;
+}
+.tv-live-wheel::after{
+  content:"";
+  position:absolute;
+  inset:34px;
+  border-radius:50%;
+  border:2px dashed rgba(255,255,255,.42);
+}
+.tv-live-wheel strong{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:4;
+  width:132px;
+  height:132px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(10,10,24,.96);
+  border:2px solid rgba(255,255,255,.28);
+  letter-spacing:2px;
+  box-shadow:0 0 35px rgba(0,0,0,.55);
+}
+.tv-wheel-label{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform-origin:0 0;
+  font-size:15px;
+  font-weight:1000;
+  letter-spacing:1px;
+  color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.75);
+  z-index:3;
+}
+.tv-label-1{transform:rotate(22.5deg) translate(150px) rotate(67.5deg)}
+.tv-label-2{transform:rotate(67.5deg) translate(150px) rotate(67.5deg)}
+.tv-label-3{transform:rotate(112.5deg) translate(150px) rotate(67.5deg)}
+.tv-label-4{transform:rotate(157.5deg) translate(150px) rotate(67.5deg)}
+.tv-label-5{transform:rotate(202.5deg) translate(150px) rotate(67.5deg)}
+.tv-label-6{transform:rotate(247.5deg) translate(150px) rotate(67.5deg)}
+.tv-label-7{transform:rotate(292.5deg) translate(150px) rotate(67.5deg)}
+.tv-label-8{transform:rotate(337.5deg) translate(150px) rotate(67.5deg)}
+.tv-roulette-live.is-spinning .tv-live-wheel{filter:saturate(1.25) brightness(1.08)}
+.tv-live-result-card{
+  padding:30px;
+  border-radius:30px;
+  background:linear-gradient(135deg,rgba(255,0,120,.22),rgba(0,183,255,.14)),rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 20px 70px rgba(0,0,0,.35);
+}
+.tv-live-kicker{
+  display:inline-flex;
+  padding:10px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  color:#fbbf24;
+  font-weight:900;
+  margin-bottom:16px;
+}
+.tv-live-result-card h3{
+  font-size:clamp(52px,7vw,100px);
+  line-height:.95;
+  margin:0 0 18px;
+  text-shadow:0 0 30px rgba(251,191,36,.38);
+}
+.tv-live-player{font-size:32px;font-weight:900;margin-bottom:14px;color:#fff}
+.tv-live-action{font-size:clamp(24px,3vw,42px);line-height:1.25;color:#e9edff;margin-bottom:22px}
+.tv-live-stats{display:flex;flex-wrap:wrap;gap:12px}
+.tv-live-stats span{padding:12px 14px;border-radius:16px;background:rgba(0,0,0,.32);color:#dbe3ff}
+@media(max-width:1050px){
+  .tv-roulette-live{grid-template-columns:1fr}
+  .tv-live-wheel{width:min(82vw,480px);height:min(82vw,480px);min-width:310px;min-height:310px}
+  .tv-label-1{transform:rotate(22.5deg) translate(118px) rotate(67.5deg)}
+  .tv-label-2{transform:rotate(67.5deg) translate(118px) rotate(67.5deg)}
+  .tv-label-3{transform:rotate(112.5deg) translate(118px) rotate(67.5deg)}
+  .tv-label-4{transform:rotate(157.5deg) translate(118px) rotate(67.5deg)}
+  .tv-label-5{transform:rotate(202.5deg) translate(118px) rotate(67.5deg)}
+  .tv-label-6{transform:rotate(247.5deg) translate(118px) rotate(67.5deg)}
+  .tv-label-7{transform:rotate(292.5deg) translate(118px) rotate(67.5deg)}
+  .tv-label-8{transform:rotate(337.5deg) translate(118px) rotate(67.5deg)}
+}
+
+/* =========================
+V29 TV CINEMA LIVE MODE
+========================= */
+.tv-cinema-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-left:12px;
+  padding:10px 16px;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:999px;
+  background:linear-gradient(135deg,#00b894,#5b21ff);
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 0 24px rgba(0,200,255,.18);
+}
+.tv-cinema-mode{
+  overflow:hidden !important;
+}
+.tv-cinema-mode .tv-app{
+  width:100vw;
+  min-height:100vh;
+  padding:0;
+}
+.tv-cinema-mode .tv-header,
+.tv-cinema-mode .tv-main-panel,
+.tv-cinema-mode .tv-grid > .tv-panel:not(.tv-live-panel){
+  display:none !important;
+}
+.tv-cinema-mode .tv-grid{
+  display:block;
+  width:100vw;
+  height:100vh;
+}
+.tv-cinema-mode .tv-live-panel{
+  width:100vw;
+  height:100vh;
+  min-height:100vh;
+  border-radius:0;
+  border:none;
+  padding:30px;
+  display:flex;
+  flex-direction:column;
+  background:rgba(5,5,16,.52);
+}
+.tv-cinema-mode .tv-live-panel h2{
+  font-size:38px;
+  margin-bottom:18px;
+}
+.tv-cinema-mode .tv-live-game{
+  flex:1;
+  display:flex;
+  align-items:stretch;
+}
+.tv-cinema-mode .tv-roulette-live,
+.tv-cinema-mode .tv-live-bomb,
+.tv-cinema-mode .tv-live-focus,
+.tv-cinema-mode .tv-live-cardgame,
+.tv-cinema-mode .tv-live-generic,
+.tv-cinema-mode .tv-live-empty{
+  width:100%;
+  min-height:calc(100vh - 125px);
+}
+.tv-cinema-mode .tv-live-focus h3{
+  font-size:clamp(52px,7vw,126px);
+}
+.tv-cinema-mode .tv-live-action,
+.tv-cinema-mode .tv-live-focus p{
+  font-size:clamp(28px,3vw,54px);
+}
+.tv-live-focus{
+  width:100%;
+  min-height:440px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:18px;
+  padding:42px;
+  border-radius:28px;
+  background:linear-gradient(135deg,rgba(255,0,120,.18),rgba(0,183,255,.12)),rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.12);
+  text-align:center;
+}
+.tv-live-focus h3{
+  font-size:clamp(40px,6vw,92px);
+  line-height:1.04;
+  color:#fff;
+  text-shadow:0 0 28px rgba(255,255,255,.22);
+}
+.tv-live-focus p{
+  color:#e9edff;
+  font-size:clamp(22px,2.5vw,38px);
+  line-height:1.25;
+}
+.tv-live-muted{opacity:.75;font-size:22px!important}
+.tv-live-stats.big{
+  justify-content:center;
+  margin:8px auto;
+}
+.tv-live-history-list,
+.tv-live-scoreboard{
+  width:min(900px,95%);
+  margin:10px auto 0;
+  display:grid;
+  gap:10px;
+  list-style:none;
+}
+.tv-live-history-list li,
+.tv-live-scoreboard li{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:13px 16px;
+  border-radius:16px;
+  background:rgba(0,0,0,.32);
+  border:1px solid rgba(255,255,255,.08);
+  color:#e9edff;
+  text-align:left;
+}
+.tv-live-scoreboard li span{
+  color:#fbbf24;
+  font-weight:900;
+}
+.tv-live-bomb{
+  width:100%;
+  display:grid;
+  grid-template-columns:.8fr 1.2fr;
+  gap:32px;
+  align-items:center;
+  min-height:440px;
+}
+.tv-bomb-visual{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  filter:drop-shadow(0 0 44px rgba(255,0,110,.45));
+}
+.tv-bomb-fuse{
+  width:90px;
+  height:32px;
+  border-radius:12px;
+  background:#6b7280;
+  border:5px solid rgba(255,255,255,.2);
+  transform:translateY(10px);
+  z-index:2;
+}
+.tv-bomb-circle{
+  width:min(34vw,360px);
+  height:min(34vw,360px);
+  min-width:250px;
+  min-height:250px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(circle at 30% 25%,#3b3b3b,#090909 62%,#000);
+  border:10px solid rgba(255,255,255,.18);
+  box-shadow:inset -18px -28px 50px rgba(0,0,0,.65),0 0 70px rgba(255,0,120,.35);
+}
+.tv-bomb-circle span{
+  font-size:clamp(76px,9vw,150px);
+  font-weight:1000;
+  color:#fff;
+  text-shadow:0 0 26px rgba(255,0,140,.9);
+}
+.tv-bomb-circle span.danger{
+  color:#ff2b55;
+  animation:tvBombDanger .55s ease-in-out infinite alternate;
+}
+@keyframes tvBombDanger{
+  from{transform:scale(1);filter:brightness(1)}
+  to{transform:scale(1.08);filter:brightness(1.45)}
+}
+.tv-live-bomb.exploded .tv-bomb-circle{
+  background:radial-gradient(circle,#ffdd55,#ff2b55 44%,#160010 70%);
+  animation:tvExplosion .55s ease-in-out infinite alternate;
+}
+@keyframes tvExplosion{from{transform:scale(1)}to{transform:scale(1.04) rotate(-1deg)}}
+.tv-live-cardgame{
+  width:100%;
+  display:grid;
+  grid-template-columns:.72fr 1.28fr;
+  gap:32px;
+  align-items:center;
+  min-height:440px;
+}
+.tv-big-card{
+  width:min(340px,70vw);
+  height:470px;
+  margin:auto;
+  border-radius:30px;
+  background:linear-gradient(160deg,#fff,#d7d7ec);
+  color:#0b0b16;
+  box-shadow:0 0 70px rgba(255,255,255,.18),0 22px 80px rgba(0,0,0,.5);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:34px;
+  font-weight:1000;
+  border:6px solid rgba(255,255,255,.72);
+}
+.tv-big-card div{font-size:82px}.tv-big-card span{font-size:92px}
+@media(max-width:1050px){
+  .tv-live-bomb,.tv-live-cardgame{grid-template-columns:1fr}
+  .tv-cinema-mode .tv-live-panel{overflow:auto}
+}
+
+
+/* =========================
+V30 TV CINEMA FIX
+========================= */
+.tv-event-overlay.hidden{
+  display:none !important;
+}
+.tv-cinema-mode .tv-live-panel::after{
+  display:none !important;
+}
+.tv-cinema-mode .tv-live-panel{
+  overflow:hidden !important;
+  isolation:isolate;
+}
+.tv-cinema-mode .tv-live-panel > *{
+  position:relative;
+  z-index:2;
+}
+.tv-cinema-mode .tv-live-game{
+  width:100%;
+  min-height:0;
+  overflow:hidden;
+  align-items:center;
+  justify-content:center;
+}
+.tv-cinema-mode .tv-live-bomb,
+.tv-cinema-mode .tv-live-focus,
+.tv-cinema-mode .tv-roulette-live,
+.tv-cinema-mode .tv-live-cardgame{
+  min-height:0 !important;
+  height:calc(100vh - 110px) !important;
+  align-items:center;
+}
+.tv-cinema-mode .tv-bomb-circle{
+  width:min(31vw,420px);
+  height:min(31vw,420px);
+}
+.tv-cinema-mode .tv-live-result-card{
+  max-height:calc(100vh - 180px);
+  overflow:hidden;
+}
+.tv-cinema-mode .tv-live-history-list{
+  max-height:22vh;
+  overflow:hidden;
+}
+@media(max-width:1050px){
+  .tv-cinema-mode .tv-live-panel{overflow:auto !important;}
+  .tv-cinema-mode .tv-live-bomb,
+  .tv-cinema-mode .tv-live-focus,
+  .tv-cinema-mode .tv-roulette-live,
+  .tv-cinema-mode .tv-live-cardgame{height:auto !important; min-height:calc(100vh - 110px) !important;}
+}
+
+/* =========================
+V32 TV STREAM LIVE
+========================= */
+.tv-stream-live{
+  width:100%;
+  min-height:620px;
+  height:min(78vh,900px);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border-radius:30px;
+  background:rgba(0,0,0,.42);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 25px 90px rgba(0,0,0,.45);
+}
+.tv-stream-topbar{
+  height:58px;
+  flex:0 0 58px;
+  padding:0 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  background:linear-gradient(90deg,rgba(255,0,120,.22),rgba(0,180,255,.16));
+  border-bottom:1px solid rgba(255,255,255,.1);
+  color:#fff;
+}
+.tv-stream-topbar strong{font-size:22px;color:#fbbf24}
+.tv-stream-topbar span{font-size:14px;opacity:.76;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.tv-game-stream{
+  width:100%;
+  height:100%;
+  flex:1;
+  border:0;
+  background:#05050d;
+}
+.tv-cinema-mode .tv-stream-live{
+  height:100vh;
+  min-height:100vh;
+  border-radius:0;
+  border:0;
+}
+.tv-cinema-mode .tv-stream-topbar{
+  height:44px;
+  flex-basis:44px;
+}
+.tv-cinema-mode .tv-live-panel h2{display:none!important}
+.tv-cinema-mode .tv-live-game{padding:0!important}
+
+/* =========================
+V33 — TV Broadcast Polish
+========================= */
+.tv-live-panel,
+.tv-stream-live,
+.tv-live-focus,
+.tv-live-bomb,
+.tv-roulette-live,
+.tv-panel{
+  animation: tvV33FloatIn .55s cubic-bezier(.2,.9,.2,1) both;
+}
+.tv-current-game{animation: tvV33Glow 2.8s ease-in-out infinite;}
+.tv-game-stream{filter:saturate(1.08) contrast(1.02);}
+.tv-stream-live::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.06) 45%,transparent 65%);
+  transform:translateX(-120%);animation:tvV33Shine 5.5s ease-in-out infinite;
+}
+.tv-stream-live{position:relative;}
+.tv-live-result-card,.tv-live-focus,.tv-live-bomb,.tv-roulette-live{box-shadow:0 30px 110px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.12)}
+@keyframes tvV33FloatIn{from{opacity:0;transform:translateY(22px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes tvV33Glow{0%,100%{text-shadow:0 0 12px rgba(251,191,36,.24)}50%{text-shadow:0 0 32px rgba(251,191,36,.56),0 0 60px rgba(236,72,153,.28)}}
+@keyframes tvV33Shine{0%,65%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
