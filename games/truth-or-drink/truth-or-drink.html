@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PartyHub - Vérité ou Bois</title>
+
+  <link rel="stylesheet" href="../../global-ui.css" />
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="truth-or-drink.css">
+</head>
+
+<body>
+
+<div class="background"></div>
+<div id="confettiLayer" class="confetti-layer"></div>
+
+<main class="app">
+
+  <section class="screen active">
+
+    <div class="game-header">
+
+      <button id="backToLobbyBtn" class="btn danger small">
+        Retour lobby
+      </button>
+
+      <div>
+        <span id="roomBadge" class="badge">Room ----</span>
+        <h2>🍺 Vérité ou Bois</h2>
+        <p class="muted">
+          Répond honnêtement… ou bois 🍻
+        </p>
+      </div>
+
+    </div>
+
+    <div class="truth-layout">
+
+      <div class="truth-zone">
+
+        <div id="questionCard" class="question-card">
+
+          <small id="categoryText">
+            😇 Chill
+          </small>
+
+          <div class="truth-meta">
+            <div id="targetText" class="target-pill">🎯 Joueur ciblé : -</div>
+            <div id="punishmentText" class="punishment-pill">🍺 Punition : -</div>
+          </div>
+
+          <h3 id="questionText">
+            Chargement...
+          </h3>
+
+          <p id="instructionText">
+            Réponds honnêtement ou bois.
+          </p>
+
+        </div>
+
+        <div class="truth-buttons">
+
+          <button id="answerBtn" class="btn primary big-btn">
+            🎤 Répondre
+          </button>
+
+          <button id="drinkBtn" class="btn danger big-btn">
+            🍺 Je bois
+          </button>
+
+        </div>
+
+        <button id="nextQuestionBtn" class="btn secondary big-btn">
+          Question suivante 🔥
+        </button>
+
+      </div>
+
+      <aside class="truth-panel">
+
+        <h3>🔥 Infos</h3>
+
+        <div class="info-box">
+
+          <p>
+            <strong>Mode :</strong>
+            <span id="modeText">Party</span>
+          </p>
+
+          <p>
+            <strong>Niveau :</strong>
+            <span id="drinkLevelText">Normal</span>
+          </p>
+
+          <p>
+            <strong>Joueurs :</strong>
+            <span id="playersText">0</span>
+          </p>
+
+          <p>
+            <strong>Question :</strong>
+            <span id="questionCountText">1</span>
+          </p>
+
+        </div>
+
+        <div class="stats-box">
+
+          <p>🎤 Réponses : <span id="answerCounter">0</span></p>
+          <p>🍺 Boissons : <span id="drinkCounter">0</span></p>
+
+        </div>
+
+        <div class="history-box">
+
+          <h4>📜 Historique</h4>
+
+          <ul id="historyList"></ul>
+
+        </div>
+
+      </aside>
+
+    </div>
+
+  </section>
+
+</main>
+
+<script src="../../partyhub-fx.js"></script>
+<script type="module" src="truth-or-drink.js"></script>
+
+</body>
+</html>

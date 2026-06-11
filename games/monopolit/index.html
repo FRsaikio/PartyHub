@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monopoly Party — Demo V2</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a class="back-partyhub-room" id="backPartyHubRoom" href="../../index.html">← Retour à la room</a>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+
+  <main class="app">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">PartyHub prototype</p>
+        <h1>Monopoly <span>Party</span></h1>
+        <p class="subtitle">Un plateau inspiré des jeux de soirée : avance, achète des lieux, pioche des cartes et impose des défis.</p>
+      </div>
+      <div class="hero-card">
+        <span class="status-dot"></span>
+        <strong>Mode démo V2</strong>
+        <small>Local • HTML/CSS/JS</small>
+      </div>
+    </header>
+
+    <section class="setup-panel" id="setupPanel">
+      <div class="panel-title">
+        <h2>Créer la partie</h2>
+        <p>Choisis les joueurs et le niveau. Tu peux aussi jouer en mode soft.</p>
+      </div>
+
+      <div class="setup-grid">
+        <label>
+          Nombre de joueurs
+          <select id="playerCount">
+            <option value="2">2 joueurs</option>
+            <option value="3">3 joueurs</option>
+            <option value="4" selected>4 joueurs</option>
+            <option value="5">5 joueurs</option>
+            <option value="6">6 joueurs</option>
+          </select>
+        </label>
+
+        <label>
+          Intensité
+          <select id="intensity">
+            <option value="soft">Soft</option>
+            <option value="classic" selected>Classique</option>
+            <option value="hard">Hardcore</option>
+          </select>
+        </label>
+
+        <label>
+          Durée max
+          <select id="maxRounds">
+            <option value="10">10 tours</option>
+            <option value="15" selected>15 tours</option>
+            <option value="20">20 tours</option>
+            <option value="999">Illimitée</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="name-list" id="nameList"></div>
+
+      <div class="setup-actions">
+        <button class="btn primary" id="startGameBtn">Lancer la partie</button>
+        <button class="btn ghost" id="randomNamesBtn">Noms random</button>
+      </div>
+    </section>
+
+    <section class="game hidden" id="gamePanel">
+      <aside class="sidebar left-card">
+        <div class="turn-card">
+          <p class="eyebrow">Tour actuel</p>
+          <h2 id="currentPlayerName">Joueur</h2>
+          <div class="dice-box">
+            <div class="dice" id="dice">?</div>
+            <button class="btn primary" id="rollBtn">Lancer le dé</button>
+          </div>
+          <p class="round" id="roundInfo">Tour 1</p>
+        </div>
+
+        <div class="players" id="playersList"></div>
+      </aside>
+
+      <section class="board-wrap">
+        <div class="board" id="board"></div>
+        <div class="center-panel">
+          <div class="logo-mark">MP</div>
+          <h2>Monopoly Party</h2>
+          <p>Objectif : finir avec le plus de jetons et survivre aux défis.</p>
+          <div class="mini-stats">
+            <span id="ownedCount">0 lieux achetés</span>
+            <span id="eventCount">0 événements</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidebar right-card">
+        <div class="action-card" id="actionCard">
+          <p class="eyebrow">Action</p>
+          <h2 id="actionTitle">Prêt ?</h2>
+          <p id="actionText">Lance le dé pour commencer la partie.</p>
+          <div class="action-buttons" id="actionButtons"></div>
+        </div>
+
+        <div class="log-card">
+          <div class="log-head">
+            <h3>Historique</h3>
+            <button class="tiny-btn" id="resetBtn">Reset</button>
+          </div>
+          <div class="log" id="log"></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal hidden" id="cardModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeModal">×</button>
+      <p class="eyebrow" id="modalType">Carte</p>
+      <h2 id="modalTitle">Titre</h2>
+      <p id="modalText">Contenu</p>
+      <button class="btn primary" id="modalOk">OK</button>
+    </div>
+  </div>
+
+  <script src="../../partyhub-fx.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>PartyHub - Bomb Timer</title>
+
+  <link rel="stylesheet" href="../../global-ui.css" />
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="bomb-timer.css">
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<div id="explosionOverlay" class="explosion-overlay hidden">
+  <h1>💥 EXPLOSION 💥</h1>
+</div>
+
+<div id="confettiLayer" class="confetti-layer"></div>
+
+<main class="app">
+
+  <section class="screen active">
+
+    <div class="bomb-header">
+
+      <button id="backToLobbyBtn" class="btn danger small">
+        Retour lobby
+      </button>
+
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+
+        <h2>💣 Bomb Timer</h2>
+
+        <p class="muted">
+          Réponds vite… ou prends la punition ☠️
+        </p>
+      </div>
+
+    </div>
+
+    <div class="bomb-layout">
+
+      <div class="bomb-zone">
+
+        <div id="bombWrapper" class="bomb-wrapper">
+
+          <div class="bomb-glow"></div>
+
+          <div class="bomb">
+
+            <div class="bomb-top"></div>
+
+            <div id="timerText" class="timer-text">
+              15
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="question-card">
+
+          <small id="categoryText">
+            🍻 Party
+          </small>
+
+          <h3 id="questionText">
+            Chargement...
+          </h3>
+
+          <p id="instructionText">
+            Passe la bombe avant l’explosion.
+          </p>
+
+        </div>
+
+        <button id="passBombBtn" class="btn primary big-btn">
+          Passer la bombe 💣
+        </button>
+        <button id="nextBombBtn" class="btn secondary big-btn hidden">
+          Nouvelle bombe 🔥
+        </button>
+
+      </div>
+
+      <aside class="bomb-panel">
+
+        <h3>🔥 Infos</h3>
+
+        <div class="info-box">
+
+          <p>
+            <strong>Mode :</strong>
+            <span id="modeText">Party</span>
+          </p>
+
+          <p>
+            <strong>Niveau :</strong>
+            <span id="drinkLevelText">Normal</span>
+          </p>
+
+          <p>
+            <strong>Joueurs :</strong>
+            <span id="playersText">0</span>
+          </p>
+
+          <p>
+            <strong>Round :</strong>
+            <span id="roundText">1</span>
+          </p>
+
+        </div>
+
+        <div class="player-box">
+
+          <h4>🎯 Joueur actuel</h4>
+
+          <div id="currentPlayer" class="current-player">
+            Alex
+          </div>
+
+        </div>
+
+        <div id="resultBox" class="result-box hidden">
+
+          <h4 id="resultTitle">
+            💀 Explosion
+          </h4>
+
+          <p id="resultText">
+            Punition...
+          </p>
+
+        </div>
+
+        <div class="history-box">
+
+          <h4>📜 Historique</h4>
+
+          <ul id="historyList"></ul>
+
+        </div>
+
+      </aside>
+
+    </div>
+
+  </section>
+
+</main>
+
+<script src="../../partyhub-fx.js"></script>
+<script type="module" src="bomb-timer.js"></script>
+
+</body>
+</html>

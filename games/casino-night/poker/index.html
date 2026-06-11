@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PartyHub Poker Night</title>
+  <link rel="stylesheet" href="poker.css" />
+</head>
+<body>
+  <div class="noise"></div>
+
+  <a class="back-btn" id="backCasino" href="../../../room.html">← Retour Casino</a>
+
+  <header class="poker-header">
+    <div>
+      <h1>♠️ POKER NIGHT</h1>
+      <p>Texas Hold’em : blinds, mises, flop, turn, river, reveal final.</p>
+    </div>
+
+    <div class="room-pill">
+      <span>Room</span>
+      <strong id="roomCodeLabel">LOCAL</strong>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <aside class="info-panel">
+      <h2>📘 Comment ça marche ?</h2>
+
+      <div class="steps">
+        <div><strong>1. Pré-flop</strong><span>Chaque joueur reçoit 2 cartes privées.</span></div>
+        <div><strong>2. Blinds</strong><span>Small blind = 10 / Big blind = 20.</span></div>
+        <div><strong>3. Flop</strong><span>Le croupier retourne 3 cartes communes.</span></div>
+        <div><strong>4. Turn</strong><span>Le croupier ajoute une 4e carte.</span></div>
+        <div><strong>5. River</strong><span>Le croupier ajoute la 5e carte.</span></div>
+        <div><strong>6. Reveal</strong><span>Les joueurs restants montrent leurs cartes.</span></div>
+      </div>
+
+      <h2>🏆 Combinaisons</h2>
+      <ol class="rank-list">
+        <li>Royal Flush</li>
+        <li>Quinte Flush</li>
+        <li>Carré</li>
+        <li>Full House</li>
+        <li>Couleur</li>
+        <li>Suite</li>
+        <li>Brelan</li>
+        <li>Double Paire</li>
+        <li>Paire</li>
+        <li>Carte Haute</li>
+      </ol>
+
+      <h2>🍺 Punitions</h2>
+      <p class="mini-text">Le gagnant prend le pot. Les perdants restants boivent selon leur combinaison. Les joueurs couchés ne boivent pas.</p>
+    </aside>
+
+    <section class="main-game">
+
+      <section class="poker-table-shell">
+        <div class="dealer">
+          <div class="dealer-face">🎩</div>
+          <span>Croupier</span>
+        </div>
+
+        <div class="seat seat-top" id="seat1"></div>
+        <div class="seat seat-left" id="seat2"></div>
+        <div class="seat seat-right" id="seat3"></div>
+        <div class="seat seat-bottom" id="seat4"></div>
+
+        <div class="poker-table">
+          <div class="pot">
+            <span>💰 POT</span>
+            <strong id="potValue">0</strong>
+          </div>
+
+          <div class="community-cards" id="communityCards"></div>
+
+          <div class="phase-bar">
+            <span id="phasePreflop" class="active">Pré-flop</span>
+            <span id="phaseFlop">Flop</span>
+            <span id="phaseTurn">Turn</span>
+            <span id="phaseRiver">River</span>
+            <span id="phaseReveal">Reveal</span>
+          </div>
+
+          <div class="table-status" id="tableStatus">En attente du croupier...</div>
+        </div>
+      </section>
+
+      <section class="player-panel">
+        <div class="panel-head">
+          <h2>🎮 Tes actions</h2>
+          <span id="turnLabel">Table locale</span>
+        </div>
+
+        <div class="my-zone">
+          <div>
+            <h3>🃏 Tes cartes privées</h3>
+            <div class="cards-row" id="myCards"></div>
+            <p id="myHandLabel">Rejoins la table pour recevoir tes cartes.</p>
+          </div>
+
+          <div class="action-help">
+            <strong>Résumé rapide</strong>
+            <p>Suivre = suivre la mise actuelle.</p>
+            <p>Relancer = augmenter la mise.</p>
+            <p>Se coucher = se coucher, tu ne joues plus la manche.</p>
+            <p>Tapis = miser tous tes jetons.</p>
+          </div>
+        </div>
+
+        <div class="bet-row">
+          <label>Mise à suivre
+            <input id="currentBetDisplay" type="text" value="20" readonly>
+          </label>
+
+          <label>Relancer à
+            <input id="betAmount" type="number" value="40" min="20" step="10">
+          </label>
+        </div>
+
+        <div class="actions-grid">
+          <button id="joinBtn">Rejoindre</button>
+          <button id="dealBtn" class="host-action">Distribuer</button>
+        <button id="resetTableBtn" class="host-action">Reset table</button>
+          <button id="checkBtn">Parole</button>
+          <button id="callBtn">Suivre</button>
+          <button id="raiseBtn">Relancer</button>
+          <button id="foldBtn">Se coucher</button>
+          <button id="allInBtn" class="danger">Tapis</button>
+          <button id="flopBtn" class="host-action">Flop</button>
+          <button id="turnBtn" class="host-action">Turn</button>
+          <button id="riverBtn" class="host-action">River</button>
+          <button id="revealBtn" class="host-action danger">Reveal</button>
+        </div>
+
+        <div class="result" id="actionResult">Rejoins la table pour commencer.</div>
+      </section>
+
+    </section>
+
+  </main>
+
+  <script src="../../../partyhub-fx.js"></script>
+<script type="module" src="poker.js"></script>
+</body>
+</html>
