@@ -100,7 +100,7 @@ function updateTruthControls() {
   answerBtn.textContent = targetCanAnswer ? "🎤 Répondre" : (questionResolved ? "Réponse validée" : "Attente du joueur ciblé");
   drinkBtn.textContent = targetCanAnswer ? "🍺 Je bois" : (questionResolved ? "Action validée" : "Attente du joueur ciblé");
   nextQuestionBtn.disabled = !canNext;
-  nextQuestionBtn.textContent = canNext ? "Question suivante 🔥" : "Attente du host";
+  nextQuestionBtn.textContent = canNext ? "Question suivante" : "Attente du host";
 }
 
 
