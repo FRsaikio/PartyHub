@@ -728,6 +728,7 @@ function renderVoteButtons() {
     const btn = document.createElement("button");
     btn.className = "vote-btn";
     btn.textContent = player.name;
+    btn.dataset.initial = String(player.name || "?").trim().charAt(0).toUpperCase();
 
     if (hasCurrentPlayerVoted) {
       btn.disabled = true;
