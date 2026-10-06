@@ -1,0 +1,676 @@
+/* =========================================================
+   PartyHub TV — habillage Néon Club
+   Chargé APRÈS neon-club.css et tv.css : tv.css garde la géométrie
+   (roue, bombe, cartes, mode cinéma), ce fichier change le style.
+   ========================================================= */
+
+body {
+  background: var(--nc-bg);
+  font-family: var(--nc-font-body);
+  color: var(--nc-text);
+}
+
+/* Le contenu passe au-dessus de la grille synthwave (body::before) */
+.tv-app {
+  position: relative;
+  z-index: 1;
+  width: min(1600px, 94vw);
+  padding: 40px 0 90px;
+}
+
+/* Fond : halos néon qui dérivent */
+.tv-bg {
+  background: var(--nc-bg);
+  animation: none;
+  overflow: hidden;
+}
+
+.tv-bg::before,
+.tv-bg::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+}
+
+.tv-bg::before {
+  top: -260px;
+  left: 30%;
+  width: 900px;
+  height: 620px;
+  background: var(--nc-pink);
+  opacity: 0.2;
+  animation: ncDriftA 20s ease-in-out infinite alternate;
+}
+
+.tv-bg::after {
+  bottom: -300px;
+  right: -200px;
+  width: 760px;
+  height: 760px;
+  background: var(--nc-cyan);
+  opacity: 0.13;
+  animation: ncDriftB 24s ease-in-out infinite alternate;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--nc-font-display);
+}
+
+/* ---------- En-tête : code de la room + QR ---------- */
+
+.tv-header {
+  position: relative;
+  align-items: stretch;
+  gap: 32px;
+  padding: 36px 40px;
+  margin-bottom: 28px;
+  border-radius: 36px;
+  border: 1.5px solid transparent;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(224, 31, 160, 0.22), transparent 55%) padding-box,
+    radial-gradient(100% 140% at 100% 100%, rgba(34, 211, 238, 0.16), transparent 55%) padding-box,
+    linear-gradient(var(--nc-bg-raised), var(--nc-bg-raised)) padding-box,
+    var(--nc-neon-border) border-box;
+  box-shadow: 0 0 70px rgba(139, 92, 246, 0.22), 0 30px 90px rgba(0, 0, 0, 0.45);
+}
+
+.tv-header > div:first-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tv-badge {
+  align-self: flex-start;
+  margin-bottom: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--nc-pink-soft);
+  border: 1px solid rgba(224, 31, 160, 0.55);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.tv-cinema-btn {
+  align-self: flex-start;
+  margin: 14px 0 0;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--nc-line-strong);
+  background: var(--nc-surface-2);
+  color: var(--nc-text);
+  font-family: var(--nc-font-body);
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: none;
+}
+
+.tv-cinema-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.tv-header h1 {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 24px;
+  font-family: var(--nc-font-body);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--nc-muted);
+  text-shadow: none;
+  line-height: 1;
+}
+
+.tv-header h1 span,
+#tvRoomCode {
+  font-family: var(--nc-font-display);
+  font-weight: 800;
+  font-size: clamp(90px, 10vw, 160px);
+  letter-spacing: 0.06em;
+  line-height: 0.95;
+  color: #fff;
+  animation: ncCodePulse 3.2s ease-in-out infinite;
+}
+
+.tv-header p {
+  margin-top: 18px;
+  font-size: 22px;
+  color: var(--nc-text-2);
+}
+
+.tv-qr-card {
+  width: 280px;
+  flex-shrink: 0;
+  padding: 20px;
+  border-radius: 28px;
+  background: rgba(8, 6, 26, 0.6);
+  border: 1px solid rgba(34, 211, 238, 0.4);
+  box-shadow: 0 0 50px rgba(34, 211, 238, 0.22);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.tv-qr-card img {
+  width: 230px;
+  height: 230px;
+  margin: 0;
+  padding: 12px;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.tv-qr-card strong {
+  font-size: 20px;
+  color: var(--nc-text);
+}
+
+/* ---------- Panneaux ---------- */
+
+.tv-grid {
+  gap: 22px;
+}
+
+.tv-panel {
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  border-radius: 30px;
+  padding: 28px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 24px 70px rgba(0, 0, 0, 0.3);
+}
+
+.tv-panel::after {
+  display: none;
+}
+
+.tv-panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 26px;
+  color: var(--nc-text);
+}
+
+.tv-panel h2::before {
+  content: "";
+  width: 5px;
+  height: 24px;
+  border-radius: 4px;
+  background: var(--nc-neon-border);
+  box-shadow: 0 0 12px var(--nc-pink-glow);
+}
+
+/* Disposition : jeu en cours sur toute la largeur, activité à côté de joueurs + ambiance */
+.tv-main-panel {
+  grid-column: 1 / -1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 32px;
+}
+
+.tv-main-panel h2 {
+  grid-column: 1 / -1;
+}
+
+.tv-main-panel .tv-phase {
+  margin-top: 0;
+}
+
+.tv-players-panel { grid-column: 1; grid-row: 3; }
+.tv-mood-panel { grid-column: 1; grid-row: 4; }
+.tv-activity-panel { grid-column: 2; grid-row: 3 / span 2; }
+
+@media (max-width: 900px) {
+  .tv-main-panel {
+    grid-template-columns: 1fr;
+    row-gap: 16px;
+  }
+
+  .tv-main-panel .tv-phase {
+    justify-self: start;
+  }
+
+  .tv-players-panel,
+  .tv-mood-panel,
+  .tv-activity-panel {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+.tv-live-kicker {
+  align-self: center;
+}
+
+/* Grands titres : lignes équilibrées (évite un « ? » seul sur sa ligne) */
+.tv-current-game,
+.tv-live-focus h3,
+.tv-live-result-card h3,
+.tv-broadcast-subtitle {
+  text-wrap: balance;
+}
+
+/* Jeu en cours */
+.tv-current-game {
+  font-family: var(--nc-font-display);
+  font-weight: 800;
+  font-size: clamp(40px, 4.6vw, 80px);
+  line-height: 1.05;
+  color: #fff;
+  animation: ncCodePulse 3.2s ease-in-out infinite;
+}
+
+.tv-status-hot {
+  color: var(--nc-yellow) !important;
+}
+
+.tv-phase {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--nc-pink-soft);
+  border: 1.5px solid var(--nc-pink);
+  color: #fff;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+/* Joueurs */
+.tv-players {
+  gap: 14px;
+}
+
+.tv-player {
+  min-height: 76px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+}
+
+.tv-player:hover {
+  transform: none;
+}
+
+.tv-avatar {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border: 2.5px solid var(--nc-cyan);
+  background: #102b3a;
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.35);
+  font-size: 28px;
+}
+
+.tv-player:nth-child(3n + 1) .tv-avatar {
+  border-color: var(--nc-pink);
+  background: #2a1650;
+  box-shadow: 0 0 16px var(--nc-pink-glow);
+}
+
+.tv-player:nth-child(3n + 2) .tv-avatar {
+  border-color: var(--nc-yellow);
+  background: #2b1a10;
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.3);
+}
+
+.tv-player strong {
+  font-size: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tv-player small {
+  font-size: 15px;
+  color: var(--nc-muted);
+}
+
+.tv-player.offline {
+  opacity: 0.55;
+  border-color: var(--nc-line);
+}
+
+.tv-kick-btn {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 92, 122, 0.5);
+  background: rgba(255, 92, 122, 0.14);
+  color: #ffd6de;
+  font-family: var(--nc-font-body);
+  font-weight: 700;
+}
+
+/* Activité */
+.tv-activity {
+  gap: 12px;
+}
+
+.tv-activity li {
+  position: relative;
+  padding: 12px 16px 12px 36px;
+  border-radius: 16px;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  color: var(--nc-text-2);
+  font-size: 18px;
+}
+
+.tv-activity li::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: var(--nc-cyan);
+}
+
+.tv-activity li:first-child {
+  color: #fff;
+}
+
+.tv-activity li:first-child::before {
+  background: var(--nc-pink);
+  box-shadow: 0 0 10px var(--nc-pink-glow);
+}
+
+/* Ambiance */
+.tv-awards div {
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+}
+
+.tv-awards span {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--nc-muted);
+}
+
+.tv-awards strong {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--nc-font-display);
+  font-size: 28px;
+}
+
+/* ---------- Contrôles du host ---------- */
+
+.tv-control-grid label {
+  color: var(--nc-text-2);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tv-control-grid select {
+  min-height: 52px;
+  padding: 0 40px 0 16px;
+  border-radius: var(--nc-radius-sm);
+  border: 1px solid var(--nc-line-strong);
+  background-color: rgba(8, 6, 26, 0.6);
+  color: var(--nc-text);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.tv-control-btn {
+  min-height: 56px;
+  padding: 0 18px;
+  border-radius: var(--nc-radius-sm);
+  border: 1px solid var(--nc-line-strong);
+  background: var(--nc-surface-2);
+  color: var(--nc-text);
+  font-family: var(--nc-font-body);
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: none;
+}
+
+.tv-control-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.tv-control-btn.primary {
+  border: 0;
+  background: var(--nc-pink);
+  color: #fff;
+  font-family: var(--nc-font-display);
+  font-weight: 800;
+  animation: ncBreathe 2.8s ease-in-out infinite;
+}
+
+.tv-control-btn.danger {
+  border-color: rgba(255, 92, 122, 0.5);
+  background: rgba(255, 92, 122, 0.12);
+  color: #ffd6de;
+}
+
+.tv-host-status,
+.tv-summary-box {
+  border-radius: 16px;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  color: var(--nc-text-2);
+}
+
+/* ---------- Vue spectateur (jeu en direct) ---------- */
+
+.tv-live-empty,
+.tv-live-generic,
+.tv-live-focus,
+.tv-live-result-card {
+  border-radius: 28px;
+  border: 1px solid var(--nc-line);
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(224, 31, 160, 0.16), transparent 55%),
+    radial-gradient(120% 120% at 100% 100%, rgba(34, 211, 238, 0.1), transparent 55%),
+    rgba(8, 6, 26, 0.55);
+  color: var(--nc-text-2);
+}
+
+.tv-live-generic strong,
+.tv-live-result-card h3 {
+  font-family: var(--nc-font-display);
+  color: #fff;
+  text-shadow: 0 0 30px var(--nc-pink-glow);
+}
+
+.tv-live-focus h3 {
+  font-family: var(--nc-font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.tv-live-kicker {
+  background: var(--nc-pink-soft);
+  border: 1.5px solid var(--nc-pink);
+  color: #fff;
+  font-weight: 700;
+}
+
+.tv-live-player {
+  color: #fff;
+}
+
+.tv-live-stats span,
+.tv-live-history-list li,
+.tv-live-scoreboard li {
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  color: var(--nc-text-2);
+}
+
+.tv-live-scoreboard li span {
+  color: var(--nc-pink);
+}
+
+.tv-stream-live {
+  border: 1px solid var(--nc-line);
+}
+
+.tv-stream-topbar {
+  background: linear-gradient(90deg, rgba(224, 31, 160, 0.25), rgba(139, 92, 246, 0.18), rgba(34, 211, 238, 0.15));
+  border-bottom: 1px solid var(--nc-line);
+}
+
+.tv-stream-topbar strong {
+  font-family: var(--nc-font-display);
+  color: #fff;
+}
+
+/* Votes */
+.tv-vote-arena-progress {
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+}
+
+.tv-vote-total {
+  border-radius: 16px;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+}
+
+.tv-vote-total strong {
+  font-family: var(--nc-font-display);
+  color: #fff;
+}
+
+.tv-vote-row {
+  border-radius: 16px;
+  background: rgba(8, 6, 26, 0.5);
+  border: 1px solid var(--nc-line);
+}
+
+.tv-vote-track {
+  height: 20px;
+}
+
+.tv-vote-fill {
+  background: linear-gradient(90deg, var(--nc-violet), var(--nc-pink));
+  box-shadow: 0 0 22px var(--nc-pink-glow);
+}
+
+.tv-vote-row.leader {
+  border-color: var(--nc-pink);
+  box-shadow: 0 0 30px rgba(224, 31, 160, 0.25);
+}
+
+.tv-vote-row.leader .tv-vote-fill {
+  box-shadow: 0 0 34px rgba(224, 31, 160, 0.7);
+}
+
+.tv-vote-count {
+  border-radius: 12px;
+  background: var(--nc-pink-soft);
+  border: 1px solid rgba(224, 31, 160, 0.5);
+  color: #fff;
+  font-family: var(--nc-font-display);
+}
+
+.tv-result-chip {
+  background: linear-gradient(135deg, rgba(224, 31, 160, 0.25), rgba(139, 92, 246, 0.2));
+  border: 1.5px solid var(--nc-pink);
+  box-shadow: 0 0 60px rgba(224, 31, 160, 0.3);
+}
+
+.tv-result-chip strong {
+  font-family: var(--nc-font-display);
+}
+
+.tv-result-chip em {
+  color: var(--nc-text-2);
+}
+
+/* ---------- Révélations plein écran ---------- */
+
+.tv-broadcast-reveal {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(224, 31, 160, 0.4), transparent 40%),
+    radial-gradient(circle at 25% 20%, rgba(34, 211, 238, 0.2), transparent 30%),
+    rgba(4, 3, 14, 0.93);
+}
+
+.tv-broadcast-kicker {
+  font-family: var(--nc-font-body);
+  font-weight: 800;
+  color: var(--nc-cyan);
+  text-shadow: 0 0 24px rgba(34, 211, 238, 0.5);
+}
+
+.tv-broadcast-count {
+  font-family: var(--nc-font-display);
+  font-weight: 800;
+  text-shadow: 0 0 40px rgba(224, 31, 160, 0.85), 0 0 100px rgba(139, 92, 246, 0.45);
+}
+
+.tv-broadcast-subtitle {
+  font-family: var(--nc-font-display);
+  font-weight: 700;
+  color: var(--nc-text-2);
+}
+
+.tv-reveal-overlay {
+  background: rgba(4, 3, 14, 0.9);
+  font-family: var(--nc-font-display);
+}
+
+.tv-reveal-winner {
+  text-shadow: 0 0 40px var(--nc-pink-glow);
+}
+
+.tv-event-card {
+  border: 1.5px solid transparent;
+  background:
+    radial-gradient(circle at top left, rgba(224, 31, 160, 0.3), transparent 45%) padding-box,
+    radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.2), transparent 45%) padding-box,
+    linear-gradient(var(--nc-bg-raised), var(--nc-bg-raised)) padding-box,
+    var(--nc-neon-border) border-box;
+  box-shadow: 0 0 80px rgba(224, 31, 160, 0.3), 0 30px 120px rgba(0, 0, 0, 0.6);
+}
+
+.tv-event-card h2 {
+  font-family: var(--nc-font-display);
+  color: #fff;
+  text-shadow: 0 0 34px var(--nc-pink-glow);
+}
+
+.tv-event-card p {
+  color: var(--nc-text-2);
+}
+
+/* Mode cinéma : fond transparent sur les halos */
+.tv-cinema-mode .tv-live-panel {
+  background: rgba(8, 6, 26, 0.45);
+}
+
+@media (max-width: 900px) {
+  .tv-header {
+    padding: 24px;
+  }
+
+  .tv-qr-card {
+    width: 100%;
+  }
+}

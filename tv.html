@@ -3,8 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PartyHub TV Mode</title>
+  <title>PartyHub TV</title>
+  <meta name="theme-color" content="#08061a" />
+  <link rel="icon" href="partyhub-logo-neon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
+  <link rel="stylesheet" href="neon-club.css" />
   <link rel="stylesheet" href="tv.css" />
+  <link rel="stylesheet" href="tv-neon.css" />
 </head>
 <body>
   <div class="tv-bg"></div>
@@ -12,8 +19,8 @@
   <main class="tv-app">
     <header class="tv-header">
       <div>
-        <span class="tv-badge">📺 PartyHub TV Mode</span>
-        <button id="tvCinemaBtn" class="tv-cinema-btn" type="button">⛶ Plein écran live</button>
+        <span class="tv-badge">PartyHub TV</span>
+        <button id="tvCinemaBtn" class="tv-cinema-btn" type="button">Plein écran live</button>
         <h1>Room <span id="tvRoomCode">----</span></h1>
         <p id="tvStatus">Écran central de soirée — les joueurs rejoignent avec leur téléphone.</p>
       </div>
@@ -26,30 +33,30 @@
 
     <section class="tv-grid">
       <div class="tv-panel tv-main-panel">
-        <h2>🎮 Jeu en cours</h2>
+        <h2>Jeu en cours</h2>
         <div class="tv-current-game" id="tvCurrentGame">En attente...</div>
         <div class="tv-phase" id="tvPhase">Lobby</div>
       </div>
 
       <div class="tv-panel tv-live-panel">
-        <h2>📡 Partie en direct</h2>
+        <h2>Partie en direct</h2>
         <div id="tvLiveGame" class="tv-live-game">
           <div class="tv-live-empty">Lance un jeu pour afficher la vue spectateur.</div>
         </div>
       </div>
 
-      <div class="tv-panel">
-        <h2>👥 Joueurs connectés</h2>
+      <div class="tv-panel tv-players-panel">
+        <h2>Joueurs connectés</h2>
         <div id="tvPlayers" class="tv-players"></div>
       </div>
 
-      <div class="tv-panel">
-        <h2>📢 Activité live</h2>
+      <div class="tv-panel tv-activity-panel">
+        <h2>Activité live</h2>
         <ul id="tvActivity" class="tv-activity"></ul>
       </div>
 
-      <div class="tv-panel">
-        <h2>🏆 Ambiance</h2>
+      <div class="tv-panel tv-mood-panel">
+        <h2>Ambiance</h2>
         <div class="tv-awards">
           <div><span>Mode</span><strong id="tvMode">Chill</strong></div>
           <div><span>Alcool</span><strong id="tvAlcohol">Activé</strong></div>
@@ -58,7 +65,7 @@
       </div>
 
       <div class="tv-panel tv-host-panel">
-        <h2>🎛️ Contrôle TV Host</h2>
+        <h2>Contrôle de la soirée</h2>
 
         <div class="tv-control-grid">
           <label>
@@ -136,7 +143,7 @@
       </div>
 
       <div class="tv-panel tv-summary-panel">
-        <h2>🏁 Bilan rapide</h2>
+        <h2>Bilan rapide</h2>
         <div id="tvSummaryBox" class="tv-summary-box">
           Lance le bilan depuis le panneau host.
         </div>
