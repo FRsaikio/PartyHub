@@ -1,5 +1,13 @@
 // Fonctions partagées par les mini-jeux.
 
+// Retour lobby de l'hôte : on prévient la room, mais on n'attend jamais plus
+// de `maxWait` ms la réponse de Firestore avant de changer de page (sinon le
+// bouton paraît mort si le réseau traîne). Pas de risque de perte : l'accueil
+// (restoreLobbyFromGame dans app.js) réécrit gameStarted:false en arrivant.
+export function lobbyWrite(promise, maxWait = 1200) {
+  return Promise.race([promise, new Promise(resolve => setTimeout(resolve, maxWait))]);
+}
+
 // Détermine si ce téléphone pilote la partie (init de l'état, manche suivante,
 // retour lobby global...). Un seul appareil doit répondre true :
 // - le joueur marqué host dans la room ;
