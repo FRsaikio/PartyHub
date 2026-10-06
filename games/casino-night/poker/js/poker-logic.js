@@ -15,7 +15,7 @@
 // Les jetons de la table (stack) viennent du portefeuille du casino : `w.charge` à
 // l'arrivée (cave / recave), `w.credit` au départ (on repart avec son tapis).
 
-import { freshDeck, evaluate, buildPots, punishmentFor } from "./poker-rules.js";
+import { freshDeck, evaluate, buildPots, punishmentFor } from "./poker-rules.js?v=3";
 
 export const MAX_SEATS = 6;
 export const SMALL_BLIND = 10;

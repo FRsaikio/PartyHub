@@ -268,7 +268,7 @@ openTab((() => {
 
 // Lien Poker : garde la room
 const pokerLink = document.getElementById("pokerNightBtn");
-if (pokerLink && roomCode) pokerLink.href = `poker/index.html?room=${encodeURIComponent(roomCode)}`;
+if (pokerLink && roomCode) pokerLink.href = `poker/index.html?room=${encodeURIComponent(roomCode)}&v=3`;
 
 // ---------- Retour au lobby (même logique que les autres jeux) ----------
 
