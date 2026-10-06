@@ -788,12 +788,12 @@ function renderLiveGame(data){
         <div class="tv-roulette-stage">
           <div class="tv-roulette-pointer">▼</div>
           <div class="tv-live-wheel tv-premium-wheel" data-tv-roulette-wheel style="transition:none; transform: rotate(${startRotation}deg)">
-            <div class="tv-segment-label tv-label-1" data-category="bois"><span>🍻</span><strong>BOIS</strong></div>
-            <div class="tv-segment-label tv-label-2" data-category="distribue"><span>🎁</span><strong>DISTRIBUE</strong></div>
-            <div class="tv-segment-label tv-label-3" data-category="duel"><span>⚔️</span><strong>DUEL</strong></div>
-            <div class="tv-segment-label tv-label-4" data-category="tous"><span>🔥</span><strong>TOUS</strong></div>
-            <div class="tv-segment-label tv-label-5" data-category="chance"><span>🍀</span><strong>CHANCE</strong></div>
-            <div class="tv-segment-label tv-label-6" data-category="chaos"><span>⚡</span><strong>CHAOS</strong></div>
+            <div class="tv-segment-label tv-label-1" data-category="bois"><span><svg class="wheel-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h10l-1.2 16H7.2z"/><path d="M16 8h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2.4"/><path d="M6.4 9h9.2"/></svg></span><strong>BOIS</strong></div>
+            <div class="tv-segment-label tv-label-2" data-category="distribue"><span><svg class="wheel-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/><path d="M12 8v13"/><path d="M12 8C10 4 6.5 4.5 7.5 7.2 8 8 12 8 12 8z"/><path d="M12 8c2-4 5.5-3.5 4.5-.8C16 8 12 8 12 8z"/></svg></span><strong>DISTRIBUE</strong></div>
+            <div class="tv-segment-label tv-label-3" data-category="duel"><span><svg class="wheel-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/><path d="M9.5 17.5 21 6V3h-3L6.5 14.5"/><path d="m11 19-6-6"/><path d="m8 16-4 4"/><path d="m5 21-2-2"/></svg></span><strong>DUEL</strong></div>
+            <div class="tv-segment-label tv-label-4" data-category="tous"><span><svg class="wheel-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/></svg></span><strong>TOUS</strong></div>
+            <div class="tv-segment-label tv-label-5" data-category="chance"><span><svg class="wheel-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 15 8.6l6.7 1-4.8 4.7 1.1 6.7L12 17.8 6 21l1.1-6.7-4.8-4.7 6.7-1z"/></svg></span><strong>CHANCE</strong></div>
+            <div class="tv-segment-label tv-label-6" data-category="chaos"><span><svg class="wheel-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span><strong>CHAOS</strong></div>
             <div class="tv-wheel-center"><span>SPIN</span><small>PARTYHUB</small></div>
           </div>
         </div>
