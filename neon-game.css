@@ -231,7 +231,7 @@
   font-size: 18px;
 }
 
-.score-list li:first-child {
+.score-list li.leader {
   border-color: var(--nc-pink);
   background: var(--nc-pink-soft);
   box-shadow: 0 0 20px rgba(224, 31, 160, 0.2);
@@ -297,7 +297,7 @@
   font-weight: 700;
 }
 
-.final-score-row:first-child {
+.final-score-row.leader {
   border-color: var(--nc-yellow);
   background: rgba(250, 204, 21, 0.1);
   color: #fde68a;
