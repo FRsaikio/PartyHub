@@ -6,8 +6,13 @@
 
   <title>PartyHub - Mission Traître</title>
 
-  <link rel="stylesheet" href="../../global-ui.css" />
-  <link rel="stylesheet" href="../../style.css" />
+  <meta name="theme-color" content="#08061a" />
+  <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
+  <link rel="stylesheet" href="../../neon-club.css" />
+  <link rel="stylesheet" href="../../neon-game.css" />
   <link rel="stylesheet" href="mission-traitre.css" />
 </head>
 
@@ -20,14 +25,14 @@
 
     <section class="screen active">
 
-      <div class="traitor-header">
+      <div class="game-header traitor-header">
         <button id="backToLobbyBtn" class="btn danger small">
           Retour lobby
         </button>
 
         <div>
           <span id="roomBadge" class="badge">Room</span>
-          <h2>🕵️ Mission Traître</h2>
+          <h2>Mission Traître</h2>
           <p class="muted">
             Un traître se cache parmi vous. Sa mission : réussir sans se faire griller.
           </p>
@@ -58,7 +63,7 @@
             </button>
 
             <button id="nextPlayerBtn" class="btn secondary big-btn hidden">
-              Joueur suivant →
+              Joueur suivant
             </button>
 
             <button id="startDebateBtn" class="btn primary full hidden">
@@ -74,17 +79,17 @@
 
         <aside class="traitor-panel">
 
-          <h3>🔥 Infos</h3>
+          <h3>Infos</h3>
 
           <div class="info-box">
-            <p><strong>Mode :</strong> <span id="modeText">Party</span></p>
-            <p><strong>Niveau :</strong> <span id="drinkLevelText">Normal</span></p>
-            <p><strong>Joueurs :</strong> <span id="playersText">0</span></p>
-            <p><strong>Joueur actuel :</strong> <span id="currentPlayerText">-</span></p>
+            <p><strong>Mode</strong> <span id="modeText">Party</span></p>
+            <p><strong>Niveau</strong> <span id="drinkLevelText">Normal</span></p>
+            <p><strong>Joueurs</strong> <span id="playersText">0</span></p>
+            <p><strong>Joueur actuel</strong> <span id="currentPlayerText">-</span></p>
           </div>
 
           <div id="missionBox" class="mission-box hidden">
-            <h4>🎯 Mission du traître</h4>
+            <h4>Mission du traître</h4>
             <p id="missionText"></p>
           </div>
 
@@ -94,7 +99,7 @@
           </div>
 
           <div class="history-box">
-            <h4>📜 Historique</h4>
+            <h4>Historique</h4>
             <ul id="historyList"></ul>
           </div>
 
