@@ -35,6 +35,11 @@ There is no build step, package manager, linter, or test suite. Serve the repo r
 - Returning to lobby: the host sets `gameStarted: false`, `activeGame: null`, `gameState: {}`, `forceNavigation: { target: "lobby", at: Date.now() }`; all clients (including TV) see `gameStarted === false`, set `localStorage.partyhubReturnLobby = "true"`, and navigate to `../../index.html`. Follow this same pattern in new games.
 - Host-only vs. any-player actions differ per game (e.g. Chaos Kings: reset is host-only, drawing is open to all). Games compute `isHost` with `resolveIsHost()`; only the host publishes the initial `gameState` on page load, so a non-host must never do it (it would reset the game for everyone).
 
+**Casino Night** (`games/casino-night/`, ES modules under `js/`)
+- `wallet.js` keeps per-player chips shared in the room doc: `casino.wallets.<key> = { name, chips, shields }` and `casino.lastEvent` (big wins/steals, shown as toasts on phones and on the TV). Each player only writes their own wallet; chip changes always go through Firestore `increment()` (exported by `firebase.js`) so concurrent players never overwrite each other. Without a room it falls back to `localStorage`.
+- `app.js` (hall: tabs, bet, ALL IN, shields, leaderboard, loan when broke, lobby return) passes a `ctx` (`wallet`, `placeBet()`, `sanctionChoices()`, `toast`) to `slots.js`, `blackjack.js`, `dice.js`; `ui.js` holds sounds, toasts, result box and full-screen effects. Bets are taken when a game starts and wins return the stake × multiplier.
+- The TV renders its own casino view from `data.casino` (it no longer embeds the casino page, which would create a fake "TV" wallet). The Poker table (`poker/`) is still the old standalone page.
+
 **Script loading quirks**
 - Most games use `<script type="module">` with static imports from `../../firebase.js`. Casino Night and Monopoly use classic scripts and pull Firebase with dynamic `import("../../firebase.js")`; Poker lives one level deeper (`games/casino-night/poker/`) so its paths use `../../../`.
 - `GAME_CONFIG["verite-ou-bois"]` is a legacy alias kept for old rooms; it points to `games/truth-or-drink/`.

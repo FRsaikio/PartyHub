@@ -761,7 +761,9 @@ function renderLiveGame(data){
   const label = data.activeGame?.label || data.selectedGame || "Jeu actif";
 
   const labelLower = String(label || "").toLowerCase();
-  const wantsStream = activeId === "monopolit" || activeId === "casino-night" || activeId === "poker-night" || labelLower.includes("poker") || labelLower.includes("casino") || labelLower.includes("monopoly");
+  // Casino Night a sa propre vue TV (classement + annonces), pas de page intégrée :
+  // l'intégrer créerait un faux portefeuille « TV » dans la room.
+  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || labelLower.includes("poker") || labelLower.includes("monopoly");
   if(wantsStream && renderGameStream(activeId, data, label)) return;
 
   if(data.roomStatus !== "in-game" && !data.gameStarted){
@@ -1055,15 +1057,31 @@ function renderLiveGame(data){
     return;
   }
 
-  if(activeId === "casino-night"){
-    const state = data.casinoState || data.casinoNightState || data.gameState?.casino || data.gameState || {};
+  if(activeId === "casino-night" || labelLower.includes("casino")){
+    // Portefeuilles partagés écrits par games/casino-night/js/wallet.js
+    const casino = data.casino || {};
+    const rows = Object.values(casino.wallets || {})
+      .map(w => ({ name: w?.name || "Joueur", chips: Math.max(0, Number(w?.chips) || 0) }))
+      .sort((a, b) => b.chips - a.chips)
+      .slice(0, 8);
+    const event = casino.lastEvent;
+    const fmt = n => Math.round(n).toLocaleString("fr-FR").replace(/ /g, " ");
+    const eventFresh = event?.at && Date.now() - Number(event.at) < 5 * 60 * 1000;
+
     liveGameEl.innerHTML = `
-      <div class="tv-live-focus">
-        <span class="tv-live-kicker">🎰 Casino Night</span>
-        <h3>${formatLiveValue(state.currentCasinoGame || state.phase || "Table ouverte")}</h3>
-        <p>Tour : ${formatLiveValue(state.currentPlayerName || state.turnPlayerName, "-")}</p>
-        <div class="tv-live-stats big"><span>💰 Pot : <strong>${formatLiveValue(state.pot, 0)}</strong></span><span>🎲 Manche : <strong>${formatLiveValue(state.round, "-")}</strong></span></div>
-        ${historyList(state.history || state.logs)}
+      <div class="tv-casino">
+        <div class="tv-casino-event ${eventFresh ? "fresh" : ""}">
+          <span class="tv-live-kicker">🎰 Casino Night</span>
+          ${eventFresh
+            ? `<h3>${escapeHtml(event.name)}</h3><p>${escapeHtml(event.text)}</p>`
+            : `<h3>Les tables sont ouvertes</h3><p>Machine à sous, blackjack, dés du diable et poker.</p>`}
+        </div>
+        <div class="tv-casino-board">
+          <h4>Les plus riches</h4>
+          ${rows.length
+            ? `<ol>${rows.map((row, i) => `<li class="${i === 0 ? "leader" : ""}"><span>${i === 0 ? "👑" : i + 1}</span><strong>${escapeHtml(row.name)}</strong><em>${fmt(row.chips)}</em></li>`).join("")}</ol>`
+            : `<p class="tv-live-muted">Personne n'a encore joué.</p>`}
+        </div>
       </div>
     `;
     return;

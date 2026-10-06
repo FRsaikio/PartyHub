@@ -10,7 +10,8 @@ import {
   serverTimestamp,
   arrayUnion,
   runTransaction,
-  deleteDoc
+  deleteDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -36,5 +37,6 @@ export {
   serverTimestamp,
   arrayUnion,
   runTransaction,
-  deleteDoc
+  deleteDoc,
+  increment
 };
