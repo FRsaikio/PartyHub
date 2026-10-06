@@ -41,15 +41,25 @@ export function initBjTable(ctx, { roomCode, me, isHost }) {
   let shownRound = null;
   let firstSnapshot = true;
   let newCards = false;
+  let wasMyTurn = false;
   const seenCards = new Map(); // nombre de cartes déjà affichées par main (pour animer les nouvelles)
   resultBox.hidden = true;
 
   // ---------- Transactions ----------
 
+  // Applique une version de la table si elle est au moins aussi récente que celle affichée
+  // (chaque action incrémente `v`) : un vieux snapshot n'écrase jamais l'état local.
+  function applyTable(next) {
+    if ((next?.v || 0) < (table?.v || 0)) return;
+    table = next || emptyTable();
+    render();
+  }
+
   async function mutate(label, fn) {
     if (busy) return;
     busy = true;
     renderControls();
+    let committed = null;
     try {
       await runTransaction(db, async t => {
         const snap = await t.get(roomRef);
@@ -68,19 +78,24 @@ export function initBjTable(ctx, { roomCode, me, isHost }) {
 
         fn(next, { chipsOf, credit, charge });
         next.updatedAt = Date.now();
+        next.v = (next.v || 0) + 1;
 
         const update = { [TABLE]: next };
         Object.entries(deltas).forEach(([key, amount]) => {
           if (amount) update[`casino.wallets.${key}.chips`] = increment(amount);
         });
         t.update(roomRef, update);
+        committed = next; // dernière tentative = celle qui est validée
       });
     } catch (error) {
+      committed = null;
       ctx.toast(error.message || `Action impossible : ${label}`, "lose");
       if (!error.message) console.error(error);
     } finally {
       busy = false;
-      renderControls();
+      // Celui qui joue voit tout de suite le résultat, sans attendre le retour du serveur.
+      if (committed) applyTable(committed);
+      else renderControls();
     }
   }
 
@@ -131,8 +146,9 @@ export function initBjTable(ctx, { roomCode, me, isHost }) {
   function statusText() {
     const turnSeat = table.turn && table.seats[table.turn.key];
     if (table.phase === "betting") {
-      const bettors = Object.values(table.seats).filter(s => s.bet > 0).length;
-      return bettors ? `${bettors} mise${bettors > 1 ? "s" : ""} posée${bettors > 1 ? "s" : ""} · on distribue quand tout le monde est prêt` : "Asseyez-vous et posez vos mises";
+      const seats = Object.values(table.seats);
+      const bettors = seats.filter(s => s.bet > 0).length;
+      return bettors ? `${bettors}/${seats.length} mises posées · la manche part dès que tout le monde a misé` : "Asseyez-vous et posez vos mises";
     }
     if (table.phase === "insurance") return "La banque montre un As : assurance ?";
     if (table.phase === "playing" && turnSeat) return table.turn.key === me.key ? "À toi de jouer !" : `Au tour ${ofName(turnSeat.name)}`;
@@ -225,6 +241,18 @@ export function initBjTable(ctx, { roomCode, me, isHost }) {
     }));
 
     if (newCards) sound.card();
+
+    // C'est à moi (tour de jeu ou choix d'assurance) : on me prévient et on montre mes boutons.
+    const mine = table.seats[me.key];
+    const myTurn = (table.phase === "playing" && table.turn?.key === me.key) ||
+      (table.phase === "insurance" && table.order.includes(me.key) && mine && !mine.insuranceDecided);
+    if (myTurn && !wasMyTurn && !firstSnapshot) {
+      navigator.vibrate?.([80, 60, 80]);
+      sound.chip();
+      ctx.toast(table.phase === "insurance" ? "🛡️ La banque montre un As : assurance ?" : "🃏 À toi de jouer !", "gold");
+      controlsEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    wasMyTurn = myTurn;
     renderControls(seated);
     showMyResult();
   }
@@ -255,8 +283,12 @@ export function initBjTable(ctx, { roomCode, me, isHost }) {
         const b = ctx.peekBet();
         if (b) { actions.bet(b.amount, b.allIn); ctx.betUsed(); }
       }, seat.bet && table.phase === "betting" ? "secondary" : "primary", !pending));
-      const anyBet = table.phase === "betting" && Object.values(table.seats).some(s => s.bet > 0);
-      items.push(button("Distribuer", actions.deal, "primary big-btn", !anyBet));
+      // La manche démarre seule quand tout le monde a misé ; ce bouton sert si quelqu'un traîne.
+      const seats = Object.values(table.seats);
+      const bettors = table.phase === "betting" ? seats.filter(s => s.bet > 0).length : 0;
+      if (bettors && bettors < seats.length) {
+        items.push(button(`Lancer sans attendre (${bettors}/${seats.length})`, actions.deal, "secondary"));
+      }
       items.push(button("Quitter la table", () => actions.leave(me.key), "secondary"));
     } else if (table.phase === "insurance") {
       if (!seat.insuranceDecided && table.order.includes(me.key)) {
@@ -333,8 +365,7 @@ export function initBjTable(ctx, { roomCode, me, isHost }) {
 
   onSnapshot(roomRef, snapshot => {
     if (!snapshot.exists()) return;
-    table = snapshot.data().casino?.bjTable || emptyTable();
-    render();
+    applyTable(snapshot.data().casino?.bjTable || emptyTable());
     firstSnapshot = false;
   }, error => console.error("Table de blackjack : synchro impossible", error));
 

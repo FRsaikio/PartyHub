@@ -137,6 +137,42 @@ function startPlay(table, credit) {
   advance(table, credit);
 }
 
+// Distribue une nouvelle manche à tous ceux qui ont misé.
+function dealRound(table, w) {
+  const order = Object.entries(table.seats).filter(([, s]) => s.bet > 0).sort((a, b) => a[1].index - b[1].index).map(([k]) => k);
+  if (!order.length) throw new Error("Personne n'a misé.");
+  table.round += 1;
+  table.order = order;
+  table.dealer = [];
+  table.turn = null;
+  order.forEach(key => {
+    const seat = table.seats[key];
+    Object.assign(seat, { hands: [newHand(seat.bet)], insurance: 0, insuranceDecided: false, result: null });
+  });
+  if (table.shoe.length < 15 + order.length * 6) table.shoe = freshShoe().map(cardCode);
+  // Distribution comme au casino : une carte à chacun, une à la banque, deux fois.
+  for (let r = 0; r < 2; r++) {
+    order.forEach(key => table.seats[key].hands[0].cards.push(drawCard(table)));
+    table.dealer.push(drawCard(table));
+  }
+  if (parseCard(table.dealer[0]).rank === "A") {
+    table.phase = "insurance";
+    order.forEach(key => {
+      const seat = table.seats[key];
+      seat.insuranceDecided = isNatural(seat, seat.hands[0]); // un blackjack ne s'assure pas
+    });
+    if (order.every(key => table.seats[key].insuranceDecided)) startPlay(table, w.credit);
+  } else {
+    startPlay(table, w.credit);
+  }
+}
+
+// Tous les joueurs assis ont misé : la manche peut partir toute seule.
+const everyoneHasBet = table => {
+  const seats = Object.values(table.seats);
+  return seats.length > 0 && seats.every(seat => seat.bet > 0);
+};
+
 // ---------- Actions ----------
 // Chaque action modifie `table` sur place. `w` = { chipsOf(key), credit(key, n), charge(key, n) }.
 // Une erreur lancée annule l'action (et la transaction).
@@ -163,6 +199,7 @@ export function applyAction(table, type, payload, me, w) {
       if (inRound) throw new Error(key === me.key ? "Termine la manche avant de quitter la table." : "Ce joueur est en pleine manche.");
       if (table.phase === "betting" && seat.bet) w.credit(key, seat.bet); // mise rendue
       delete table.seats[key];
+      if (table.phase === "betting" && everyoneHasBet(table)) dealRound(table, w);
       return;
     }
 
@@ -176,37 +213,14 @@ export function applyAction(table, type, payload, me, w) {
       w.charge(me.key, stake);
       mySeat.bet = stake;
       mySeat.allIn = Boolean(payload.allIn);
+      if (everyoneHasBet(table)) dealRound(table, w);
       return;
     }
 
     case "deal": {
+      // « Lancer sans attendre » : démarre avec ceux qui ont déjà misé.
       if (table.phase !== "betting") return;
-      const order = Object.entries(table.seats).filter(([, s]) => s.bet > 0).sort((a, b) => a[1].index - b[1].index).map(([k]) => k);
-      if (!order.length) throw new Error("Personne n'a misé.");
-      table.round += 1;
-      table.order = order;
-      table.dealer = [];
-      table.turn = null;
-      order.forEach(key => {
-        const seat = table.seats[key];
-        Object.assign(seat, { hands: [newHand(seat.bet)], insurance: 0, insuranceDecided: false, result: null });
-      });
-      if (table.shoe.length < 15 + order.length * 6) table.shoe = freshShoe().map(cardCode);
-      // Distribution comme au casino : une carte à chacun, une à la banque, deux fois.
-      for (let r = 0; r < 2; r++) {
-        order.forEach(key => table.seats[key].hands[0].cards.push(drawCard(table)));
-        table.dealer.push(drawCard(table));
-      }
-      if (parseCard(table.dealer[0]).rank === "A") {
-        table.phase = "insurance";
-        order.forEach(key => {
-          const seat = table.seats[key];
-          seat.insuranceDecided = isNatural(seat, seat.hands[0]); // un blackjack ne s'assure pas
-        });
-        if (order.every(key => table.seats[key].insuranceDecided)) startPlay(table, w.credit);
-      } else {
-        startPlay(table, w.credit);
-      }
+      dealRound(table, w);
       return;
     }
 

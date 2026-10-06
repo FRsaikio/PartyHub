@@ -4,7 +4,7 @@
 
 import { db, doc, updateDoc, onSnapshot } from "../../../firebase.js";
 import { resolveIsHost, lobbyWrite } from "../../../game-common.js";
-import { createWallet, walletKeyFor, SHIELD_PRICE } from "./wallet.js";
+import { createWallet, walletKeyFor, legacyWalletKeyFor, SHIELD_PRICE } from "./wallet.js";
 import { sound, toast, formatChips } from "./ui.js";
 import { initSlots } from "./slots.js";
 import { initBlackjack } from "./blackjack.js";
@@ -18,15 +18,26 @@ const LOAN = 500;
 // ---------- Qui joue, dans quelle room ----------
 
 const params = new URLSearchParams(window.location.search);
+// La copie de l'onglet (sessionStorage) passe avant celle du navigateur (localStorage) :
+// avec deux onglets ouverts, chacun garde son propre joueur.
 const savedData = (() => {
-  try { return JSON.parse(localStorage.getItem("partyhubGameData") || "{}") || {}; }
-  catch { return {}; }
+  for (const store of [sessionStorage, localStorage]) {
+    try {
+      const data = JSON.parse(store.getItem("partyhubGameData") || "null");
+      if (data) return data;
+    } catch { /* stockage indisponible */ }
+  }
+  return {};
 })();
 
 const roomCode = params.get("room") || params.get("code") || savedData.roomCode || "";
 const spectator = params.get("spectator") === "1";
 const myName = savedData.currentPlayer || savedData.playerName || savedData.currentProfileName || "Joueur";
-const me = { name: myName, key: walletKeyFor(savedData.currentProfileId, myName) };
+const me = {
+  name: myName,
+  key: walletKeyFor(savedData.currentProfileId, myName),
+  legacyKey: legacyWalletKeyFor(savedData.currentProfileId)
+};
 const isHost = resolveIsHost(savedData);
 
 // ---------- Éléments ----------

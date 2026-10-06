@@ -1061,6 +1061,7 @@ function renderLiveGame(data){
     // Portefeuilles partagés écrits par games/casino-night/js/wallet.js
     const casino = data.casino || {};
     const rows = Object.values(casino.wallets || {})
+      .filter(Boolean) // anciennes clés vidées lors d'une reprise de compte
       .map(w => ({ name: w?.name || "Joueur", chips: Math.max(0, Number(w?.chips) || 0) }))
       .sort((a, b) => b.chips - a.chips)
       .slice(0, 8);

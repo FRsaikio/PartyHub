@@ -708,25 +708,26 @@ function listenToRoom(roomCode) {
     syncSelectedCards();
     lockLobbyControlsForGuests();
 
-    localStorage.setItem(
-      "partyhubGameData",
-      JSON.stringify({
-        roomCode: currentRoom,
-        players,
-        selectedGame,
-        selectedGameId,
-        selectedPartyMode,
-        alcoholMode: alcoholMode.checked,
-        drinkLevel: drinkLevel.value,
-        gameDuration: gameDuration.value,
-        autoRotation: autoRotation.checked,
-        bombGameMode: selectedBombGameMode,
-        isHost,
-        currentPlayer,
-        currentProfileId: currentProfile?.id || localStorage.getItem("partyhubProfileId") || "",
-        currentProfileName: currentProfile?.name || currentPlayer || ""
-      })
-    );
+    const gameData = JSON.stringify({
+      roomCode: currentRoom,
+      players,
+      selectedGame,
+      selectedGameId,
+      selectedPartyMode,
+      alcoholMode: alcoholMode.checked,
+      drinkLevel: drinkLevel.value,
+      gameDuration: gameDuration.value,
+      autoRotation: autoRotation.checked,
+      bombGameMode: selectedBombGameMode,
+      isHost,
+      currentPlayer,
+      currentProfileId: currentProfile?.id || localStorage.getItem("partyhubProfileId") || "",
+      currentProfileName: currentProfile?.name || currentPlayer || ""
+    });
+    localStorage.setItem("partyhubGameData", gameData);
+    // Copie propre à cet onglet : deux onglets du même navigateur (= même localStorage)
+    // gardent chacun leur joueur quand ils passent du lobby au jeu.
+    try { sessionStorage.setItem("partyhubGameData", gameData); } catch { /* ignoré */ }
 
     handleGlobalNavigation(data);
 
