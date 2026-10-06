@@ -5,6 +5,7 @@ import {
   updateDoc,
   onSnapshot
 } from "../../firebase.js";
+import { resolveIsHost } from "../../game-common.js";
 
 const backToLobbyBtn = document.getElementById("backToLobbyBtn");
 const roomBadge = document.getElementById("roomBadge");
@@ -44,7 +45,7 @@ const selectedPartyMode = savedData.selectedPartyMode || "Party";
 const drinkLevel = savedData.drinkLevel || "normal";
 const alcoholMode = savedData.alcoholMode;
 const roomCode = savedData.roomCode || "----";
-const isHost = savedData.isHost || savedData.enablePlayerControl !== false;
+const isHost = resolveIsHost(savedData);
 const currentPlayerName = savedData.currentPlayer || savedData.playerName || "Joueur";
 
 const roomRef = doc(db, "rooms", roomCode);

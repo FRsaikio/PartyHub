@@ -1,4 +1,14 @@
 
+// Protection XSS (script non-module : copie locale de html-safe.js).
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 // V25 PartyHub sync: retour lobby global depuis ce jeu non-module.
 async function partyhubV25ReturnEveryoneToLobby(roomCode) {
   if (!roomCode || roomCode === "----") return;
@@ -373,7 +383,7 @@ function render() {
   roundInfo.textContent = state.maxRounds === 999 ? `Tour ${state.round}` : `Tour ${state.round}/${state.maxRounds}`;
   playersList.innerHTML = state.players.map((player, i) => `
     <div class="player-card ${i === state.current ? "active" : ""}">
-      <div class="player-top"><span class="player-name">${player.name}</span><span class="badge">${player.coins} jetons</span></div>
+      <div class="player-top"><span class="player-name">${escapeHtml(player.name)}</span><span class="badge">${escapeHtml(player.coins)} jetons</span></div>
       <div class="player-meta"><span>Case ${player.position + 1}</span><span>Bouclier ${player.shield}</span><span>Biens ${tiles.filter(t => t.owner === i).length}</span></div>
     </div>`).join("");
 

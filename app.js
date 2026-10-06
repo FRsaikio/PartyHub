@@ -21,6 +21,8 @@ import {
   saveCustomAvatar
 } from "./profile.js";
 
+import { escapeHtml, safeImageSrc, cleanPseudo } from "./html-safe.js";
+
 const MAX_PLAYERS = 20;
 const ACTIVITY_LIMIT = 6;
 const ROOM_CODE_LENGTH = 4;
@@ -56,7 +58,7 @@ const GAME_CONFIG = {
   },
   "verite-ou-bois": {
     label: "Vérité ou Bois",
-    url: "games/verite-ou-bois/truth-or-drink.html"
+    url: "games/truth-or-drink/truth-or-drink.html"
   },
   traitor: {
     label: "Mission Traître",
@@ -234,12 +236,12 @@ async function v22ShowEndParty() {
   const summary = v22BuildEndSummary();
   if (endPartyStats) {
     endPartyStats.innerHTML = summary.stats.map(([label, value]) => `
-      <div class="v22-end-stat"><span>${label}</span><strong>${value}</strong></div>
+      <div class="v22-end-stat"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>
     `).join("");
   }
   if (endPartyAwards) {
     endPartyAwards.innerHTML = summary.awards.map(([title, value, desc]) => `
-      <div class="v22-award"><b>${title}</b><strong>${value}</strong><small>${desc}</small></div>
+      <div class="v22-award"><b>${escapeHtml(title)}</b><strong>${escapeHtml(value)}</strong><small>${escapeHtml(desc)}</small></div>
     `).join("");
   }
   endPartyOverlay?.classList.remove("hidden");
@@ -275,13 +277,13 @@ function setupAvatarSelect() {
 }
 
 function avatarMarkup(profileOrPlayer = {}) {
-  const customUrl = profileOrPlayer.avatarUrl || profileOrPlayer.avatarBase64;
+  const customUrl = safeImageSrc(profileOrPlayer.avatarUrl || profileOrPlayer.avatarBase64);
 
   if (customUrl) {
     return `<img class="avatar-img" src="${customUrl}" alt="Avatar" />`;
   }
 
-  return `<span class="avatar-emoji">${profileOrPlayer.avatar || "🍻"}</span>`;
+  return `<span class="avatar-emoji">${escapeHtml(profileOrPlayer.avatar || "🍻")}</span>`;
 }
 
 function renderAvatarElement(element, profileOrPlayer = {}) {
@@ -359,7 +361,7 @@ function renderProfile(profile = currentProfile) {
   if (lobbyProfileMini) {
     lobbyProfileMini.innerHTML =
       `<span class="mini-avatar">${avatarMarkup(profile)}</span> ` +
-      `${profile.pseudo || "Player"} · Niv. ${level}`;
+      `${escapeHtml(profile.pseudo || "Player")} · Niv. ${escapeHtml(level)}`;
   }
 }
 
@@ -417,7 +419,7 @@ function normalizeRoomCode(value) {
 }
 
 function normalizePseudo(value) {
-  return value.trim().replace(/\s+/g, " ").slice(0, 14);
+  return cleanPseudo(value).trim().replace(/\s+/g, " ").slice(0, 14);
 }
 
 function generateRoomCode() {
@@ -822,7 +824,7 @@ function renderPlayers() {
     left.innerHTML =
       `${player.host ? '<span class="crown">👑</span>' : ""}` +
       `<span class="mini-avatar">${avatarMarkup(player)}</span>` +
-      `<span>${player.name}${player.level ? ` · Nv.${player.level}` : ""}</span>`;
+      `<span>${escapeHtml(player.name)}${player.level ? ` · Nv.${escapeHtml(player.level)}` : ""}</span>`;
 
     const right = document.createElement("span");
     const isOnline = isPlayerOnline(player);
@@ -1445,7 +1447,7 @@ if (pseudoInput) {
     if (lobbyProfileMini) {
       lobbyProfileMini.innerHTML =
         `<span class="mini-avatar">${avatarMarkup(currentProfile)}</span> ` +
-        `${typedPseudo || "Player"} · Niv. ${currentProfile.level || 1}`;
+        `${escapeHtml(typedPseudo || "Player")} · Niv. ${escapeHtml(currentProfile.level || 1)}`;
     }
 
     clearError();

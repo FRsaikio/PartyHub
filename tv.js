@@ -7,6 +7,7 @@ import {
   onSnapshot,
   serverTimestamp
 } from "./firebase.js";
+import { safeImageSrc } from "./html-safe.js";
 
 const params = new URLSearchParams(window.location.search);
 const roomCode =
@@ -23,7 +24,7 @@ const GAME_CONFIG = {
   survivor: { label: "Survivor", url: "games/survivor/survivor.html" },
   bomb: { label: "Bomb Timer", url: "games/bomb-timer/bomb-timer.html" },
   "truth-or-drink": { label: "Vérité ou Bois", url: "games/truth-or-drink/truth-or-drink.html" },
-  "verite-ou-bois": { label: "Vérité ou Bois", url: "games/verite-ou-bois/truth-or-drink.html" },
+  "verite-ou-bois": { label: "Vérité ou Bois", url: "games/truth-or-drink/truth-or-drink.html" },
   traitor: { label: "Mission Traître", url: "games/mission-traitre/mission-traitre.html" },
   monopolit: { label: "Monopoly", url: "games/monopolit/index.html" },
   "casino-night": { label: "Casino Night", url: "games/casino-night/index.html" },
@@ -453,9 +454,9 @@ function createGoldRain(){
 }
 
 function avatarMarkup(player){
-  const img = player.avatarBase64 || player.avatarUrl;
+  const img = safeImageSrc(player.avatarBase64 || player.avatarUrl);
   if(img) return `<img src="${img}" alt="">`;
-  return player.avatar || "🍻";
+  return escapeHtml(player.avatar || "🍻");
 }
 
 function currentSettings(){
@@ -1114,7 +1115,7 @@ function render(data){
     }).join("")
     : `<div class="tv-player"><div class="tv-avatar">📱</div><div><strong>En attente</strong><small>Scanne le QR code</small></div></div>`;
 
-  activityEl.innerHTML = activity.slice(0,8).map(item => `<li>${item}</li>`).join("");
+  activityEl.innerHTML = activity.slice(0,8).map(item => `<li>${escapeHtml(item)}</li>`).join("");
 
   applyControlsFromData(data);
   renderLiveGame(data);

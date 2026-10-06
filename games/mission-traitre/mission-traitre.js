@@ -5,6 +5,8 @@ import {
   updateDoc,
   onSnapshot
 } from "../../firebase.js";
+import { resolveIsHost } from "../../game-common.js";
+import { escapeHtml } from "../../html-safe.js";
 
 const backToLobbyBtn = document.getElementById("backToLobbyBtn");
 
@@ -51,7 +53,7 @@ const selectedPartyMode = savedData.selectedPartyMode || "Party";
 const alcoholMode = savedData.alcoholMode;
 const drinkLevel = savedData.drinkLevel || "normal";
 const roomCode = savedData.roomCode || "----";
-const isHost = savedData.isHost || savedData.enablePlayerControl !== false;
+const isHost = resolveIsHost(savedData);
 
 const roomRef = doc(db, "rooms", roomCode);
 
@@ -511,7 +513,7 @@ function startVote() {
           .map(
             (player, index) => `
           <button class="vote-btn" onclick="voteForPlayer(${index})">
-            ${player.name}
+            ${escapeHtml(player.name)}
           </button>
         `
           )
@@ -563,12 +565,12 @@ function revealTraitor(votedIndex) {
 
   resultText.innerHTML = innocentsWin
     ? `
-      Le groupe a voté contre ${votedPlayer.name}. Bien joué, le traître a été trouvé !<br><br>
+      Le groupe a voté contre ${escapeHtml(votedPlayer.name)}. Bien joué, le traître a été trouvé !<br><br>
       🍻 <strong>Punition du traître :</strong> ${punishment}<br>
       👑 <strong>Bonus innocents :</strong> ${reward}
     `
     : `
-      Le groupe a voté contre ${votedPlayer.name}, mais le vrai traître était ${traitor.name}.<br><br>
+      Le groupe a voté contre ${escapeHtml(votedPlayer.name)}, mais le vrai traître était ${escapeHtml(traitor.name)}.<br><br>
       🍻 <strong>Punition des innocents :</strong> ${punishment}<br>
       👑 <strong>Bonus du traître :</strong> ${reward}
     `;
