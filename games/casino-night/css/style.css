@@ -598,6 +598,60 @@
   grid-column: 1 / -1;
 }
 
+.bj-controls .btn:not(.big-btn) {
+  padding: 0 8px;
+  font-size: 14px;
+}
+
+/* Mains du joueur (plusieurs après une séparation) */
+.bj-hands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bj-hand {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 16px;
+  border: 1.5px solid transparent;
+  transition: opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+/* Plusieurs mains : côte à côte quand la place le permet */
+.bj-hand:not(:only-child) {
+  flex-basis: calc(50% - 5px);
+  min-width: 150px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.bj-hand.active {
+  border-color: var(--cs-gold);
+  background: rgba(245, 196, 81, 0.1);
+  box-shadow: 0 0 22px var(--cs-gold-glow);
+}
+
+.bj-hand.done:not(.active) {
+  opacity: 0.6;
+}
+
+.bj-hand:not(:only-child) .playing-card {
+  width: 56px;
+  height: 82px;
+}
+
+.bj-hand:not(:only-child) .pc-suit {
+  font-size: 28px;
+}
+
+.bj-hand:not(:only-child) .cards-row {
+  min-height: 82px;
+  gap: 6px;
+}
+
 /* ---------- Dés du Diable ---------- */
 
 /* Vrais dés en 3D : un cube à 6 faces qui roule puis se pose sur la bonne face.
@@ -978,11 +1032,7 @@
   }
 
   .bj-controls {
-    grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
-  }
-
-  .bj-controls #bjDealBtn {
-    grid-column: auto;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   :root {

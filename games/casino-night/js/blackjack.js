@@ -1,14 +1,24 @@
 // Blackjack Extreme.
-// États : "idle" (pas de manche) → "player" (le joueur joue) → "dealer" (la banque tire) → "idle".
+//
+// États : "idle" (pas de manche) → ["insurance" si la banque montre un As]
+//         → "player" (le joueur joue ses mains une par une) → "dealer" → "idle".
 // Les boutons ne sont actifs que dans le bon état : impossible de jouer sans avoir misé.
-// Gains : la mise est prélevée à la distribution ; un gain ×N renvoie N fois la mise ;
-// une égalité rend la mise.
+//
+// Règles :
+//   - Blackjack naturel ×3, banque tire jusqu'à 17.
+//   - Doubler : sur 2 cartes (y compris après une séparation, sauf As séparés).
+//   - Séparer : 2 cartes de même valeur, jusqu'à 4 mains ; As séparés = une seule carte chacun.
+//   - Assurance : si la banque montre un As, moitié de la mise, paie 2 contre 1.
+//   - Abandonner : sur les 2 premières cartes, récupère la moitié de la mise.
+// Argent : chaque mise est prélevée quand elle est engagée ; un gain ×N renvoie N fois
+// la mise de la main ; une égalité rend la mise.
 
 import { sound, sleep, formatChips, showResult, cinematic, goldRain } from "./ui.js";
 
 const SUITS = ["♠", "♥", "♦", "♣"];
 const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 const DECKS = 4;
+const MAX_HANDS = 4;
 
 const value = rank => (rank === "A" ? 1 : ["J", "Q", "K"].includes(rank) ? 10 : Number(rank));
 
@@ -66,19 +76,25 @@ export function initBlackjack(ctx) {
   const hitBtn = document.getElementById("bjHitBtn");
   const standBtn = document.getElementById("bjStandBtn");
   const doubleBtn = document.getElementById("bjDoubleBtn");
-  const playerEl = document.getElementById("bjPlayerCards");
+  const splitBtn = document.getElementById("bjSplitBtn");
+  const surrenderBtn = document.getElementById("bjSurrenderBtn");
+  const handsEl = document.getElementById("bjPlayerHands");
   const dealerEl = document.getElementById("bjDealerCards");
-  const playerTotalEl = document.getElementById("bjPlayerTotal");
   const dealerTotalEl = document.getElementById("bjDealerTotal");
   const shoeEl = document.getElementById("bjShoe");
   const resultBox = document.getElementById("bjResult");
 
   let shoe = [];
-  let player = [];
   let dealer = [];
+  // Une main : { cards, bet, doubled, done, splitAces, surrendered }
+  let hands = [];
+  let active = 0;
   let state = "idle";
-  let bet = null; // { amount, allIn }
-  let doubled = false;
+  let allIn = false;
+  let insurance = 0;
+
+  const hand = () => hands[active];
+  const fromSplit = () => hands.length > 1;
 
   function newShoe() {
     shoe = [];
@@ -114,170 +130,376 @@ export function initBlackjack(ctx) {
     return el;
   }
 
-  function render({ revealDealer = state !== "player", freshPlayer = 0, freshDealer = 0 } = {}) {
-    playerEl.replaceChildren(...player.map((c, i) => cardEl(c, false, i >= player.length - freshPlayer)));
-    dealerEl.replaceChildren(...dealer.map((c, i) => cardEl(c, !revealDealer && i === 1, i >= dealer.length - freshDealer)));
-    playerTotalEl.textContent = player.length ? total(player) : "–";
+  // `fresh` = { hand: index de la main dont la dernière carte vient d'arriver, dealer: bool }
+  function render(fresh = {}) {
+    const revealDealer = state === "dealer" || state === "idle";
+
+    handsEl.replaceChildren(...(hands.length ? hands : [{ cards: [] }]).map((h, i) => {
+      const box = document.createElement("div");
+      box.className = "bj-hand";
+      if (state === "player" && i === active && hands.length > 1) box.classList.add("active");
+      if (h.done && state === "player") box.classList.add("done");
+
+      const head = document.createElement("div");
+      head.className = "bj-zone-head";
+      const label = document.createElement("span");
+      label.textContent = hands.length > 1 ? `Main ${i + 1}${h.bet ? ` · ${formatChips(h.bet)}` : ""}` : "Toi";
+      const score = document.createElement("strong");
+      score.textContent = h.cards.length ? total(h.cards) : "–";
+      head.append(label, score);
+
+      const row = document.createElement("div");
+      row.className = "cards-row";
+      row.append(...h.cards.map((c, j) => cardEl(c, false, fresh.hand === i && j === h.cards.length - 1)));
+
+      box.append(head, row);
+      return box;
+    }));
+
+    dealerEl.replaceChildren(...dealer.map((c, i) => cardEl(c, !revealDealer && i === 1, fresh.dealer && i === dealer.length - 1)));
     dealerTotalEl.textContent = !dealer.length ? "–" : revealDealer ? total(dealer) : value(dealer[0].rank) === 1 ? "1 / 11" : value(dealer[0].rank);
     shoeEl.textContent = `${shoe.length} cartes dans le sabot`;
   }
 
+  function canSplit() {
+    const h = hand();
+    return state === "player" && h && !h.done && h.cards.length === 2 && !h.splitAces &&
+      value(h.cards[0].rank) === value(h.cards[1].rank) && hands.length < MAX_HANDS && ctx.wallet.canAfford(h.bet);
+  }
+
   function setButtons() {
-    const playing = state === "player";
+    const h = hand();
+    const playing = state === "player" && h && !h.done;
     dealBtn.disabled = state !== "idle";
-    hitBtn.disabled = !playing;
+    hitBtn.disabled = !playing || h.splitAces;
     standBtn.disabled = !playing;
-    doubleBtn.disabled = !playing || doubled || player.length !== 2 || !ctx.wallet.canAfford(bet?.amount || Infinity);
+    doubleBtn.disabled = !playing || h.cards.length !== 2 || h.splitAces || !ctx.wallet.canAfford(h.bet);
+    splitBtn.disabled = !canSplit();
+    surrenderBtn.disabled = !playing || fromSplit() || h.cards.length !== 2;
+  }
+
+  function prompt() {
+    const h = hand();
+    const lines = [];
+    if (canSplit()) lines.push("Paire ! Tu peux séparer tes cartes en deux mains.");
+    lines.push(fromSplit() ? `Main ${active + 1} sur ${hands.length} : carte, rester ou doubler.` : "Carte, rester, doubler… ou abandonner.");
+    showResult(resultBox, { title: `${fromSplit() ? `Main ${active + 1} : ` : "Ta main : "}${total(h.cards)}`, lines, tone: "info" });
   }
 
   // ---------- Déroulement ----------
 
   async function deal() {
     if (state !== "idle") return;
-    bet = ctx.placeBet();
+    const bet = ctx.placeBet();
     if (!bet) return;
 
-    doubled = false;
-    player = [];
+    allIn = bet.allIn;
+    insurance = 0;
     dealer = [];
+    hands = [{ cards: [], bet: bet.amount, doubled: false, done: false, splitAces: false, surrendered: false }];
+    active = 0;
     state = "player";
     setButtons();
     showResult(resultBox, { title: "Distribution…", tone: "info" });
+    disableAll();
 
-    // Distribution une carte à la fois : joueur, banque, joueur, banque (cachée)
-    for (const target of [player, dealer, player, dealer]) {
-      target.push(draw());
+    // Une carte à la fois : joueur, banque, joueur, banque (cachée)
+    for (const who of ["player", "dealer", "player", "dealer"]) {
+      if (who === "player") hands[0].cards.push(draw());
+      else dealer.push(draw());
       sound.card();
-      render({ freshPlayer: target === player ? 1 : 0, freshDealer: target === dealer ? 1 : 0 });
+      render(who === "player" ? { hand: 0 } : { dealer: true });
       await sleep(260);
     }
 
-    const playerBJ = isBlackjack(player);
+    const playerBJ = isBlackjack(hands[0].cards);
+
+    // La banque montre un As : on propose l'assurance (sauf si on a déjà un blackjack).
+    if (dealer[0].rank === "A" && !playerBJ && ctx.wallet.canAfford(Math.floor(hands[0].bet / 2))) {
+      state = "insurance";
+      setButtons();
+      const cost = Math.floor(hands[0].bet / 2);
+      showResult(resultBox, {
+        title: "La banque montre un As",
+        lines: [`Assurance : mise ${formatChips(cost)} jetons sur un blackjack de la banque (paie 2 contre 1).`],
+        tone: "info",
+        choices: [
+          { label: `Prendre l'assurance (${formatChips(cost)})`, variant: "primary", onClick: () => afterInsurance(cost) },
+          { label: "Pas d'assurance", variant: "secondary", onClick: () => afterInsurance(0) }
+        ]
+      });
+      return;
+    }
+
+    await checkNaturals();
+  }
+
+  function disableAll() {
+    [dealBtn, hitBtn, standBtn, doubleBtn, splitBtn, surrenderBtn].forEach(b => { b.disabled = true; });
+  }
+
+  async function afterInsurance(cost) {
+    if (state !== "insurance") return;
+    if (cost) {
+      ctx.wallet.add(-cost);
+      insurance = cost;
+      sound.chip();
+    }
+    state = "player";
+    await checkNaturals();
+  }
+
+  // La banque regarde sa carte cachée : blackjack(s) d'entrée ?
+  async function checkNaturals() {
+    const playerBJ = isBlackjack(hands[0].cards);
     const dealerBJ = isBlackjack(dealer);
+
     if (playerBJ || dealerBJ) {
       state = "dealer";
       render();
-      if (playerBJ && dealerBJ) return finish({ outcome: "push", text: "🃏 Double blackjack : égalité, chacun boit 2 gorgées." });
-      if (playerBJ) return finish({ outcome: "win", mult: 3, text: "🃏 VRAI BLACKJACK : distribue 20 gorgées.", big: true });
-      return finish({ outcome: "lose", text: "🏦 Blackjack de la banque : tout le monde boit." });
+      hands[0].done = true;
+      return settle({ naturals: { playerBJ, dealerBJ } });
     }
 
-    showResult(resultBox, { title: `Ta main : ${total(player)}`, lines: ["Tire une carte, reste, ou double ta mise."], tone: "info" });
+    if (insurance) ctx.toast(`Pas de blackjack pour la banque : assurance perdue (-${formatChips(insurance)}).`, "lose");
+    render();
     setButtons();
+    prompt();
   }
 
   async function hit() {
-    if (state !== "player") return;
-    player.push(draw());
+    const h = hand();
+    if (state !== "player" || !h || h.done || h.splitAces) return;
+    h.cards.push(draw());
     sound.card();
-    render({ freshPlayer: 1 });
+    render({ hand: active });
 
-    const score = total(player);
-    if (score > 21) {
-      state = "dealer";
-      render();
-      return finish({ outcome: "bust", text: bustSanction(score) });
+    const score = total(h.cards);
+    if (score >= 21) {
+      h.done = true;
+      return nextHand();
     }
-    if (score === 21) return stand();
     setButtons();
+    prompt();
+  }
+
+  function stand() {
+    const h = hand();
+    if (state !== "player" || !h || h.done) return;
+    h.done = true;
+    return nextHand();
   }
 
   async function doubleDown() {
-    if (state !== "player" || doubled || player.length !== 2) return;
-    if (!ctx.wallet.canAfford(bet.amount)) return ctx.toast("Pas assez de jetons pour doubler.", "lose");
-    ctx.wallet.add(-bet.amount);
-    bet = { ...bet, amount: bet.amount * 2 };
-    doubled = true;
+    const h = hand();
+    if (state !== "player" || !h || h.done || h.cards.length !== 2 || h.splitAces) return;
+    if (!ctx.wallet.canAfford(h.bet)) return ctx.toast("Pas assez de jetons pour doubler.", "lose");
+    ctx.wallet.add(-h.bet);
+    h.bet *= 2;
+    h.doubled = true;
     sound.chip();
-    await hit();
-    if (state === "player") await stand();
+    h.cards.push(draw());
+    sound.card();
+    h.done = true;
+    render({ hand: active });
+    await sleep(350);
+    return nextHand();
   }
 
-  async function stand() {
-    if (state !== "player") return;
+  async function split() {
+    if (!canSplit()) return;
+    const h = hand();
+    ctx.wallet.add(-h.bet);
+    sound.chip();
+
+    const aces = h.cards[0].rank === "A";
+    const second = { cards: [h.cards.pop()], bet: h.bet, doubled: false, done: false, splitAces: aces, surrendered: false };
+    h.splitAces = aces;
+    hands.splice(active + 1, 0, second);
+    render();
+    await sleep(250);
+
+    // Chaque main reçoit sa deuxième carte.
+    for (const [i, target] of [[active, h], [active + 1, second]]) {
+      target.cards.push(draw());
+      sound.card();
+      render({ hand: i });
+      await sleep(260);
+    }
+
+    // As séparés : une seule carte chacun, on passe directement.
+    if (aces) {
+      h.done = true;
+      second.done = true;
+      return nextHand();
+    }
+    if (total(h.cards) === 21) {
+      h.done = true;
+      return nextHand();
+    }
+    setButtons();
+    prompt();
+  }
+
+  function surrender() {
+    const h = hand();
+    if (state !== "player" || !h || h.done || fromSplit() || h.cards.length !== 2) return;
+    h.surrendered = true;
+    h.done = true;
+    ctx.wallet.add(Math.floor(h.bet / 2));
+    state = "dealer";
+    render();
+    return settle({});
+  }
+
+  // Passe à la prochaine main à jouer, ou à la banque si tout est joué.
+  function nextHand() {
+    const next = hands.findIndex(h => !h.done);
+    if (next >= 0) {
+      active = next;
+      render();
+      setButtons();
+      prompt();
+      return;
+    }
+    return dealerTurn();
+  }
+
+  async function dealerTurn() {
     state = "dealer";
     setButtons();
     render(); // retourne la carte cachée
     await sleep(500);
 
-    while (total(dealer) < 17) {
+    // La banque ne tire que s'il reste au moins une main en jeu.
+    const alive = hands.some(h => !h.surrendered && total(h.cards) <= 21);
+    while (alive && total(dealer) < 17) {
       dealer.push(draw());
       sound.card();
-      render({ freshDealer: 1 });
+      render({ dealer: true });
       await sleep(600);
     }
-
-    const p = total(player);
-    const d = total(dealer);
-
-    if (d > 21) {
-      return finish(d > 25
-        ? { outcome: "win", mult: 3, text: "☠️ La banque explose (plus de 25) : tout le monde cul sec.", big: true }
-        : { outcome: "win", mult: 2, text: "🔥 La banque saute : shot collectif." });
-    }
-    if (p > d) {
-      const bonus = winBonus(p, d, player.length);
-      return finish({ outcome: "win", mult: bonus.mult, text: bonus.text, big: bonus.mult >= 4 });
-    }
-    if (p === d) {
-      return finish({ outcome: "push", text: p === 21 ? "💀 Égalité à 21 : duel de shots." : p === 20 ? "🍺 Égalité à 20 : distribuez 5 gorgées chacun." : "🃏 Égalité : tout le monde boit 2 gorgées." });
-    }
-    return finish({ outcome: "lose", text: `${losingHandSanction(p)} + le croupier gagnant te donne un shot.` });
+    return settle({});
   }
 
-  function finish({ outcome, mult = 0, text, big = false }) {
-    const lines = [text];
-    let tone = "info";
-    let title = "";
-    let choices = [];
+  // ---------- Règlement ----------
 
-    if (outcome === "win") {
-      let payout = bet.amount * mult;
-      if (bet.allIn) {
-        payout *= 2;
-        lines.push("🔥 ALL IN réussi : gain doublé.");
+  function resolveHand(h, naturals) {
+    const p = total(h.cards);
+    const d = total(dealer);
+
+    if (naturals) {
+      if (naturals.playerBJ && naturals.dealerBJ) return { outcome: "push", text: "🃏 Double blackjack : égalité, chacun boit 2 gorgées." };
+      if (naturals.playerBJ) return { outcome: "win", mult: 3, text: "🃏 VRAI BLACKJACK : distribue 20 gorgées.", big: true };
+      return { outcome: "lose", text: "🏦 Blackjack de la banque : tout le monde boit." };
+    }
+    if (h.surrendered) return { outcome: "surrender", text: "🏳️ Abandon : la moitié de ta mise est rendue, tu bois 2 gorgées." };
+    if (p > 21) return { outcome: "lose", bust: true, text: bustSanction(p) };
+    if (d > 21) {
+      return d > 25
+        ? { outcome: "win", mult: 3, text: "☠️ La banque explose (plus de 25) : tout le monde cul sec.", big: true }
+        : { outcome: "win", mult: 2, text: "🔥 La banque saute : shot collectif." };
+    }
+    if (p > d) {
+      const bonus = winBonus(p, d, h.cards.length);
+      return { outcome: "win", mult: bonus.mult, text: bonus.text, big: bonus.mult >= 4 };
+    }
+    if (p === d) {
+      return { outcome: "push", text: p === 21 ? "💀 Égalité à 21 : duel de shots." : p === 20 ? "🍺 Égalité à 20 : distribuez 5 gorgées chacun." : "🃏 Égalité : tout le monde boit 2 gorgées." };
+    }
+    return { outcome: "lose", text: `${losingHandSanction(p)} + le croupier gagnant te donne un shot.` };
+  }
+
+  function settle({ naturals = null }) {
+    const lines = [];
+    let staked = 0;
+    let returned = 0;
+    let handPayout = 0; // gains + mises rendues des mains, versés en une fois
+    let anyLoss = false;
+    let big = false;
+
+    hands.forEach((h, i) => {
+      const r = resolveHand(h, naturals);
+      const prefix = hands.length > 1 ? `Main ${i + 1} (${total(h.cards)}) : ` : "";
+      staked += h.bet;
+
+      if (r.outcome === "win") {
+        let payout = h.bet * r.mult;
+        if (allIn) payout *= 2;
+        returned += payout;
+        handPayout += payout;
+        big = big || r.big;
+        lines.push(`${prefix}${r.text}${h.doubled ? " 💪 Double réussi." : ""}`);
+      } else if (r.outcome === "push") {
+        returned += h.bet;
+        handPayout += h.bet;
+        lines.push(`${prefix}${r.text}`);
+      } else if (r.outcome === "surrender") {
+        returned += Math.floor(h.bet / 2); // déjà recrédité au moment de l'abandon
+        lines.push(`${prefix}${r.text}`);
+      } else {
+        anyLoss = true;
+        lines.push(`${prefix}${r.text}${h.doubled ? " 💀 Double raté : double shot en plus." : ""}`);
       }
-      ctx.wallet.add(payout);
-      title = `Gagné ! +${formatChips(payout)} jetons`;
-      tone = big ? "gold" : "win";
-      if (doubled) lines.push("💪 Double réussi.");
+    });
+
+    // Assurance : paie 2 contre 1 (on rend la mise + 2×) si la banque a un blackjack.
+    if (insurance) {
+      if (naturals?.dealerBJ) {
+        ctx.wallet.add(insurance * 3);
+        returned += insurance * 3;
+        lines.push(`🛡️ Assurance gagnante : +${formatChips(insurance * 3)} jetons.`);
+      } else if (naturals) {
+        lines.push(`Assurance perdue (-${formatChips(insurance)}).`);
+      }
+      staked += insurance;
+    }
+
+    // L'abandon et l'assurance sont déjà réglés ; on verse le reste en une fois.
+    if (handPayout) ctx.wallet.add(handPayout);
+
+    if (allIn && returned > staked) lines.push("🔥 ALL IN réussi : gains doublés.");
+    if (allIn && anyLoss && returned <= staked) lines.push("⚠️ ALL IN raté : sanction doublée.");
+
+    const net = returned - staked;
+    const title = net > 0 ? `Gagné ! +${formatChips(net)} jetons`
+      : net < 0 ? `Perdu : ${formatChips(net)} jetons`
+      : anyLoss ? "Bilan nul (0 jeton)" : "Égalité : mise rendue";
+    const tone = net > 0 ? (big ? "gold" : "win") : net < 0 ? "lose" : "push";
+
+    if (net > 0) {
       if (big) {
         sound.jackpot();
-        cinematic("BLACKJACK", `+${formatChips(payout)} jetons`, "gold");
+        cinematic("BLACKJACK", `+${formatChips(net)} jetons`, "gold");
         goldRain(25);
-        ctx.wallet.announce(`a gagné ${formatChips(payout)} jetons au blackjack !`, "gold");
+        ctx.wallet.announce(`a gagné ${formatChips(net)} jetons au blackjack !`, "gold");
       } else {
         sound.win();
       }
-    } else if (outcome === "push") {
-      ctx.wallet.add(bet.amount);
-      title = "Égalité : mise rendue";
-      tone = "push";
-    } else {
-      title = outcome === "bust" ? `Sauté à ${total(player)} ! -${formatChips(bet.amount)} jetons` : `Perdu ! -${formatChips(bet.amount)} jetons`;
-      tone = "lose";
-      if (doubled) lines.push("💀 Double raté : double shot en plus.");
-      if (bet.allIn) lines.push("⚠️ ALL IN raté : sanction doublée.");
+    } else if (net < 0) {
       sound.lose();
-      choices = ctx.sanctionChoices();
     }
 
     state = "idle";
-    bet = null;
+    active = 0;
+    insurance = 0;
+    render();
     setButtons();
-    showResult(resultBox, { title, lines, tone, choices });
+    showResult(resultBox, { title, lines, tone, choices: anyLoss ? ctx.sanctionChoices() : [] });
   }
 
   dealBtn.addEventListener("click", deal);
   hitBtn.addEventListener("click", hit);
   standBtn.addEventListener("click", stand);
   doubleBtn.addEventListener("click", doubleDown);
+  splitBtn.addEventListener("click", split);
+  surrenderBtn.addEventListener("click", surrender);
 
   newShoe();
   render();
   setButtons();
   showResult(resultBox, { title: "Le croupier t'attend", lines: ["Choisis ta mise puis clique sur « Distribuer »."], tone: "info" });
 
-  // Le solde change (gain, vol…) : on réévalue la possibilité de doubler.
+  // Le solde change (gain, vol…) : on réévalue doubler / séparer.
   return { refresh: setButtons };
 }
