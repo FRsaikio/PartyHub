@@ -897,39 +897,61 @@ async function restartGame() {
   });
 }
 
+// Classement avec gestion des égalités : même score = même rang (1, 1, 3...).
+// "leader" = à égalité en tête avec au moins 1 vote.
+function rankPlayers() {
+  const sorted = [...players].sort((a, b) => (scores[b.name] || 0) - (scores[a.name] || 0));
+  const topScore = scores[sorted[0]?.name] || 0;
+
+  return sorted.map((player, index) => {
+    const score = scores[player.name] || 0;
+    const firstWithScore = sorted.findIndex(p => (scores[p.name] || 0) === score);
+    return {
+      player,
+      score,
+      rank: (index === firstWithScore ? index : firstWithScore) + 1,
+      leader: topScore > 0 && score === topScore
+    };
+  });
+}
+
+function joinNames(names) {
+  return names.length > 1 ? `${names.slice(0, -1).join(", ")} et ${names[names.length - 1]}` : names[0] || "";
+}
+
 function renderScores() {
   scoreList.innerHTML = "";
 
-  const sortedPlayers = [...players].sort((a, b) => {
-    return (scores[b.name] || 0) - (scores[a.name] || 0);
-  });
-
-  sortedPlayers.forEach((player, index) => {
+  rankPlayers().forEach(({ player, score, rank, leader }) => {
     const li = document.createElement("li");
-    const rank = index === 0 ? "👑" : `${index + 1}.`;
+    li.classList.toggle("leader", leader);
 
-    li.innerHTML = `<span>${rank} ${escapeHtml(player.name)}</span><strong>${escapeHtml(scores[player.name] || 0)}</strong>`;
+    li.innerHTML = `<span>${leader ? "👑" : `${rank}.`} ${escapeHtml(player.name)}</span><strong>${escapeHtml(score)}</strong>`;
 
     scoreList.appendChild(li);
   });
 }
 
 function showFinalScreen() {
-  const sortedPlayers = [...players].sort((a, b) => {
-    return (scores[b.name] || 0) - (scores[a.name] || 0);
-  });
-
-  const winner = sortedPlayers[0];
+  const ranking = rankPlayers();
+  const leaders = ranking.filter(entry => entry.leader);
   const votesLabel = count => `${count} vote${count > 1 ? "s" : ""}`;
 
-  winnerText.textContent = `💀 ${winner.name} est la cible officielle de la soirée avec ${votesLabel(scores[winner.name] || 0)}.`;
+  if (!leaders.length) {
+    winnerText.textContent = "🤝 Personne n’a reçu de vote pendant cette partie.";
+  } else if (leaders.length === 1) {
+    winnerText.textContent = `💀 ${leaders[0].player.name} est la cible officielle de la soirée avec ${votesLabel(leaders[0].score)}.`;
+  } else {
+    winnerText.textContent = `🤝 Égalité ! ${joinNames(leaders.map(entry => entry.player.name))} se partagent la place de cible officielle avec ${votesLabel(leaders[0].score)} chacun.`;
+  }
 
   finalScores.innerHTML = "";
 
-  sortedPlayers.forEach((player, index) => {
+  ranking.forEach(({ player, score, rank, leader }) => {
     const row = document.createElement("div");
     row.className = "final-score-row";
-    row.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)}</span><strong>${escapeHtml(votesLabel(scores[player.name] || 0))}</strong>`;
+    row.classList.toggle("leader", leader);
+    row.innerHTML = `<span>${rank}. ${escapeHtml(player.name)}</span><strong>${escapeHtml(votesLabel(score))}</strong>`;
     finalScores.appendChild(row);
   });
 
