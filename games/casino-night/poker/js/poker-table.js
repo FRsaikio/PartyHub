@@ -1,6 +1,6 @@
 // Salle de poker : plusieurs tables (6 places chacune), synchro Firestore + affichage.
 //
-// Chaque table = un petit document rooms/{code}/casinoPoker/table-N (rapide à lire).
+// Chaque table est rangée dans le doc de la room : casino.poker.t1 … t4.
 // Toutes les actions passent par runTransaction et appliquent poker-logic.js ; la cave et
 // le départ modifient aussi le portefeuille du casino (increment dans la même transaction).
 // Le « croupier » n'a besoin de personne : chaque téléphone surveille les délais
@@ -13,17 +13,16 @@ import { evaluate, suitOf, rankOf } from "./poker-rules.js";
 import { MAX_SEATS, BUY_INS, MIN_BUY_IN, NEXT_HAND_DELAY, emptyTable, applyAction, potTotal, callInfo, canAct } from "./poker-logic.js";
 import { sound, formatChips, showResult, cinematic, goldRain } from "../../js/ui.js";
 
-export const TABLE_IDS = ["table-1", "table-2", "table-3", "table-4"];
+export const TABLE_IDS = ["t1", "t2", "t3", "t4"];
 
 // Places à l'écran (.slot-0 … .slot-5 dans poker.css) : 4 coins + 2 côtés, dans le sens
 // des aiguilles d'une montre ; le haut-centre reste au croupier. Ta place est toujours .slot-0 (en bas).
 
-const tableName = id => `Table ${id.split("-")[1]}`;
+const tableName = id => `Table ${id.slice(1)}`;
 const clone = v => JSON.parse(JSON.stringify(v));
 
 export function createPokerRoom(ctx, { roomCode, me, isHost, spectator, avatarFor }) {
   const roomRef = doc(db, "rooms", roomCode);
-  const refOf = id => doc(db, "rooms", roomCode, "casinoPoker", id);
 
   const el = id => document.getElementById(id);
   const tablesEl = el("pkTables");
@@ -56,15 +55,14 @@ export function createPokerRoom(ctx, { roomCode, me, isHost, spectator, avatarFo
   async function mutate(tableId, type, payload = {}) {
     if (busy && type !== "tick") return;
     if (type !== "tick") { busy = true; renderControls(); }
-    const needsWallet = ["sit", "rebuy", "leave"].includes(type);
     let committed = null;
     try {
       await runTransaction(db, async t => {
-        const roomSnap = needsWallet ? await t.get(roomRef) : null;
-        const snap = await t.get(refOf(tableId));
-        const before = snap.exists() ? snap.data() : emptyTable(tableId);
+        const roomSnap = await t.get(roomRef);
+        const casino = roomSnap.data()?.casino || {};
+        const before = casino.poker?.[tableId] || emptyTable(tableId);
         const next = clone(before);
-        const wallets = roomSnap?.data()?.casino?.wallets || {};
+        const wallets = casino.wallets || {};
         const deltas = {};
         const w = {
           chipsOf: key => Math.max(0, Number(wallets[key]?.chips) || 0) + (deltas[key] || 0),
@@ -79,10 +77,10 @@ export function createPokerRoom(ctx, { roomCode, me, isHost, spectator, avatarFo
         // Rien n'a changé (ex. « tick » déjà appliqué par un autre téléphone) : pas d'écriture.
         if (JSON.stringify(next) === JSON.stringify(before)) { committed = null; return; }
         next.v = (before.v || 0) + 1;
-        t.set(refOf(tableId), next);
-        const patch = {};
+        // Table et portefeuilles dans la même écriture du doc de la room.
+        const patch = { [`casino.poker.${tableId}`]: next };
         Object.entries(deltas).forEach(([key, n]) => { if (n) patch[`casino.wallets.${key}.chips`] = increment(n); });
-        if (Object.keys(patch).length) t.update(roomRef, patch);
+        t.update(roomRef, patch);
         committed = next;
       });
     } catch (error) {
@@ -97,10 +95,11 @@ export function createPokerRoom(ctx, { roomCode, me, isHost, spectator, avatarFo
     }
   }
 
-  function applyTable(id, data) {
-    if ((data?.v || 0) < (tables[id]?.v || 0)) return; // un vieux snapshot n'écrase jamais l'état local
+  function applyTable(id, data, redraw = true) {
+    if ((data?.v || 0) < (tables[id]?.v || 0)) return false; // un vieux snapshot n'écrase jamais l'état local
     tables[id] = data || emptyTable(id);
-    render();
+    if (redraw) render();
+    return true;
   }
 
   // ---------- Quelle table afficher ----------
@@ -505,10 +504,17 @@ export function createPokerRoom(ctx, { roomCode, me, isHost, spectator, avatarFo
 
   // ---------- Démarrage ----------
 
-  TABLE_IDS.forEach(id => {
-    onSnapshot(refOf(id), snap => applyTable(id, snap.exists() ? snap.data() : emptyTable(id)),
-      error => console.error(`Poker ${id} : synchro impossible`, error));
-  });
+  // Les tables vivent dans le doc de la room (casino.poker.t1…t4), comme la table de blackjack :
+  // les règles Firestore l'autorisent déjà, contrairement à une sous-collection.
+  onSnapshot(roomRef, snap => {
+    const poker = snap.exists() ? snap.data().casino?.poker || {} : {};
+    let changed = false;
+    TABLE_IDS.forEach(id => {
+      const data = poker[id] || emptyTable(id);
+      if (JSON.stringify(data) !== JSON.stringify(tables[id]) && applyTable(id, data, false)) changed = true;
+    });
+    if (changed) render();
+  }, error => console.error("Poker : synchro impossible", error));
   render();
 
   return { refresh: () => renderControls(), render };
