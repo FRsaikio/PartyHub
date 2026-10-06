@@ -1,141 +1,182 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Casino Night Extreme V4</title>
+  <title>PartyHub - Casino Night</title>
+  <meta name="theme-color" content="#08061a" />
+  <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
+  <link rel="stylesheet" href="../../neon-club.css" />
+  <link rel="stylesheet" href="../../neon-game.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-<a class="back-partyhub" id="backPartyHub" href="../../index.html">← Retour PartyHub</a>
+  <div class="background"></div>
 
-<div class="bg-noise"></div>
+  <main class="app casino-app">
 
-<header class="topbar">
-  <div>
-    <h1>🎰 CASINO NIGHT EXTREME</h1>
-    <p>Slots infernales, blackjack premium, jetons et sanctions rares.</p>
-  </div>
-
-  <div class="wallet">
-    <span>💰 Jetons</span>
-    <strong id="chips">1000</strong>
-  </div>
-</header>
-
-<main class="container">
-
-  <section class="card economy-card">
-    <h2>💰 Casino Bank</h2>
-
-    <div class="economy-grid">
-      <label>
-        Mise
-        <input id="betInput" type="number" min="50" step="50" value="100" />
-      </label>
-
-      <button id="allInBtn" class="danger-btn">ALL IN</button>
-      <button id="buyShieldBtn">Acheter protection - 300</button>
+    <!-- En-tête -->
+    <div class="game-header casino-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>Casino <span class="casino-gold">Night</span></h2>
+        <p class="muted">Machine à sous, blackjack, dés du diable et poker. Les jetons se jouent contre toute la room.</p>
+      </div>
     </div>
 
-    <div class="inventory">
-      <span>🛡️ Protections : <strong id="shields">0</strong></span>
-      <span>🔥 Statut : <strong id="status">En vie</strong></span>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="section-title">
-      <h2>🎰 Machine à Sous Infernale</h2>
-      <span class="badge">Rare combos</span>
-    </div>
-
-    <div class="slot-machine" id="slotMachine">
-      <div class="reel"><div class="slot" id="slot1">❓</div></div>
-      <div class="reel"><div class="slot" id="slot2">❓</div></div>
-      <div class="reel"><div class="slot" id="slot3">❓</div></div>
-    </div>
-
-    <button id="spinBtn">SPIN</button>
-
-    <div class="result result-hot" id="slotResult">
-      Choisis ta mise puis lance la machine...
-    </div>
-  </section>
-
-
-  <section class="card casino-menu-card">
-    <div class="section-title">
-      <h2>♠️ Poker Night</h2>
-      <span class="badge">Table dédiée multi</span>
-    </div>
-
-    <p class="casino-menu-text">
-      Ouvre une vraie table poker connectée à la même room PartyHub.
-    </p>
-
-    <a id="pokerNightBtn" class="casino-link-btn" href="poker/index.html">
-      ♠️ Entrer dans Poker Night
-    </a>
-  </section>
-
-  <section class="card">
-    <div class="section-title">
-      <h2>🎲 Dés du Diable</h2>
-      <span class="badge">Chaos rapide</span>
-    </div>
-
-    <div class="devil-dice">
-      <div id="dice1">🎲</div>
-      <div id="dice2">🎲</div>
-    </div>
-
-    <button id="rollDiceBtn">Lancer les Dés</button>
-
-    <div class="result" id="diceResult">
-      Les dés attendent...
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="section-title">
-      <h2>🃏 Blackjack Extreme</h2>
-      <span class="badge">Cartes visuelles</span>
-    </div>
-
-    <div class="blackjack-table">
-
-      <div class="player-zone">
-        <h3>👤 Joueur</h3>
-        <div class="cards-row" id="playerCards"></div>
-        <p>Total : <strong id="playerTotal">0</strong></p>
+    <!-- Portefeuille + mise -->
+    <section class="wallet-bar" aria-label="Ton portefeuille">
+      <div class="wallet-balance">
+        <span class="wallet-label">Tes jetons</span>
+        <strong id="walletChips" class="wallet-chips">1 000</strong>
+        <small id="syncHint" class="wallet-hint">Connexion à la room…</small>
       </div>
 
-      <div class="player-zone dealer">
-        <h3>🏦 Banque</h3>
-        <div class="cards-row" id="dealerCards"></div>
-        <p>Total : <strong id="dealerTotal">0</strong></p>
+      <div class="wallet-bet">
+        <div class="wallet-bet-head">
+          <span class="wallet-label">Mise</span>
+          <strong id="betValue" class="bet-value">100</strong>
+        </div>
+        <div id="betSteps" class="bet-steps" role="group" aria-label="Choisir la mise"></div>
       </div>
 
+      <div class="wallet-actions">
+        <button id="allInBtn" class="btn small all-in-btn" type="button" aria-pressed="false">ALL IN</button>
+        <button id="buyShieldBtn" class="btn small secondary" type="button">🛡️ Protection · 300</button>
+        <span class="wallet-shields">Protections : <strong id="walletShields">0</strong></span>
+      </div>
+    </section>
+
+    <!-- À sec -->
+    <section id="ruinBanner" class="ruin-banner" hidden>
+      <div>
+        <strong>💀 Tu es à sec</strong>
+        <p>Le casino peut te prêter 500 jetons… contre un cul sec.</p>
+      </div>
+      <button id="loanBtn" class="btn primary small" type="button">Emprunter 500 jetons</button>
+    </section>
+
+    <div class="casino-layout">
+
+      <div class="casino-main">
+
+        <!-- Choix de la table -->
+        <div class="casino-tabs" role="tablist" aria-label="Tables du casino">
+          <button class="casino-tab" type="button" role="tab" data-tab="slots"><span class="tab-icon" aria-hidden="true">🎰</span>Machine à sous</button>
+          <button class="casino-tab" type="button" role="tab" data-tab="blackjack"><span class="tab-icon" aria-hidden="true">🃏</span>Blackjack</button>
+          <button class="casino-tab" type="button" role="tab" data-tab="dice"><span class="tab-icon" aria-hidden="true">🎲</span>Dés du Diable</button>
+          <button class="casino-tab" type="button" role="tab" data-tab="poker"><span class="tab-icon" aria-hidden="true">♠️</span>Poker</button>
+        </div>
+
+        <!-- Machine à sous -->
+        <section class="casino-panel" data-panel="slots" role="tabpanel">
+          <div class="table-head">
+            <h3>Machine à sous infernale</h3>
+            <span class="table-tag">777 = ×10</span>
+          </div>
+
+          <div class="slot-cabinet">
+            <div class="slot-lights" aria-hidden="true"></div>
+            <div class="slot-machine" id="slotMachine">
+              <div class="reel"><div class="reel-strip"></div></div>
+              <div class="reel"><div class="reel-strip"></div></div>
+              <div class="reel"><div class="reel-strip"></div></div>
+              <div class="slot-payline" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <button id="spinBtn" class="btn primary big-btn full" type="button">Lancer la machine</button>
+          <div id="slotResult" class="casino-result" aria-live="polite"></div>
+
+          <details class="table-rules">
+            <summary>Combinaisons et gains</summary>
+            <ul>
+              <li><strong>7 7 7</strong> : jackpot ×10</li>
+              <li><strong>3 symboles identiques</strong> : ×3 (🔥🔥🔥 : ×4), 👑👑👑 vole 300 jetons au plus riche</li>
+              <li><strong>Combos spéciaux</strong> (ex. 💣🔥💀, 7👑7…) : ×1,5 + effet</li>
+              <li><strong>Sinon</strong> : mise perdue + sanction</li>
+            </ul>
+          </details>
+        </section>
+
+        <!-- Blackjack -->
+        <section class="casino-panel" data-panel="blackjack" role="tabpanel" hidden>
+          <div class="table-head">
+            <h3>Blackjack Extreme</h3>
+            <span id="bjShoe" class="table-tag">208 cartes dans le sabot</span>
+          </div>
+
+          <div class="bj-table">
+            <div class="bj-zone">
+              <div class="bj-zone-head"><span>Banque</span><strong id="bjDealerTotal">–</strong></div>
+              <div id="bjDealerCards" class="cards-row"></div>
+            </div>
+            <div class="bj-divider" aria-hidden="true">BLACKJACK PAIE ×3 · LA BANQUE TIRE JUSQU'À 17</div>
+            <div class="bj-zone">
+              <div class="bj-zone-head"><span>Toi</span><strong id="bjPlayerTotal">–</strong></div>
+              <div id="bjPlayerCards" class="cards-row"></div>
+            </div>
+          </div>
+
+          <div class="bj-controls">
+            <button id="bjDealBtn" class="btn primary big-btn" type="button">Distribuer</button>
+            <button id="bjHitBtn" class="btn secondary" type="button">Carte</button>
+            <button id="bjStandBtn" class="btn secondary" type="button">Rester</button>
+            <button id="bjDoubleBtn" class="btn secondary" type="button">Doubler</button>
+          </div>
+          <div id="bjResult" class="casino-result" aria-live="polite"></div>
+        </section>
+
+        <!-- Dés du Diable -->
+        <section class="casino-panel" data-panel="dice" role="tabpanel" hidden>
+          <div class="table-head">
+            <h3>Dés du Diable</h3>
+            <span class="table-tag">Gratuit · chaos garanti</span>
+          </div>
+
+          <div class="dice-stage">
+            <div id="die1" class="die"></div>
+            <div id="die2" class="die"></div>
+          </div>
+
+          <button id="rollDiceBtn" class="btn primary big-btn full" type="button">Lancer les dés</button>
+          <div id="diceResult" class="casino-result" aria-live="polite"></div>
+        </section>
+
+        <!-- Poker -->
+        <section class="casino-panel" data-panel="poker" role="tabpanel" hidden>
+          <div class="table-head">
+            <h3>Poker Night</h3>
+            <span class="table-tag">Texas Hold'em · jusqu'à 4</span>
+          </div>
+          <div class="poker-teaser">
+            <div class="poker-cards" aria-hidden="true">
+              <span class="playing-card"><span class="pc-corner">A♠</span><span class="pc-suit">♠</span><span class="pc-corner pc-corner-bottom">A♠</span></span>
+              <span class="playing-card red"><span class="pc-corner">K♥</span><span class="pc-suit">♥</span><span class="pc-corner pc-corner-bottom">K♥</span></span>
+            </div>
+            <p>Une vraie table de poker, connectée à la même room : blinds, mises, flop, turn, river et révélation finale.</p>
+            <a id="pokerNightBtn" class="btn primary big-btn" href="poker/index.html">Rejoindre la table</a>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Classement de la room -->
+      <aside class="casino-side">
+        <h3>Les plus riches</h3>
+        <ol id="leaderboard" class="leaderboard"></ol>
+        <p class="side-hint">Les gros gains et les vols s'affichent chez tout le monde… et sur la TV.</p>
+      </aside>
+
     </div>
+  </main>
 
-    <div class="controls">
-      <button id="startBtn">Nouvelle manche</button>
-      <button id="hitBtn">Hit</button>
-      <button id="standBtn">Stand</button>
-      <button id="doubleBtn" class="danger-btn">Double</button>
-    </div>
-
-    <div class="result" id="blackjackResult">
-      Le casino attend sa victime...
-    </div>
-  </section>
-
-</main>
-
-<script src="../../partyhub-fx.js"></script>
-<script src="js/app.js"></script>
+  <script src="../../partyhub-fx.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
