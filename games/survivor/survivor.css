@@ -1,183 +1,358 @@
-.survivor-header {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  margin: 35px 0;
-}
-
-.survivor-header h2 {
-  font-size: clamp(40px, 7vw, 76px);
-  margin: 8px 0;
-}
+/* =========================================================
+   Survivor — style Néon Club
+   Base : neon-club.css + neon-game.css. Ici : carte défi, liste des
+   survivants (créée par survivor.js) et résumé final.
+   ========================================================= */
 
 .survivor-layout {
   display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 28px;
+  gap: 18px;
   align-items: start;
 }
 
-.round-info {
+.survivor-main {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
 }
 
+/* ---------- Carte défi ---------- */
+
 .challenge-card {
-  min-height: 360px;
-  padding: 42px 34px;
-  border-radius: 32px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
-  border: 1px solid rgba(255,255,255,0.22);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 25px 90px rgba(0,0,0,0.45);
+  min-height: 280px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  gap: 14px;
+  padding: 30px 24px;
+  border-radius: var(--nc-radius-lg);
   text-align: center;
+  border: 1.5px solid transparent;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(250, 204, 21, 0.16), transparent 55%) padding-box,
+    radial-gradient(120% 120% at 100% 100%, rgba(224, 31, 160, 0.2), transparent 55%) padding-box,
+    linear-gradient(var(--nc-bg-raised), var(--nc-bg-raised)) padding-box,
+    linear-gradient(120deg, var(--nc-yellow), var(--nc-pink), var(--nc-violet)) border-box;
+  box-shadow: 0 0 40px rgba(250, 204, 21, 0.18), 0 20px 50px rgba(0, 0, 0, 0.35);
 }
 
 .challenge-card.pop {
-  animation: popIn 0.4s ease;
+  animation: ncPop 0.4s cubic-bezier(0.2, 1.3, 0.4, 1) both;
 }
 
 .challenge-card small {
-  color: #d8d8ec;
-  font-weight: 900;
-  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nc-yellow);
 }
 
 .challenge-card h3 {
-  font-size: clamp(34px, 7vw, 72px);
-  line-height: 1.05;
-  margin: 0;
+  font-size: clamp(26px, 7vw, 56px);
+  font-weight: 800;
+  line-height: 1.1;
+  text-wrap: balance;
 }
 
 .challenge-card p {
-  margin-top: 22px;
-  font-size: 20px;
-  color: #eeeeff;
-  font-weight: bold;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--nc-text-2);
 }
 
-.result-box {
-  margin-top: 22px;
-  padding: 24px;
-  border-radius: 24px;
+/* Résultat : base dans neon-game.css */
+.survivor-main .result-box {
   text-align: center;
-  background: linear-gradient(135deg, rgba(255,0,120,0.28), rgba(123,44,255,0.24));
-  border: 1px solid rgba(255,0,150,0.55);
-  box-shadow: 0 0 35px rgba(255,0,150,0.3);
 }
 
-.result-box h3 {
-  margin: 0 0 10px;
-  font-size: 32px;
+.survivor-main .result-box p {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.result-box p {
-  font-size: 24px;
-  font-weight: 900;
-  margin: 0;
-}
+/* ---------- Boutons ---------- */
 
 .survivor-actions {
   display: grid;
-  gap: 14px;
-  margin-top: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
+
+.survivor-actions .big-btn {
+  padding: 6px 10px;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.survivor-actions .full {
+  grid-column: 1 / -1;
+}
+
+#chooseLoserBtn {
+  border-color: rgba(255, 92, 122, 0.5);
+  background: rgba(255, 92, 122, 0.12);
+  color: #ffd6de;
+  box-shadow: none;
+  animation: none;
+}
+
+#chooseLoserBtn::after {
+  display: none;
+}
+
+/* ---------- Panneau des survivants ---------- */
 
 .survivor-panel {
-  padding: 24px;
-  border-radius: 26px;
-  background: rgba(255,255,255,0.11);
-  border: 1px solid rgba(255,255,255,0.18);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-  position: sticky;
-  top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: var(--nc-radius-lg);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 50px rgba(0, 0, 0, 0.25);
 }
 
-.survivor-panel h3 {
-  margin-top: 0;
-  font-size: 26px;
+.survivor-panel > h3,
+.survivor-panel h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--nc-font-display);
+  font-size: 16px;
 }
 
-.info-box,
-.history-box {
-  padding: 18px;
-  border-radius: 20px;
-  background: rgba(0,0,0,0.24);
-  margin-bottom: 18px;
+.survivor-panel > h3::before,
+.history-box h4::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--nc-neon-border);
+  box-shadow: 0 0 10px var(--nc-pink-glow);
+}
+
+.info-box {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .info-box p {
-  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--nc-radius-sm);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  font-size: 15px;
+  font-weight: 700;
+  min-width: 0;
 }
 
-.survivor-list,
-#historyList {
+.info-box p strong {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--nc-muted);
+}
+
+/* Liste des survivants */
+.survivor-list {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .survivor-list li {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px;
-  margin-bottom: 10px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.09);
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--nc-radius);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
 }
 
 .survivor-list li.dead {
   opacity: 0.45;
+}
+
+.survivor-list li.dead .survivor-player-info > span {
   text-decoration: line-through;
 }
 
+.survivor-player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.survivor-player-info > span {
+  font-family: var(--nc-font-display);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.survivor-meta {
+  font-size: 13px;
+  color: var(--nc-muted);
+}
+
+.inventory-visible {
+  color: #fde68a;
+  font-weight: 700;
+}
+
+.inventory-empty {
+  opacity: 0.7;
+}
+
+.survivor-player-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.survivor-player-actions .btn.small {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
+.survivor-player-actions .vote-btn:not(:disabled) {
+  border-color: var(--nc-pink);
+  background: var(--nc-pink-soft);
+  box-shadow: 0 0 16px rgba(224, 31, 160, 0.3);
+}
+
 .life {
-  color: #ff4fc3;
-  font-weight: 900;
+  margin-left: auto;
+  font-size: 15px;
+  letter-spacing: 1px;
+  filter: drop-shadow(0 0 6px rgba(255, 60, 90, 0.6));
+}
+
+/* Historique */
+.history-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 #historyList li {
-  padding: 11px 12px;
+  padding: 9px 12px;
   border-radius: 12px;
-  background: rgba(255,255,255,0.08);
-  margin-bottom: 8px;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
   font-size: 14px;
+  color: var(--nc-text-2);
 }
 
-.end-screen {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(12px);
-  z-index: 80;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
+/* ---------- Résumé final (dans l'écran de fin) ---------- */
 
 .end-card {
-  width: 100%;
-  max-width: 520px;
-  padding: 32px;
-  border-radius: 30px;
-  background: rgba(20,20,35,0.96);
-  border: 1px solid rgba(255,255,255,0.18);
-  text-align: center;
-  box-shadow: 0 30px 90px rgba(0,0,0,0.55);
+  text-align: left;
 }
 
-.end-card h2 {
-  font-size: 48px;
-  margin: 14px 0;
+.survivor-final-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
+
+.survivor-final-summary h3,
+.survivor-final-summary h4 {
+  font-size: 16px;
+  text-align: left;
+}
+
+.survivor-final-summary > p strong {
+  font-family: var(--nc-font-display);
+  font-size: 26px;
+  color: var(--nc-yellow);
+  text-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+}
+
+.title-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.title-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--nc-radius-sm);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+}
+
+.title-grid b {
+  font-size: 13px;
+  color: var(--nc-muted);
+}
+
+.title-grid span {
+  font-weight: 700;
+  color: #fff;
+}
+
+.survivor-final-summary ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.survivor-final-summary li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--nc-radius-sm);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+}
+
+.survivor-final-summary li:first-child {
+  border-color: var(--nc-yellow);
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.survivor-final-summary small {
+  font-size: 12px;
+  color: var(--nc-muted);
+}
+
+/* ---------- Confettis / tremblement ---------- */
 
 .confetti-layer {
   position: fixed;
@@ -196,130 +371,41 @@
   animation: confettiFall 1.8s linear forwards;
 }
 
-.hidden {
-  display: none !important;
+@keyframes confettiFall {
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 }
 
 .screen-shake {
   animation: screenShake 0.35s ease;
 }
 
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: scale(0.94) translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
 @keyframes screenShake {
-  0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-8px); }
   40% { transform: translateX(8px); }
   60% { transform: translateX(-5px); }
   80% { transform: translateX(5px); }
 }
 
-@keyframes confettiFall {
-  to {
-    transform: translateY(110vh) rotate(720deg);
-    opacity: 0;
+/* ---------- Grand écran ---------- */
+
+@media (min-width: 480px) {
+  .survivor-actions .big-btn {
+    font-size: 17px;
   }
 }
 
-@media (max-width: 900px) {
-  .survivor-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
+@media (min-width: 900px) {
   .survivor-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) 380px;
   }
 
   .survivor-panel {
-    position: static;
+    position: sticky;
+    top: 24px;
   }
-}
 
-/* Survivor Prime */
-.survivor-player-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.survivor-player-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.survivor-meta {
-  opacity: .72;
-  font-size: .78rem;
-}
-
-.survivor-final-summary {
-  text-align: left;
-}
-
-.survivor-final-summary h3,
-.survivor-final-summary h4 {
-  text-align: center;
-}
-
-.title-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
-  margin: 14px 0;
-}
-
-.title-grid div {
-  border: 1px solid rgba(255,255,255,.16);
-  border-radius: 14px;
-  padding: 10px;
-  background: rgba(255,255,255,.08);
-}
-
-.title-grid b,
-.title-grid span,
-.survivor-final-summary small {
-  display: block;
-}
-
-.survivor-final-summary ol {
-  padding-left: 20px;
-}
-
-.survivor-final-summary li {
-  margin: 8px 0;
-}
-
-
-/* Survivor V4 additions */
-.inventory-visible {
-  color: #ffd166;
-  font-weight: 700;
-}
-
-.inventory-empty {
-  opacity: .45;
-}
-
-.survivor-list li {
-  gap: 10px;
-}
-
-.vote-btn:not(:disabled) {
-  box-shadow: 0 0 0 1px rgba(255,255,255,.18), 0 0 18px rgba(255,0,122,.22);
-}
-
-.survivor-final-summary .title-grid div {
-  min-height: 78px;
+  .challenge-card {
+    min-height: 360px;
+    padding: 44px 36px;
+  }
 }
