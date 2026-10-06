@@ -742,6 +742,9 @@ function getLiveStreamUrl(activeId, data){
 function renderGameStream(activeId, data, title){
   const url = getLiveStreamUrl(activeId, data);
   if(!url) return false;
+  // Déjà affichée : on ne recrée pas l'iframe (sinon la page du jeu se rechargeait à chaque mise à jour de la room).
+  const current = liveGameEl.querySelector(".tv-game-stream");
+  if(current && current.getAttribute("src") === url) return true;
   liveGameEl.innerHTML = `
     <div class="tv-stream-live">
       <div class="tv-stream-topbar">
@@ -763,7 +766,8 @@ function renderLiveGame(data){
   const labelLower = String(label || "").toLowerCase();
   // Casino Night a sa propre vue TV (classement + annonces), pas de page intégrée :
   // l'intégrer créerait un faux portefeuille « TV » dans la room.
-  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || labelLower.includes("poker") || labelLower.includes("monopoly");
+  // Survivor : la page du jeu a sa propre vue TV (?tv=1), en lecture seule.
+  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || labelLower.includes("poker") || labelLower.includes("monopoly");
   if(wantsStream && renderGameStream(activeId, data, label)) return;
 
   if(data.roomStatus !== "in-game" && !data.gameStarted){
@@ -991,37 +995,6 @@ function renderLiveGame(data){
           <div class="tv-live-stats"><span>🔥 Chaos : <strong>${formatLiveValue(state.chaosLevel, 0)}%</strong></span><span>👑 Rois : <strong>${formatLiveValue(state.kingCount, 0)}/4</strong></span></div>
           ${historyList(state.historyItems)}
         </div>
-      </div>
-    `;
-    return;
-  }
-
-  if(activeId === "survivor"){
-    const state = data.survivorState || data.gameState?.survivor || {};
-    if(state.type === "loser" || state.type === "finish"){
-      showBroadcastReveal(`survivor:${state.actionId || state.round}:${state.loserName || state.winnerName || "result"}`, {
-        kicker: "SURVIVOR",
-        icon: state.type === "finish" ? "👑" : "💔",
-        title: state.type === "finish" ? (state.winnerName || "GAGNANT") : (state.loserName || "PERDANT"),
-        subtitle: state.type === "finish" ? "Dernier survivant" : "Le groupe a tranché",
-        text: state.type === "finish" ? "Fin de partie" : (state.punishment || "Perd une vie")
-      });
-    }
-    const lives = state.lives || state.playersLives || {};
-    const rows = Object.entries(lives).map(([name, life]) => `<li><strong>${escapeHtml(name)}</strong><span>${"💗".repeat(Math.max(0, Number(life)||0)) || "💀"}</span></li>`).join("");
-    const survivorGaugeItems = Object.entries(lives).map(([name, life]) => ({
-      name,
-      value: Math.max(0, Number(life || 0)) / 3 * 100,
-      label: `${Math.max(0, Number(life || 0))}/3`
-    }));
-    liveGameEl.innerHTML = `
-      <div class="tv-live-focus">
-        <span class="tv-live-kicker">⚡ Survivor · Round ${formatLiveValue(state.round, "1")}</span>
-        <h3>${formatLiveValue(state.challenge, "Défi en attente...")}</h3>
-        <p>${formatLiveValue(state.instruction, "Le perdant perd une vie et prend une punition.")}</p>
-        ${renderGaugeBars(survivorGaugeItems, "Vies restantes")}
-        <ul class="tv-live-scoreboard">${rows || "<li>Survivants en attente.</li>"}</ul>
-        ${historyList(state.history)}
       </div>
     `;
     return;
