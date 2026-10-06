@@ -6,7 +6,7 @@ import { db, doc, onSnapshot } from "../../../../firebase.js";
 import { resolveIsHost } from "../../../../game-common.js";
 import { createWallet, walletKeyFor, legacyWalletKeyFor } from "../../js/wallet.js";
 import { sound, toast, formatChips } from "../../js/ui.js";
-import { createPokerRoom } from "./poker-table.js";
+import { createPokerRoom } from "./poker-table.js?v=3";
 
 const params = new URLSearchParams(window.location.search);
 // La copie de l'onglet (sessionStorage) passe avant celle du navigateur (localStorage).

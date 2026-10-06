@@ -9,8 +9,8 @@
 
 import { db, doc, onSnapshot, runTransaction, increment } from "../../../../firebase.js";
 import { safeImageSrc } from "../../../../html-safe.js";
-import { evaluate, suitOf, rankOf } from "./poker-rules.js";
-import { MAX_SEATS, BUY_INS, MIN_BUY_IN, NEXT_HAND_DELAY, emptyTable, applyAction, potTotal, callInfo, canAct } from "./poker-logic.js";
+import { evaluate, suitOf, rankOf } from "./poker-rules.js?v=3";
+import { MAX_SEATS, BUY_INS, MIN_BUY_IN, NEXT_HAND_DELAY, emptyTable, applyAction, potTotal, callInfo, canAct } from "./poker-logic.js?v=3";
 import { sound, formatChips, showResult, cinematic, goldRain } from "../../js/ui.js";
 
 export const TABLE_IDS = ["t1", "t2", "t3", "t4"];
@@ -85,8 +85,12 @@ export function createPokerRoom(ctx, { roomCode, me, isHost, spectator, avatarFo
       });
     } catch (error) {
       committed = null;
-      if (type !== "tick") ctx.toast(error.message || "Action impossible.", "lose");
-      if (!error.message) console.error(error);
+      if (type !== "tick") {
+        ctx.toast(error.code === "permission-denied"
+          ? "Firebase a refusé l'action. Recharge la page (ancienne version en cache ?)."
+          : error.message || "Action impossible.", "lose");
+      }
+      if (error.code || !error.message) console.error("Poker v3 :", error);
     } finally {
       if (type !== "tick") busy = false;
       // Celui qui agit voit tout de suite le résultat, sans attendre le serveur.
