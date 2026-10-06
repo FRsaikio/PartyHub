@@ -6,8 +6,13 @@
 
   <title>PartyHub - Survivor</title>
 
-  <link rel="stylesheet" href="../../global-ui.css" />
-  <link rel="stylesheet" href="../../style.css" />
+  <meta name="theme-color" content="#08061a" />
+  <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
+  <link rel="stylesheet" href="../../neon-club.css" />
+  <link rel="stylesheet" href="../../neon-game.css" />
   <link rel="stylesheet" href="survivor.css" />
 </head>
 
@@ -18,12 +23,12 @@
   <main class="app">
     <section class="screen active">
 
-      <div class="survivor-header">
+      <div class="game-header survivor-header">
         <button id="backToLobbyBtn" class="btn danger small">Retour lobby</button>
 
         <div>
           <span id="roomBadge" class="badge">Room</span>
-          <h2>⚡ Survivor</h2>
+          <h2>Survivor</h2>
           <p class="muted">Réagis vite. Le perdant perd une vie et prend une punition.</p>
         </div>
       </div>
@@ -59,18 +64,18 @@
 
         <aside class="survivor-panel">
 
-          <h3>❤️ Survivants</h3>
+          <h3>Survivants</h3>
 
           <div class="info-box">
-            <p><strong>Mode :</strong> <span id="modeText">Party</span></p>
-            <p><strong>Niveau :</strong> <span id="drinkLevelText">Normal</span></p>
-            <p><strong>Joueurs :</strong> <span id="playersText">0</span></p>
+            <p><strong>Mode</strong> <span id="modeText">Party</span></p>
+            <p><strong>Niveau</strong> <span id="drinkLevelText">Normal</span></p>
+            <p><strong>Joueurs</strong> <span id="playersText">0</span></p>
           </div>
 
           <ul id="playersList" class="survivor-list"></ul>
 
           <div class="history-box">
-            <h4>📜 Historique</h4>
+            <h4>Historique</h4>
             <ul id="historyList"></ul>
           </div>
 
@@ -80,7 +85,7 @@
 
       <div id="endScreen" class="end-screen hidden">
         <div class="end-card">
-          <span class="badge">👑 Survivor</span>
+          <span class="badge">Survivor</span>
           <h2>Victoire</h2>
           <p id="winnerText"></p>
 
