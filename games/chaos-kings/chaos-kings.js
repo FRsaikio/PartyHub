@@ -5,7 +5,7 @@ import {
   updateDoc,
   onSnapshot
 } from "../../firebase.js";
-import { resolveIsHost } from "../../game-common.js";
+import { resolveIsHost, lobbyWrite } from "../../game-common.js";
 import { escapeHtml } from "../../html-safe.js";
 
 const backToLobbyBtn = document.getElementById("backToLobbyBtn");
@@ -2636,14 +2636,14 @@ backToLobbyBtn.addEventListener("click", async () => {
 
   if (isHost) {
     try {
-      await updateDoc(roomRef, {
+      await lobbyWrite(updateDoc(roomRef, {
         gameStarted: false,
         roomStatus: "lobby",
         screen: "lobby",
         activeGame: null,
         gameState: {},
         forceNavigation: { target: "lobby", at: Date.now() }
-      });
+      }));
     } catch (error) {
       console.error("Erreur retour lobby global :", error);
     }
