@@ -5,6 +5,8 @@ import {
   updateDoc,
   onSnapshot
 } from "../../firebase.js";
+import { resolveIsHost } from "../../game-common.js";
+import { escapeHtml } from "../../html-safe.js";
 
 const backToLobbyBtn = document.getElementById("backToLobbyBtn");
 
@@ -48,7 +50,7 @@ const selectedPartyMode = savedData.selectedPartyMode || "Party";
 const alcoholMode = savedData.alcoholMode;
 const drinkLevel = savedData.drinkLevel || "normal";
 const roomCode = savedData.roomCode || "----";
-const isHost = savedData.isHost || false;
+const isHost = resolveIsHost(savedData);
 
 function getSavedPlayerIdentity() {
   return (
@@ -1861,7 +1863,7 @@ function renderFinalSummary() {
     .map(item => `
       <div class="ck-title-card">
         <strong>${item.label}</strong>
-        <div>${item.player}</div>
+        <div>${escapeHtml(item.player)}</div>
         <div class="ck-stats-mini">${item.detail}</div>
       </div>
     `)
@@ -1870,7 +1872,7 @@ function renderFinalSummary() {
   const rankingHtml = ranking
     .map((stats, index) => `
       <li>
-        <strong>${index + 1}. ${stats.name}</strong>
+        <strong>${index + 1}. ${escapeHtml(stats.name)}</strong>
         — ${stats.score} pts
         <div class="ck-stats-mini">
           ${stats.cardsDrawn} carte(s), ${stats.specialCards} spéciale(s), ${stats.kingsDrawn} Roi(s), ${stats.timesTargeted} ciblage(s)
@@ -2452,10 +2454,10 @@ function applyDrawState(state) {
   effectTitle.textContent = `${state.cardValue}${state.cardSuit} — ${state.ruleName}`;
   effectDescription.innerHTML = `
     <span class="effect-label">Scénario</span>
-    <strong>${state.ruleText}</strong>
+    <strong>${escapeHtml(state.ruleText)}</strong>
 
     <span class="effect-label">Conséquence</span>
-    <strong>${state.consequenceText}</strong>
+    <strong>${escapeHtml(state.consequenceText)}</strong>
   `;
 
   if (state.rareEvent) {

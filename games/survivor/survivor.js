@@ -5,6 +5,8 @@ import {
   updateDoc,
   onSnapshot
 } from "../../firebase.js";
+import { resolveIsHost } from "../../game-common.js";
+import { escapeHtml } from "../../html-safe.js";
 
 const backToLobbyBtn = document.getElementById("backToLobbyBtn");
 const finalBackBtn = document.getElementById("finalBackBtn");
@@ -50,7 +52,7 @@ const selectedPartyMode = savedData.selectedPartyMode || "Party";
 const alcoholMode = savedData.alcoholMode;
 const drinkLevel = savedData.drinkLevel || "normal";
 const roomCode = savedData.roomCode || "----";
-const isHost = savedData.isHost || savedData.enablePlayerControl !== false;
+const isHost = resolveIsHost(savedData);
 
 const roomRef = doc(db, "rooms", roomCode);
 
@@ -1642,7 +1644,7 @@ function applyState(state) {
   if (state.type === "loser") {
     resultTitle.textContent = `💔 ${state.loserName} passe au conseil`;
     punishmentText.innerHTML = (state.resultSummary || [`🍻 Punition : ${state.punishment}`])
-      .map(item => `<div>${item}</div>`)
+      .map(item => `<div>${escapeHtml(item)}</div>`)
       .join("");
     resultBox.classList.remove("hidden");
 
@@ -1658,7 +1660,7 @@ function applyState(state) {
   if (state.type === "finish") {
     resultTitle.textContent = `👑 ${state.winnerName} remporte Survivor`;
     punishmentText.innerHTML = (state.resultSummary || [`🍻 Punition : ${state.punishment}`])
-      .map(item => `<div>${item}</div>`)
+      .map(item => `<div>${escapeHtml(item)}</div>`)
       .join("");
     resultBox.classList.remove("hidden");
 
@@ -1703,7 +1705,7 @@ function buildFinalSummary(winnerName) {
 
   const rankingHtml = ranking.map((stats, index) => `
     <li>
-      <strong>${index + 1}. ${stats.name}</strong> — ${stats.score} pts
+      <strong>${index + 1}. ${escapeHtml(stats.name)}</strong> — ${stats.score} pts
       <small>
         ${stats.votesGiven} votes donnés ·
         ${stats.votesReceived} votes reçus ·
@@ -1717,19 +1719,19 @@ function buildFinalSummary(winnerName) {
   return `
     <div class="survivor-final-summary">
       <h3>👑 Survivant Suprême</h3>
-      <p><strong>${winnerName}</strong></p>
+      <p><strong>${escapeHtml(winnerName)}</strong></p>
 
       <div class="title-grid">
-        <div><b>💀 Première Victime</b><span>${firstEliminated || "Aucune"}</span></div>
-        <div><b>🍻 Plus Gros Martyr</b><span>${martyr?.name || "-"}</span></div>
-        <div><b>🗳️ Aimant à Votes</b><span>${target?.name || "-"}</span></div>
-        <div><b>😈 Stratège du Conseil</b><span>${strategist?.name || "-"}</span></div>
-        <div><b>🛡️ Intouchable</b><span>${immune?.name || "-"}</span></div>
-        <div><b>🤝 Faux Ami</b><span>${traitor?.name || "-"}</span></div>
-        <div><b>🎁 Collectionneur</b><span>${collector?.name || "-"}</span></div>
-        <div><b>⚔️ Gladiateur</b><span>${gladiator?.name || "-"}</span></div>
-        <div><b>🏃 Survivant Discret</b><span>${survivor?.name || "-"}</span></div>
-        <div><b>🔥 Roi des Avantages</b><span>${idol?.name || "-"}</span></div>
+        <div><b>💀 Première Victime</b><span>${escapeHtml(firstEliminated || "Aucune")}</span></div>
+        <div><b>🍻 Plus Gros Martyr</b><span>${escapeHtml(martyr?.name || "-")}</span></div>
+        <div><b>🗳️ Aimant à Votes</b><span>${escapeHtml(target?.name || "-")}</span></div>
+        <div><b>😈 Stratège du Conseil</b><span>${escapeHtml(strategist?.name || "-")}</span></div>
+        <div><b>🛡️ Intouchable</b><span>${escapeHtml(immune?.name || "-")}</span></div>
+        <div><b>🤝 Faux Ami</b><span>${escapeHtml(traitor?.name || "-")}</span></div>
+        <div><b>🎁 Collectionneur</b><span>${escapeHtml(collector?.name || "-")}</span></div>
+        <div><b>⚔️ Gladiateur</b><span>${escapeHtml(gladiator?.name || "-")}</span></div>
+        <div><b>🏃 Survivant Discret</b><span>${escapeHtml(survivor?.name || "-")}</span></div>
+        <div><b>🔥 Roi des Avantages</b><span>${escapeHtml(idol?.name || "-")}</span></div>
       </div>
 
       <h4>Classement Survivor Prime</h4>
@@ -1752,7 +1754,7 @@ function renderPlayers() {
     const voteCount = votes?.[player.name] || 0;
     const advantages = (player.advantages || []).map(formatAdvantage).join(" · ");
     const alliance = player.allianceWith
-      ? `<small class="survivor-meta">🤝 avec ${player.allianceWith} (${player.allianceRounds})</small>`
+      ? `<small class="survivor-meta">🤝 avec ${escapeHtml(player.allianceWith)} (${escapeHtml(player.allianceRounds)})</small>`
       : "";
     const advantageText = advantages
       ? `<small class="survivor-meta inventory-visible">🎁 Inventaire : ${advantages}</small>`
@@ -1760,7 +1762,7 @@ function renderPlayers() {
 
     li.innerHTML = `
       <div class="survivor-player-info">
-        <span>${player.dead ? "💀" : "⚡"} ${player.name}</span>
+        <span>${player.dead ? "💀" : "⚡"} ${escapeHtml(player.name)}</span>
         ${alliance}
         ${advantageText}
         ${voteCount ? `<small class="survivor-meta">🗳️ Votes : ${voteCount}</small>` : ""}

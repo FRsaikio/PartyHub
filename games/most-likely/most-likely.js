@@ -5,6 +5,8 @@ import {
   updateDoc,
   onSnapshot
 } from "../../firebase.js";
+import { resolveIsHost } from "../../game-common.js";
+import { escapeHtml } from "../../html-safe.js";
 
 const backToLobbyBtn = document.getElementById("backToLobbyBtn");
 const finalBackBtn = document.getElementById("finalBackBtn");
@@ -47,7 +49,7 @@ const drinkLevel = savedData.drinkLevel || "normal";
 const gameDuration = savedData.gameDuration || "medium";
 const roomCode = savedData.roomCode || "----";
 const currentPlayer = savedData.currentPlayer || "";
-const isHost = savedData.isHost || savedData.enablePlayerControl !== false;
+const isHost = resolveIsHost(savedData);
 
 const roomRef = doc(db, "rooms", roomCode);
 
@@ -905,7 +907,7 @@ function renderScores() {
     const li = document.createElement("li");
     const rank = index === 0 ? "👑" : `${index + 1}.`;
 
-    li.innerHTML = `<span>${rank} ${player.name}</span><strong>${scores[player.name] || 0}</strong>`;
+    li.innerHTML = `<span>${rank} ${escapeHtml(player.name)}</span><strong>${escapeHtml(scores[player.name] || 0)}</strong>`;
 
     scoreList.appendChild(li);
   });
@@ -925,7 +927,7 @@ function showFinalScreen() {
   sortedPlayers.forEach((player, index) => {
     const row = document.createElement("div");
     row.className = "final-score-row";
-    row.innerHTML = `<span>${index + 1}. ${player.name}</span><strong>${scores[player.name] || 0} votes</strong>`;
+    row.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)}</span><strong>${escapeHtml(scores[player.name] || 0)} votes</strong>`;
     finalScores.appendChild(row);
   });
 

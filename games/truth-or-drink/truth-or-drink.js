@@ -4,6 +4,7 @@ import {
   updateDoc,
   onSnapshot
 } from "../../firebase.js";
+import { resolveIsHost } from "../../game-common.js";
 
 const backToLobbyBtn = document.getElementById("backToLobbyBtn");
 
@@ -50,7 +51,7 @@ const selectedPartyMode = normalizePartyMode(savedData.selectedPartyMode || "Par
 const drinkLevel = savedData.drinkLevel || "normal";
 const roomCode = savedData.roomCode || "----";
 const currentPlayer = savedData.currentPlayer || "";
-const isHost = savedData.isHost === true;
+const isHost = resolveIsHost(savedData);
 const myProfileId = savedData.currentProfileId || localStorage.getItem("partyhubProfileId") || "";
 const roomRef = doc(db, "rooms", roomCode);
 let lastTruthActionId = null;

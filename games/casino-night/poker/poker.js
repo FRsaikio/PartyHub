@@ -8,6 +8,7 @@ import {
   onSnapshot,
   serverTimestamp
 } from "../../../firebase.js";
+import { escapeHtml } from "../../../html-safe.js";
 
 
 async function partyhubV25ReturnEveryoneToLobby() {
@@ -706,8 +707,8 @@ function renderPlayerPicker(players){
   picker.className = "mobile-player-picker";
 
   picker.innerHTML = candidates.map(p => `
-    <button type="button" data-player-id="${p.id}">
-      👤 Voir mes cartes : ${p.name || "Joueur"}
+    <button type="button" data-player-id="${escapeHtml(p.id)}">
+      👤 Voir mes cartes : ${escapeHtml(p.name || "Joueur")}
     </button>
   `).join("");
 
@@ -737,15 +738,15 @@ function renderSeats(players, phase, activePlayerId){
 
     const showCards = phase === "reveal";
     const cardsToDisplay = phase === "waiting" ? [] : (p.cards || []);
-    const blind = p.blind ? `<div class="blind-badge">${p.blind}</div>` : "";
+    const blind = p.blind ? `<div class="blind-badge">${escapeHtml(p.blind)}</div>` : "";
     const active = p.id === activePlayerId ? `<div class="blind-badge">À parler</div>` : "";
 
     el.innerHTML = `
-      <div class="avatar">${p.avatar || "🎲"}</div>
-      <div class="name">${p.name || "Joueur"}</div>
-      <div class="chips">💰 ${p.chips ?? 0}</div>
+      <div class="avatar">${escapeHtml(p.avatar || "🎲")}</div>
+      <div class="name">${escapeHtml(p.name || "Joueur")}</div>
+      <div class="chips">💰 ${escapeHtml(p.chips ?? 0)}</div>
       ${blind} ${active}
-      <div class="state">${p.state || "waiting"} ${p.bet ? "• mise " + p.bet : ""}</div>
+      <div class="state">${escapeHtml(p.state || "waiting")} ${p.bet ? "• mise " + escapeHtml(p.bet) : ""}</div>
       <div class="cards-row">${cardsToDisplay.map(c => cardHtml(c, !showCards)).join("")}</div>
     `;
   });
