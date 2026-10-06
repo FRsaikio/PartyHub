@@ -246,3 +246,15 @@
   window.PartyHubFX = { sounds, confetti, tone, noise, enableSound(){ state.sound = true; localStorage.setItem(SOUND_KEY,"true"); initAudio(); }, disableSound(){ state.sound = false; localStorage.setItem(SOUND_KEY,"false"); } };
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();
+
+// Toutes les pages chargent ce fichier : on y enregistre sw.js (à la racine du site, à côté
+// de ce fichier), qui va toujours chercher la dernière version des fichiers du site.
+(() => {
+  const script = document.currentScript;
+  if (!script || !("serviceWorker" in navigator) || !window.isSecureContext) return;
+  const swUrl = new URL("sw.js", script.src);
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register(swUrl, { scope: new URL("./", swUrl).pathname })
+      .catch(error => console.warn("PartyHub : service worker indisponible", error));
+  });
+})();
