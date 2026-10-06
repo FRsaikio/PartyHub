@@ -1,0 +1,329 @@
+/* =========================================================
+   PartyHub — Néon Club : couche commune aux mini-jeux
+   À charger après neon-club.css, avant le CSS propre au jeu.
+   ========================================================= */
+
+.app {
+  width: min(1180px, 100%);
+}
+
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ---------- En-tête du jeu ---------- */
+
+/* Téléphone : bouton retour au-dessus du titre. Grand écran : à droite. */
+.game-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+@media (min-width: 720px) {
+  .game-header {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  }
+}
+
+.game-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.game-header .badge {
+  align-self: flex-start;
+}
+
+.game-header h2 {
+  font-size: clamp(24px, 6vw, 40px);
+  font-weight: 800;
+  text-shadow: 0 0 26px var(--nc-pink-glow);
+}
+
+.game-header .muted {
+  font-size: 15px;
+}
+
+/* Bouton retour : discret, ne vole pas la vedette au jeu */
+.game-header > .btn {
+  flex-shrink: 0;
+}
+
+/* ---------- Disposition ---------- */
+
+.game-layout {
+  display: grid;
+  gap: 18px;
+  align-items: start;
+}
+
+.main-game {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* Pastilles d'info (mode, manche, progression) */
+.round-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.round-info .badge {
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+
+.round-info .badge:not(:first-child) {
+  background: var(--nc-surface);
+  border-color: var(--nc-line-strong);
+  color: var(--nc-text-2);
+}
+
+/* ---------- Carte question ---------- */
+
+.question-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 22px;
+  border-radius: var(--nc-radius-lg);
+  border: 1.5px solid transparent;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(224, 31, 160, 0.22), transparent 55%) padding-box,
+    linear-gradient(var(--nc-bg-raised), var(--nc-bg-raised)) padding-box,
+    var(--nc-neon-border) border-box;
+  box-shadow: 0 0 40px rgba(224, 31, 160, 0.18), 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.question-card small {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nc-muted);
+}
+
+.question-card h3 {
+  font-size: clamp(22px, 5.4vw, 38px);
+  font-weight: 700;
+  line-height: 1.22;
+  text-wrap: balance;
+}
+
+/* ---------- Résultat ---------- */
+
+.result-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  border-radius: var(--nc-radius-lg);
+  background: var(--nc-pink-soft);
+  border: 1.5px solid var(--nc-pink);
+  box-shadow: 0 0 36px rgba(224, 31, 160, 0.3);
+  animation: ncPop 0.45s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+.result-box h3 {
+  font-size: clamp(20px, 5vw, 30px);
+  color: #fff;
+}
+
+.result-box p {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--nc-text);
+}
+
+.result-box small {
+  font-size: 14px;
+  color: var(--nc-text-2);
+}
+
+@keyframes ncPop {
+  from { opacity: 0; transform: scale(0.94) translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------- Actions ---------- */
+
+.game-actions {
+  display: grid;
+  gap: 10px;
+}
+
+/* ---------- Classement ---------- */
+
+.score-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: var(--nc-radius-lg);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.score-panel > h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+
+.score-panel > h3::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--nc-neon-border);
+  box-shadow: 0 0 10px var(--nc-pink-glow);
+}
+
+.score-hint {
+  font-size: 14px;
+  color: var(--nc-muted);
+}
+
+.score-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.score-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 8px 14px;
+  border-radius: var(--nc-radius-sm);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  font-weight: 700;
+}
+
+.score-list li span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-list li strong {
+  font-family: var(--nc-font-display);
+  font-size: 18px;
+}
+
+.score-list li:first-child {
+  border-color: var(--nc-pink);
+  background: var(--nc-pink-soft);
+  box-shadow: 0 0 20px rgba(224, 31, 160, 0.2);
+}
+
+/* ---------- Écran de fin ---------- */
+
+.end-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(4, 3, 14, 0.8);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.end-card {
+  width: min(560px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 22px;
+  border-radius: 28px;
+  border: 1.5px solid transparent;
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(224, 31, 160, 0.25), transparent 55%) padding-box,
+    linear-gradient(var(--nc-bg-raised), var(--nc-bg-raised)) padding-box,
+    var(--nc-neon-border) border-box;
+  box-shadow: 0 0 70px rgba(224, 31, 160, 0.3), 0 30px 90px rgba(0, 0, 0, 0.6);
+  animation: ncPop 0.5s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+.end-card .badge {
+  align-self: flex-start;
+}
+
+.end-card h2 {
+  font-size: clamp(30px, 8vw, 46px);
+  font-weight: 800;
+  text-shadow: 0 0 30px var(--nc-pink-glow);
+}
+
+.end-card > p {
+  font-size: 17px;
+  color: var(--nc-text-2);
+}
+
+.final-score-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-radius: var(--nc-radius-sm);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  font-weight: 700;
+}
+
+.final-score-row:first-child {
+  border-color: var(--nc-yellow);
+  background: rgba(250, 204, 21, 0.1);
+  color: #fde68a;
+}
+
+/* ---------- Grand écran ---------- */
+
+@media (min-width: 900px) {
+  .game-layout {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+
+  .score-panel {
+    position: sticky;
+    top: 24px;
+  }
+
+  .game-header h2 {
+    font-size: 44px;
+  }
+
+  .question-card {
+    padding: 36px 34px;
+  }
+
+  .question-card h3 {
+    font-size: 40px;
+  }
+}
