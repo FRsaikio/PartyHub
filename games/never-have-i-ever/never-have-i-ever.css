@@ -1,132 +1,245 @@
-.never-header {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  margin: 35px 0;
-  animation: slideDown 0.5s ease;
-}
-
-.never-header h2 {
-  font-size: clamp(38px, 7vw, 70px);
-  margin: 8px 0;
-}
+/* =========================================================
+   Je n'ai jamais — style Néon Club
+   Base : neon-club.css + neon-game.css. Ici : ce qui est propre au jeu.
+   ========================================================= */
 
 .never-layout {
   display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 26px;
+  gap: 18px;
   align-items: start;
 }
 
 .never-main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   min-width: 0;
 }
 
-.round-info {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-}
+/* ---------- Carte question ---------- */
 
 .never-card {
-  min-height: 360px;
-  padding: 45px 35px;
-  border-radius: 32px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
-  border: 1px solid rgba(255,255,255,0.22);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 25px 90px rgba(0,0,0,0.45);
+  position: relative;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  gap: 14px;
+  padding: 32px 24px;
+  border-radius: var(--nc-radius-lg);
   text-align: center;
-  animation: popIn 0.45s ease;
+  border: 1.5px solid transparent;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(224, 31, 160, 0.22), transparent 55%) padding-box,
+    radial-gradient(120% 120% at 100% 100%, rgba(34, 211, 238, 0.12), transparent 55%) padding-box,
+    linear-gradient(var(--nc-bg-raised), var(--nc-bg-raised)) padding-box,
+    var(--nc-neon-border) border-box;
+  box-shadow: 0 0 40px rgba(224, 31, 160, 0.18), 0 20px 50px rgba(0, 0, 0, 0.35);
+  animation: ncPop 0.45s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+  transition: box-shadow 0.25s ease;
 }
 
 .never-card small {
-  display: inline-block;
-  margin-bottom: 18px;
-  color: #d8d8ec;
-  font-weight: bold;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nc-muted);
 }
 
 .never-card h3 {
-  font-size: clamp(32px, 6vw, 62px);
-  line-height: 1.1;
-  margin: 0;
+  font-size: clamp(26px, 7vw, 56px);
+  font-weight: 700;
+  line-height: 1.15;
+  text-wrap: balance;
 }
 
 .never-card p {
-  margin: 22px 0 0;
-  font-size: 20px;
-  color: #e3e3f3;
-  font-weight: bold;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--nc-text-2);
 }
+
+/* Quelqu'un boit : rose / quelqu'un est sauvé : vert */
+.never-card.drink {
+  box-shadow: 0 0 60px rgba(224, 31, 160, 0.6), 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.never-card.safe {
+  box-shadow: 0 0 60px rgba(52, 211, 153, 0.5), 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* Question rare : pulsation */
+.never-card.rare-question {
+  box-shadow: 0 0 50px rgba(224, 31, 160, 0.65), 0 0 100px rgba(139, 92, 246, 0.45);
+  animation: rarePulse 0.9s infinite alternate;
+}
+
+.never-card.transition-card {
+  animation: cardFlip 0.45s ease;
+}
+
+@keyframes rarePulse {
+  from { transform: scale(1); filter: brightness(1); }
+  to { transform: scale(1.015); filter: brightness(1.18); }
+}
+
+@keyframes cardFlip {
+  from { opacity: 0; transform: rotateY(12deg) scale(0.96) translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------- Boutons ---------- */
 
 .never-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-top: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.never-actions .big-btn {
+  padding: 6px 12px;
+  font-size: 15px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* « Jamais » : vert (sauvé) */
+#safeBtn {
+  border: 0;
+  background: var(--nc-success);
+  color: #04261a;
+  box-shadow: 0 0 26px rgba(52, 211, 153, 0.4), 0 10px 26px rgba(0, 0, 0, 0.4);
+}
+
+#safeBtn:hover {
+  background: #4ee2ac;
 }
 
 .never-actions .full {
   grid-column: 1 / -1;
 }
 
+#nextQuestionBtn {
+  border: 1px solid var(--nc-line-strong);
+  background: var(--nc-surface-2);
+  box-shadow: none;
+}
+
+#nextQuestionBtn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* ---------- Panneau d'infos ---------- */
+
 .never-panel {
-  padding: 24px;
-  border-radius: 26px;
-  background: rgba(255,255,255,0.11);
-  border: 1px solid rgba(255,255,255,0.18);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-  position: sticky;
-  top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: var(--nc-radius-lg);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 50px rgba(0, 0, 0, 0.25);
 }
 
-.never-panel h3 {
-  margin-top: 0;
-  font-size: 26px;
+.never-panel > h3,
+.never-panel h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--nc-font-display);
+  font-size: 16px;
 }
 
-.info-box,
-.stats-box,
-.history-box {
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(0,0,0,0.25);
-  margin-bottom: 18px;
+.never-panel > h3::before,
+.never-panel h4::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--nc-neon-border);
+  box-shadow: 0 0 10px var(--nc-pink-glow);
+}
+
+.info-box {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .info-box p,
 .stats-box p {
-  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--nc-radius-sm);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  font-size: 15px;
+  font-weight: 700;
+  min-width: 0;
+}
+
+.info-box p strong {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--nc-muted);
+}
+
+.stats-box {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stats-box h4 {
+  grid-column: 1 / -1;
+}
+
+.stats-box p {
+  font-size: 14px;
+  color: var(--nc-text-2);
+}
+
+.stats-box span {
+  font-family: var(--nc-font-display);
+  font-size: 24px;
+  color: #fff;
 }
 
 .history-box {
-  margin-bottom: 0;
-}
-
-.history-box h4,
-.stats-box h4 {
-  margin: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 #historyList {
-  padding: 0;
-  margin: 0;
   list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 #historyList li {
-  padding: 11px 12px;
+  padding: 9px 12px;
   border-radius: 12px;
-  background: rgba(255,255,255,0.09);
-  margin-bottom: 8px;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
   font-size: 14px;
+  color: var(--nc-text-2);
 }
+
+/* ---------- Confettis / tremblement ---------- */
 
 .confetti-layer {
   position: fixed;
@@ -145,126 +258,41 @@
   animation: confettiFall 1.8s linear forwards;
 }
 
-.never-card.drink {
-  box-shadow: 0 0 55px rgba(255, 0, 150, 0.65);
-  border-color: rgba(255, 0, 150, 0.55);
-}
-
-.never-card.safe {
-  box-shadow: 0 0 55px rgba(0, 208, 132, 0.45);
-  border-color: rgba(0, 208, 132, 0.55);
-}
-
-.hidden {
-  display: none !important;
-}
-
 @keyframes confettiFall {
-  to {
-    transform: translateY(110vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: scale(0.94) translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 850px) {
-  .never-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .never-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .never-panel {
-    position: static;
-  }
-
-  .never-card {
-    min-height: 300px;
-    padding: 34px 24px;
-  }
-}
-
-@media (max-width: 520px) {
-  .never-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .never-actions .full {
-    grid-column: auto;
-  }
-
-  .never-card h3 {
-    font-size: 34px;
-  }
-}
-.never-card.rare-question {
-  border-color: rgba(255, 0, 120, 0.75);
-  box-shadow:
-    0 0 40px rgba(255, 0, 120, 0.65),
-    0 0 90px rgba(123, 44, 255, 0.45);
-  animation: rarePulse 0.9s infinite alternate;
-}
-
-.never-card.transition-card {
-  animation: cardFlip 0.45s ease;
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 }
 
 .screen-shake {
   animation: screenShake 0.35s ease;
 }
 
-@keyframes rarePulse {
-  from {
-    transform: scale(1);
-    filter: brightness(1);
-  }
-
-  to {
-    transform: scale(1.015);
-    filter: brightness(1.18);
-  }
-}
-
-@keyframes cardFlip {
-  from {
-    opacity: 0;
-    transform: rotateY(12deg) scale(0.96) translateY(16px);
-  }
-
-  to {
-    opacity: 1;
-    transform: rotateY(0) scale(1) translateY(0);
-  }
-}
-
 @keyframes screenShake {
-  0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-8px); }
   40% { transform: translateX(8px); }
   60% { transform: translateX(-5px); }
   80% { transform: translateX(5px); }
+}
+
+/* ---------- Grand écran ---------- */
+
+@media (min-width: 480px) {
+  .never-actions .big-btn {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 900px) {
+  .never-layout {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+
+  .never-panel {
+    position: sticky;
+    top: 24px;
+  }
+
+  .never-card {
+    min-height: 380px;
+    padding: 44px 36px;
+  }
 }
