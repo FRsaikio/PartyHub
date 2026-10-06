@@ -5,7 +5,7 @@ import {
   updateDoc,
   onSnapshot
 } from "../../firebase.js";
-import { resolveIsHost, lobbyWrite } from "../../game-common.js";
+import { resolveIsHost, lobbyWrite, watchHost } from "../../game-common.js";
 
 const backToLobbyBtn = document.getElementById("backToLobbyBtn");
 const roomBadge = document.getElementById("roomBadge");
@@ -45,7 +45,9 @@ const selectedPartyMode = savedData.selectedPartyMode || "Party";
 const drinkLevel = savedData.drinkLevel || "normal";
 const alcoholMode = savedData.alcoholMode;
 const roomCode = savedData.roomCode || "----";
-const isHost = resolveIsHost(savedData);
+let isHost = resolveIsHost(savedData);
+// Si l'hôte ne répond plus (téléphone éteint, onglet fermé), un autre joueur reprend la main.
+watchHost(roomCode, savedData, value => { isHost = value; });
 const currentPlayerName = savedData.currentPlayer || savedData.playerName || "Joueur";
 
 const roomRef = doc(db, "rooms", roomCode);

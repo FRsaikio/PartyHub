@@ -436,7 +436,7 @@ export function createPokerRoom(ctx, { roomCode, me, isHost, spectator, avatarFo
       const turnSeat = t.seats[t.toAct];
       items.push(note(seat.inHand && !seat.folded ? (turnSeat ? `${turnSeat.name} réfléchit…` : "Le croupier distribue…") : "Tu regardes cette main : tu joueras la suivante."));
       // Pas de chrono : l'hôte peut faire jouer un joueur absent (parole, sinon il se couche).
-      if (isHost && turnSeat && t.toAct !== mySeat) {
+      if (isHost() && turnSeat && t.toAct !== mySeat) {
         items.push(button(`Faire jouer ${turnSeat.name} (absent)`, () => mutate(current, "act", { force: true }), "secondary", false, "pk-force"));
       }
     }

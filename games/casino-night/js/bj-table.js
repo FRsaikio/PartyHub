@@ -229,7 +229,7 @@ export function initBjTable(ctx, { roomCode, me, isHost }) {
         box.appendChild(res);
       }
 
-      if (isHost && seat.key !== me.key && table.phase !== "playing" && table.phase !== "insurance") {
+      if (isHost() && seat.key !== me.key && table.phase !== "playing" && table.phase !== "insurance") {
         const kick = document.createElement("button");
         kick.type = "button";
         kick.className = "bjt-kick";
@@ -316,7 +316,7 @@ export function initBjTable(ctx, { roomCode, me, isHost }) {
         if (!table.order.includes(me.key)) items.push(waitNote("Tu joueras à la prochaine manche."));
       }
       // Garde-fou sans chrono : l'hôte peut faire rester un joueur absent.
-      if (isHost && table.turn && table.turn.key !== me.key) {
+      if (isHost() && table.turn && table.turn.key !== me.key) {
         items.push(button(`Faire rester ${table.seats[table.turn.key]?.name || "le joueur"}`, () => actions.play("stand", true), "secondary", false, "bjt-force"));
       }
     }

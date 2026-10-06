@@ -22,6 +22,7 @@ import {
 } from "./profile.js";
 
 import { escapeHtml, safeImageSrc, cleanPseudo } from "./html-safe.js";
+import { watchHost } from "./game-common.js";
 
 const MAX_PLAYERS = 20;
 const ACTIVITY_LIMIT = 6;
@@ -155,6 +156,7 @@ let selectedBombGameMode = "free";
 let players = [];
 let unsubscribeRoom = null;
 let presenceTimer = null;
+let stopHostWatch = null;
 let isReturningToLobby = false;
 let lastForceNavigationAt = Number(localStorage.getItem("partyhubLastForceNavigationAt") || 0);
 
@@ -565,17 +567,23 @@ async function joinOnlineRoom(roomCode, pseudo) {
   const roomData = roomSnap.data();
   const existingPlayers = roomData.players || [];
 
-  if (existingPlayers.length >= MAX_PLAYERS) {
-    showError("La room est pleine.");
-    return false;
-  }
-
-  const alreadyExists = existingPlayers.some(
+  const existing = existingPlayers.find(
     player => player.name.toLowerCase() === pseudo.toLowerCase()
   );
 
-  if (alreadyExists) {
-    showError("Ce pseudo est déjà utilisé dans cette room.");
+  if (existing) {
+    // Retour d'un joueur (page rechargée, téléphone éteint…) : même téléphone, ou l'ancien
+    // appareil ne donne plus signe de vie → il reprend sa place (et son statut d'hôte).
+    const samePhone = Boolean(existing.profileId) && existing.profileId === currentProfile.id;
+    if (existing.fake || (!samePhone && isPlayerOnline(existing))) {
+      showError("Ce pseudo est déjà utilisé dans cette room.");
+      return false;
+    }
+    return rejoinOnlineRoom(roomRef, existing.name);
+  }
+
+  if (existingPlayers.length >= MAX_PLAYERS) {
+    showError("La room est pleine.");
     return false;
   }
 
@@ -597,7 +605,33 @@ async function joinOnlineRoom(roomCode, pseudo) {
     activity: activityWith(`🍻 ${pseudo} a rejoint la room`, roomData.activity || [])
   });
 
-  return true;
+  return { name: pseudo, rejoined: false };
+}
+
+// Reprend la place existante d'un joueur (pseudo tel qu'enregistré dans la room).
+async function rejoinOnlineRoom(roomRef, name) {
+  await runTransaction(db, async transaction => {
+    const snap = await transaction.get(roomRef);
+    if (!snap.exists()) throw new Error("Cette room n’existe plus.");
+    const data = snap.data();
+    const nextPlayers = (data.players || []).map(player => player.name === name
+      ? {
+          ...player,
+          profileId: currentProfile.id,
+          avatar: currentProfile.avatar || player.avatar || "🍻",
+          avatarUrl: currentProfile.avatarBase64 || currentProfile.avatarUrl || "",
+          avatarBase64: currentProfile.avatarBase64 || currentProfile.avatarUrl || "",
+          online: true,
+          lastSeen: Date.now()
+        }
+      : player);
+    transaction.update(roomRef, {
+      players: nextPlayers,
+      updatedAt: serverTimestamp(),
+      activity: activityWith(`🔌 ${name} est de retour`, data.activity || [])
+    });
+  });
+  return { name, rejoined: true };
 }
 
 function startPresence(roomCode, pseudo) {
@@ -633,6 +667,9 @@ function startPresence(roomCode, pseudo) {
 
   ping();
   presenceTimer = setInterval(ping, 15000);
+
+  // Hôte parti (téléphone éteint, onglet fermé) : un autre joueur reprend la main du lobby.
+  stopHostWatch = watchHost(roomCode, { currentPlayer: pseudo, players, isHost });
 }
 
 function stopPresence() {
@@ -640,6 +677,8 @@ function stopPresence() {
     clearInterval(presenceTimer);
     presenceTimer = null;
   }
+  stopHostWatch?.();
+  stopHostWatch = null;
 }
 
 
@@ -1082,14 +1121,16 @@ joinRoomBtn.addEventListener("click", async () => {
   try {
     await syncProfileFromForm();
 
-    const joined = await joinOnlineRoom(roomCode, pseudo);
+    const joinedAs = await joinOnlineRoom(roomCode, pseudo);
 
-    if (joined) {
-      currentProfile = await updateProfileStats({ roomsJoined: 1 }, `Room ${roomCode} rejointe`);
-      currentProfile = await addProfileXP(15, "Room rejointe");
+    if (joinedAs) {
+      if (!joinedAs.rejoined) {
+        currentProfile = await updateProfileStats({ roomsJoined: 1 }, `Room ${roomCode} rejointe`);
+        currentProfile = await addProfileXP(15, "Room rejointe");
+      }
 
       renderProfile(currentProfile);
-      openLobby(roomCode, pseudo, false);
+      openLobby(roomCode, joinedAs.name, false);
     }
   } catch (error) {
     console.error("Erreur rejoindre room :", error);
@@ -1378,6 +1419,8 @@ async function restoreLobbyFromGame() {
       showError("Retour lobby effectué, mais la room n’a pas pu être synchronisée.");
     }
 
+    // Retour d'un jeu : la présence n'était pas relancée (tout le monde finissait « Inactif »).
+    startPresence(currentRoom, currentPlayer);
     listenToRoom(currentRoom);
   }
 
@@ -1515,5 +1558,37 @@ avatarFileInput?.addEventListener("change", async () => {
   }
 });
 
+// Page rechargée ou fermée en pleine soirée : on propose de revenir dans la room d'un clic.
+async function offerResumeRoom() {
+  if (localStorage.getItem("partyhubReturnLobby") === "true") return;
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem("partyhubGameData") || "null"); } catch { /* ignoré */ }
+  const code = saved?.roomCode;
+  const name = saved?.currentPlayer;
+  if (!code || !name || code === "----") return;
+
+  try {
+    const snap = await getDoc(getRoomRef(code));
+    if (!snap.exists() || !(snap.data().players || []).some(player => player.name === name)) return;
+  } catch {
+    return;
+  }
+  if (currentRoom) return; // déjà rentré entre-temps
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.id = "resumeRoomBtn";
+  btn.className = "btn primary";
+  btn.textContent = `🔌 Revenir dans la room ${code} (${name})`;
+  btn.addEventListener("click", () => {
+    pseudoInput.value = name;
+    roomCodeInput.value = code;
+    btn.remove();
+    joinRoomBtn.click();
+  });
+  createRoomBtn.before(btn);
+}
+
 applyRoomCodeFromUrl();
 restoreLobbyFromGame();
+offerResumeRoom();
