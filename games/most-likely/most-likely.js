@@ -920,15 +920,16 @@ function showFinalScreen() {
   });
 
   const winner = sortedPlayers[0];
+  const votesLabel = count => `${count} vote${count > 1 ? "s" : ""}`;
 
-  winnerText.textContent = `💀 ${winner.name} est la cible officielle de la soirée avec ${scores[winner.name] || 0} votes.`;
+  winnerText.textContent = `💀 ${winner.name} est la cible officielle de la soirée avec ${votesLabel(scores[winner.name] || 0)}.`;
 
   finalScores.innerHTML = "";
 
   sortedPlayers.forEach((player, index) => {
     const row = document.createElement("div");
     row.className = "final-score-row";
-    row.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)}</span><strong>${escapeHtml(scores[player.name] || 0)} votes</strong>`;
+    row.innerHTML = `<span>${index + 1}. ${escapeHtml(player.name)}</span><strong>${escapeHtml(votesLabel(scores[player.name] || 0))}</strong>`;
     finalScores.appendChild(row);
   });
 
@@ -940,7 +941,7 @@ skipQuestionBtn.addEventListener("click", skipQuestion);
 finishGameBtn.addEventListener("click", finishGame);
 restartGameBtn.addEventListener("click", restartGame);
 
-backToLobbyBtn.addEventListener("click", async () => {
+async function returnToLobby() {
 
   if (isHost) {
     try {
@@ -965,7 +966,10 @@ backToLobbyBtn.addEventListener("click", async () => {
   window.location.href =
     "../../index.html";
 
-});
+}
+
+backToLobbyBtn.addEventListener("click", returnToLobby);
+finalBackBtn.addEventListener("click", returnToLobby);
 
 
 
