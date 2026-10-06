@@ -1065,8 +1065,39 @@ function renderLiveGame(data){
       .sort((a, b) => b.chips - a.chips)
       .slice(0, 8);
     const event = casino.lastEvent;
-    const fmt = n => Math.round(n).toLocaleString("fr-FR").replace(/ /g, " ");
+    const fmt = n => Math.round(n).toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0");
     const eventFresh = event?.at && Date.now() - Number(event.at) < 5 * 60 * 1000;
+
+    // Table de blackjack partagée (games/casino-night/js/bj-table-logic.js)
+    const bj = casino.bjTable;
+    const bjSeats = Object.entries(bj?.seats || {}).sort((a, b) => a[1].index - b[1].index);
+    const bjCardValue = code => { const r = String(code).slice(0, -1); return r === "A" ? 1 : ["J", "Q", "K"].includes(r) ? 10 : Number(r); };
+    const bjTotal = codes => {
+      let sum = (codes || []).reduce((s, c) => s + bjCardValue(c), 0);
+      let aces = (codes || []).filter(c => String(c).startsWith("A")).length;
+      while (aces-- > 0 && sum + 10 <= 21) sum += 10;
+      return sum;
+    };
+    const bjCard = (code, hidden = false) => hidden
+      ? `<span class="tv-bj-card back"></span>`
+      : `<span class="tv-bj-card ${/[♥♦]$/.test(code) ? "red" : ""}">${escapeHtml(code)}</span>`;
+    const bjHoleHidden = bj?.phase === "insurance" || bj?.phase === "playing";
+    const bjActive = bj && bjSeats.length && (bj.phase !== "betting" || bjSeats.some(([, s]) => s.bet > 0));
+    const bjHtml = !bjActive ? "" : `
+      <div class="tv-bj">
+        <div class="tv-bj-dealer">
+          <h4>Blackjack · Banque ${bj.dealer?.length ? `<em>${bjHoleHidden ? "?" : bjTotal(bj.dealer)}</em>` : ""}</h4>
+          <div class="tv-bj-cards">${(bj.dealer || []).map((c, i) => bjCard(c, bjHoleHidden && i === 1)).join("") || `<span class="tv-live-muted">Mises en cours…</span>`}</div>
+        </div>
+        <div class="tv-bj-seats">
+          ${bjSeats.map(([key, seat]) => `
+            <div class="tv-bj-seat ${bj.turn?.key === key ? "turn" : ""}">
+              <strong>${escapeHtml(seat.name)}</strong>
+              <small>${seat.bet ? `Mise ${fmt(seat.bet)}` : "Pas de mise"}${bj.phase === "done" && seat.result ? ` · <b class="${seat.result.net >= 0 ? "up" : "down"}">${seat.result.net > 0 ? "+" : ""}${fmt(seat.result.net)}</b>` : ""}</small>
+              ${(seat.hands || []).map(h => `<div class="tv-bj-cards">${h.cards.map(c => bjCard(c)).join("")}<em>${bjTotal(h.cards)}</em></div>`).join("")}
+            </div>`).join("")}
+        </div>
+      </div>`;
 
     liveGameEl.innerHTML = `
       <div class="tv-casino">
@@ -1082,6 +1113,7 @@ function renderLiveGame(data){
             ? `<ol>${rows.map((row, i) => `<li class="${i === 0 ? "leader" : ""}"><span>${i === 0 ? "👑" : i + 1}</span><strong>${escapeHtml(row.name)}</strong><em>${fmt(row.chips)}</em></li>`).join("")}</ol>`
             : `<p class="tv-live-muted">Personne n'a encore joué.</p>`}
         </div>
+        ${bjHtml}
       </div>
     `;
     return;

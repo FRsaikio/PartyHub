@@ -8,6 +8,7 @@ import { createWallet, walletKeyFor, SHIELD_PRICE } from "./wallet.js";
 import { sound, toast, formatChips } from "./ui.js";
 import { initSlots } from "./slots.js";
 import { initBlackjack } from "./blackjack.js";
+import { initBjTable } from "./bj-table.js";
 import { initDice } from "./dice.js";
 
 const MIN_BET = 50;
@@ -47,6 +48,7 @@ roomBadge.textContent = roomCode ? `Room ${roomCode}` : "Hors room";
 // ---------- Portefeuille partagé ----------
 
 let blackjackApi = null;
+let bjTableApi = null;
 let displayedChips = null;
 
 const wallet = createWallet({
@@ -57,6 +59,7 @@ const wallet = createWallet({
     renderWallet(mine);
     renderLeaderboard(leaderboard);
     blackjackApi?.refresh();
+    bjTableApi?.refresh();
   },
   onEvent: event => {
     sound.chip();
@@ -115,6 +118,7 @@ let bet = (() => {
 let allInArmed = false;
 
 function renderBet() {
+  bjTableApi?.refresh(); // le bouton « Miser » de la table affiche la mise choisie
   const chips = wallet.chips;
   betValueEl.textContent = allInArmed ? `ALL IN · ${formatChips(chips)}` : formatChips(bet);
   betStepsEl.querySelectorAll("button").forEach(btn => {
@@ -191,6 +195,23 @@ const ctx = {
     sound.chip();
     renderBet();
     return { amount, allIn };
+  },
+
+  // Pour la table multijoueur : la mise choisie, SANS la prélever (la transaction de la
+  // table s'en charge). null si impossible.
+  peekBet() {
+    if (spectator) return null;
+    const chips = wallet.chips;
+    const amount = allInArmed ? chips : bet;
+    if (chips < MIN_BET || amount > chips) return null;
+    return { amount, allIn: allInArmed };
+  },
+
+  // La mise a été posée à la table : on désarme ALL IN.
+  betUsed() {
+    allInArmed = false;
+    sound.chip();
+    renderBet();
   },
 
   // Boutons proposés après une sanction : utiliser une protection ou assumer.
@@ -273,8 +294,29 @@ if (roomCode && !spectator) {
 
 // ---------- C'est parti ----------
 
+// Blackjack : table partagée de la room ou partie solo.
+const bjModeButtons = [...document.querySelectorAll(".bj-mode-btn")];
+
+function setBjMode(mode) {
+  bjModeButtons.forEach(btn => {
+    const active = btn.dataset.mode === mode;
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-pressed", String(active));
+  });
+  document.getElementById("bjTableMode").hidden = mode !== "table";
+  document.getElementById("bjSoloMode").hidden = mode !== "solo";
+  try { localStorage.setItem("partyhubBjMode", mode); } catch { /* ignoré */ }
+}
+
+bjModeButtons.forEach(btn => btn.addEventListener("click", () => { sound.click(); setBjMode(btn.dataset.mode); }));
+setBjMode((() => {
+  if (!wallet.online) return "solo";
+  try { return localStorage.getItem("partyhubBjMode") === "solo" ? "solo" : "table"; } catch { return "table"; }
+})());
+
 initSlots(ctx);
 blackjackApi = initBlackjack(ctx);
+bjTableApi = initBjTable(ctx, { roomCode: wallet.online && !spectator ? roomCode : "", me, isHost });
 initDice(ctx);
 wallet.start();
 renderBet();

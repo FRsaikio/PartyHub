@@ -108,6 +108,39 @@
         <section class="casino-panel" data-panel="blackjack" role="tabpanel" hidden>
           <div class="table-head">
             <h3>Blackjack Extreme</h3>
+            <div class="bj-mode" role="group" aria-label="Mode de jeu">
+              <button class="bj-mode-btn" type="button" data-mode="table" aria-pressed="false">Table de la room</button>
+              <button class="bj-mode-btn" type="button" data-mode="solo" aria-pressed="false">Jouer seul</button>
+            </div>
+          </div>
+
+          <!-- Table partagée (bj-table.js) -->
+          <div id="bjTableMode" class="bj-mode-panel">
+            <p class="bjt-offline" hidden>La table de la room n'est disponible que dans une room PartyHub. Tu peux jouer seul en attendant.</p>
+            <div class="bjt-online">
+              <div class="bjt-topline">
+                <strong id="bjtStatus" class="bjt-status" aria-live="polite">Connexion à la table…</strong>
+                <span id="bjtShoe" class="table-tag">Sabot neuf</span>
+              </div>
+
+              <div class="bj-table">
+                <div class="bj-zone">
+                  <div class="bj-zone-head"><span>Banque</span><strong id="bjtDealerTotal">–</strong></div>
+                  <div id="bjtDealerCards"></div>
+                </div>
+                <div class="bj-divider" aria-hidden="true">UN SEUL SABOT POUR TOUTE LA TABLE · CHACUN JOUE À SON TOUR</div>
+                <div id="bjtSeats" class="bjt-seats"></div>
+              </div>
+
+              <div id="bjtControls" class="bjt-controls"></div>
+              <div id="bjtResult" class="casino-result" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <!-- Partie solo (blackjack.js) -->
+          <div id="bjSoloMode" class="bj-mode-panel" hidden>
+          <div class="bjt-topline">
+            <strong class="bjt-status">Toi contre la banque</strong>
             <span id="bjShoe" class="table-tag">208 cartes dans le sabot</span>
           </div>
 
@@ -130,10 +163,12 @@
             <button id="bjSurrenderBtn" class="btn secondary" type="button">Abandonner</button>
           </div>
           <div id="bjResult" class="casino-result" aria-live="polite"></div>
+          </div>
 
           <details class="table-rules">
             <summary>Règles du blackjack</summary>
             <ul>
+              <li><strong>Table de la room</strong> : jusqu'à 5 joueurs, un seul sabot. Chacun mise, puis joue à son tour dans l'ordre des places : les cartes que tu tires changent celles des suivants. L'hôte peut faire « rester » un joueur absent.</li>
               <li><strong>But</strong> : approcher 21 sans dépasser, et battre la banque. Figures = 10, As = 1 ou 11.</li>
               <li><strong>Blackjack</strong> (As + figure ou 10 d'entrée) : paie ×3. La banque tire jusqu'à 17.</li>
               <li><strong>Doubler</strong> : sur tes 2 premières cartes, tu doubles ta mise et reçois une seule carte.</li>

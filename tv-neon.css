@@ -913,3 +913,105 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
+
+/* Table de blackjack partagée, sous l'annonce et le classement */
+.tv-bj {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.6fr) minmax(0, 2fr);
+  gap: 18px;
+  padding: 22px;
+  border-radius: 28px;
+  background: radial-gradient(120% 120% at 50% 0%, #17604a, #0d3b2e 55%, #062419);
+  border: 4px solid #3b2410;
+  box-shadow: inset 0 0 0 2px #b8860b, 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.tv-bj h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-family: var(--nc-font-display);
+  font-size: 22px;
+  color: #fff;
+}
+
+.tv-bj em {
+  font-style: normal;
+  font-family: var(--nc-font-display);
+  font-weight: 800;
+  color: #f5c451;
+}
+
+.tv-bj-seats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.tv-bj-seat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+.tv-bj-seat.turn {
+  border-color: #f5c451;
+  background: rgba(245, 196, 81, 0.12);
+  box-shadow: 0 0 34px rgba(245, 196, 81, 0.35);
+}
+
+.tv-bj-seat strong {
+  font-size: 22px;
+}
+
+.tv-bj-seat small {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.tv-bj-seat b.up { color: #a7f3d0; }
+.tv-bj-seat b.down { color: #ffc2cf; }
+
+.tv-bj-cards {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.tv-bj-card {
+  min-width: 46px;
+  padding: 10px 6px;
+  border-radius: 8px;
+  background: linear-gradient(160deg, #fff, #f1ece2);
+  color: #15111c;
+  font-family: var(--nc-font-display);
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+}
+
+.tv-bj-card.red {
+  color: #c8102e;
+}
+
+.tv-bj-card.back {
+  min-height: 46px;
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.14) 0 6px, transparent 6px 12px),
+    linear-gradient(135deg, var(--nc-pink), var(--nc-violet));
+  border: 2px solid #fff;
+}
+
+@media (max-width: 1050px) {
+  .tv-bj {
+    grid-template-columns: 1fr;
+  }
+}
