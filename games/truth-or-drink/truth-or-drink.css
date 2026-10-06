@@ -1,144 +1,272 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  color: white;
-  background: #0f172a;
-}
-
-.app {
-  max-width: 1300px;
-  margin: auto;
-  padding: 25px;
-}
-
-.game-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-}
+/* =========================================================
+   Vérité ou Bois — style Néon Club
+   Base : neon-club.css + neon-game.css. Ici : ce qui est propre au jeu.
+   ========================================================= */
 
 .truth-layout {
   display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 25px;
+  gap: 18px;
+  align-items: start;
 }
 
 .truth-zone {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
+  min-width: 0;
 }
 
+/* Carte question : la base vient de neon-game.css */
 .question-card {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 24px;
-  padding: 40px;
-  min-height: 240px;
-  display: flex;
-  flex-direction: column;
+  min-height: 260px;
   justify-content: center;
 }
 
-.question-card h3 {
-  font-size: 2rem;
-  margin: 15px 0;
+#instructionText {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--nc-text-2);
 }
 
-.truth-buttons {
-  display: flex;
-  gap: 15px;
-}
-
-.truth-panel {
-  background: rgba(255,255,255,0.05);
-  border-radius: 24px;
-  padding: 20px;
-  height: fit-content;
-}
-
-.info-box,
-.stats-box,
-.history-box {
-  margin-top: 20px;
-  background: rgba(255,255,255,0.04);
-  border-radius: 16px;
-  padding: 15px;
-}
-
-.big-btn {
-  width: 100%;
-  padding: 18px;
-  font-size: 1rem;
-}
-
-.history-box ul {
-  padding-left: 18px;
-}
-
-.history-box li {
-  margin-bottom: 8px;
-}
-
-.drink-effect {
-  animation: pulse 0.5s ease;
-}
-
-.answer-effect {
-  animation: shake 0.4s ease;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.03); }
-  100% { transform: scale(1); }
-}
-
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-}
-
-@media (max-width: 950px) {
-
-  .truth-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .truth-buttons {
-    flex-direction: column;
-  }
-
-}
-
-
+/* Pastilles : joueur ciblé (cyan) et punition (jaune) */
 .truth-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 10px 0 5px;
+  gap: 8px;
 }
 
 .target-pill,
 .punishment-pill {
-  width: fit-content;
-  padding: 10px 14px;
+  padding: 8px 14px;
   border-radius: 999px;
-  font-weight: 800;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.target-pill {
+  background: var(--nc-cyan-soft);
+  border: 1px solid rgba(34, 211, 238, 0.5);
+  color: #cffafe;
 }
 
 .punishment-pill {
-  color: #ffd166;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.5);
+  color: #fde68a;
+}
+
+/* Boutons Répondre / Je bois côte à côte */
+.truth-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.truth-buttons .big-btn,
+#nextQuestionBtn {
+  width: 100%;
+}
+
+.truth-buttons .big-btn {
+  padding: 0 10px;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+@media (min-width: 480px) {
+  .truth-buttons .big-btn {
+    font-size: 17px;
+  }
+}
+
+#drinkBtn {
+  border: 0;
+  background: var(--nc-yellow);
+  color: #1a1206;
+  box-shadow: 0 0 26px rgba(250, 204, 21, 0.4), 0 10px 26px rgba(0, 0, 0, 0.4);
+  animation: none;
+}
+
+#drinkBtn:hover {
+  background: #fde047;
+}
+
+#drinkBtn::after {
+  display: none;
+}
+
+#nextQuestionBtn {
+  min-height: 52px;
+  font-family: var(--nc-font-body);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0;
+  animation: none;
+}
+
+#nextQuestionBtn::after {
+  display: none;
+}
+
+/* Effets quand on répond ou qu'on boit */
+.question-card.answer-effect {
+  animation: truthShake 0.4s ease;
+  box-shadow: 0 0 50px rgba(34, 211, 238, 0.35), 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.question-card.drink-effect {
+  animation: truthPulse 0.5s ease;
+  box-shadow: 0 0 50px rgba(250, 204, 21, 0.35), 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes truthPulse {
+  50% { transform: scale(1.02); }
+}
+
+@keyframes truthShake {
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Panneau d'infos */
+.truth-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: var(--nc-radius-lg);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.truth-panel > h3,
+.history-box h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--nc-font-display);
+  font-size: 16px;
+}
+
+.truth-panel > h3::before,
+.history-box h4::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--nc-neon-border);
+  box-shadow: 0 0 10px var(--nc-pink-glow);
+}
+
+.info-box {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.info-box p,
+.stats-box p {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: var(--nc-radius-sm);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  font-size: 15px;
+  font-weight: 700;
+  min-width: 0;
+}
+
+.info-box p strong {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--nc-muted);
+}
+
+.stats-box {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stats-box p {
+  font-size: 14px;
+  color: var(--nc-text-2);
+}
+
+.stats-box span {
+  font-family: var(--nc-font-display);
+  font-size: 24px;
+  color: #fff;
+}
+
+.history-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+#historyList li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--nc-text-2);
+}
+
+#historyList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--nc-cyan);
+}
+
+#historyList li:first-child {
+  color: #fff;
+}
+
+#historyList li:first-child::before {
+  background: var(--nc-pink);
+  box-shadow: 0 0 10px var(--nc-pink-glow);
 }
 
 .result-line {
-  margin-top: 14px;
   padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.08);
-  font-weight: 800;
+  border-radius: var(--nc-radius-sm);
+  background: var(--nc-surface-2);
+  font-weight: 700;
+}
+
+@media (min-width: 900px) {
+  .truth-layout {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+
+  .truth-panel {
+    position: sticky;
+    top: 24px;
+  }
+
+  .question-card {
+    min-height: 320px;
+  }
 }
