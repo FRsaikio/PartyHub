@@ -3,7 +3,7 @@
 // (slots.js, blackjack.js, dice.js). Le Poker reste une page à part (poker/).
 
 import { db, doc, updateDoc, onSnapshot } from "../../../firebase.js";
-import { resolveIsHost, lobbyWrite } from "../../../game-common.js";
+import { resolveIsHost, lobbyWrite, watchHost } from "../../../game-common.js";
 import { createWallet, walletKeyFor, legacyWalletKeyFor, SHIELD_PRICE } from "./wallet.js";
 import { sound, toast, formatChips } from "./ui.js";
 import { initSlots } from "./slots.js";
@@ -38,7 +38,9 @@ const me = {
   key: walletKeyFor(savedData.currentProfileId, myName),
   legacyKey: legacyWalletKeyFor(savedData.currentProfileId)
 };
-const isHost = resolveIsHost(savedData);
+let isHost = resolveIsHost(savedData);
+// Si l'hôte ne répond plus, un autre joueur reprend la main (et le bouton « faire jouer l'absent »).
+if (!spectator) watchHost(roomCode, savedData, value => { isHost = value; bjTableApi?.refresh(); });
 
 // ---------- Éléments ----------
 
@@ -327,7 +329,7 @@ setBjMode((() => {
 
 initSlots(ctx);
 blackjackApi = initBlackjack(ctx);
-bjTableApi = initBjTable(ctx, { roomCode: wallet.online && !spectator ? roomCode : "", me, isHost });
+bjTableApi = initBjTable(ctx, { roomCode: wallet.online && !spectator ? roomCode : "", me, isHost: () => isHost });
 initDice(ctx);
 wallet.start();
 renderBet();

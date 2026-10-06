@@ -3,10 +3,10 @@
 // on récupère son tapis en se levant. La table elle-même est gérée par poker-table.js.
 
 import { db, doc, onSnapshot } from "../../../../firebase.js";
-import { resolveIsHost } from "../../../../game-common.js";
+import { resolveIsHost, watchHost } from "../../../../game-common.js";
 import { createWallet, walletKeyFor, legacyWalletKeyFor } from "../../js/wallet.js";
 import { sound, toast, formatChips } from "../../js/ui.js";
-import { createPokerRoom } from "./poker-table.js?v=3";
+import { createPokerRoom } from "./poker-table.js?v=4";
 
 const params = new URLSearchParams(window.location.search);
 // La copie de l'onglet (sessionStorage) passe avant celle du navigateur (localStorage).
@@ -29,7 +29,7 @@ const me = {
   key: walletKeyFor(savedData.currentProfileId, myName),
   legacyKey: legacyWalletKeyFor(savedData.currentProfileId)
 };
-const isHost = resolveIsHost(savedData);
+let isHost = resolveIsHost(savedData);
 
 if (params.get("embed") === "1") document.body.classList.add("pk-embed");
 if (spectator) document.body.classList.add("pk-spectator");
@@ -101,6 +101,8 @@ function start() {
     if (api && before !== JSON.stringify(players.map(p => [p?.name, p?.avatar, Boolean(p?.avatarBase64 || p?.avatarUrl)]))) api.render();
   }, error => console.error("Poker : synchro de la room impossible", error));
 
-  api = createPokerRoom(ctx, { roomCode, me, isHost, spectator, avatarFor });
+  api = createPokerRoom(ctx, { roomCode, me, isHost: () => isHost, spectator, avatarFor });
+  // Si l'hôte ne répond plus, un autre joueur reprend la main (bouton « faire jouer l'absent »).
+  if (!spectator) watchHost(roomCode, savedData, value => { isHost = value; api.refresh(); });
   wallet.start();
 }
