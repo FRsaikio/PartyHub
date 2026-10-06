@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>PartyHub - Survivor</title>
+  <title>Survivor · PartyHub</title>
 
   <meta name="theme-color" content="#08061a" />
   <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
@@ -18,86 +18,41 @@
 
 <body>
   <div class="background"></div>
-  <div id="confettiLayer" class="confetti-layer"></div>
 
-  <main class="app">
-    <section class="screen active">
+  <main class="app sv-app">
 
-      <div class="game-header survivor-header">
-        <button id="backToLobbyBtn" class="btn danger small">Retour lobby</button>
+    <div class="game-header sv-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>Survivor <span class="sv-flame">🔥</span></h2>
+        <p class="muted">Épreuves, conseil secret, idoles cachées. Une seule personne quittera l'île en vainqueur.</p>
+      </div>
+      <span id="svRound" class="sv-round">Avant-match</span>
+    </div>
 
-        <div>
-          <span id="roomBadge" class="badge">Room</span>
-          <h2>Survivor</h2>
-          <p class="muted">Réagis vite. Le perdant perd une vie et prend une punition.</p>
-        </div>
+    <div class="sv-layout">
+      <div class="sv-main">
+        <section id="svStage" class="sv-stage" aria-live="polite"></section>
+        <div id="svHost" class="sv-host" hidden></div>
+        <section id="svMe" class="sv-me" hidden aria-label="Ton sac secret"></section>
       </div>
 
-      <div class="survivor-layout">
+      <aside class="sv-side">
+        <section class="sv-tribe-box">
+          <h3>La tribu</h3>
+          <div id="svTribe" class="sv-tribe"></div>
+        </section>
+        <details class="sv-log">
+          <summary>📜 Journal de l'île</summary>
+          <ol id="svLog"></ol>
+        </details>
+      </aside>
+    </div>
 
-        <div class="survivor-main">
-
-          <div class="round-info">
-            <span id="modeBadge" class="badge">Mode Party</span>
-            <span id="levelBadge" class="badge">Normal</span>
-            <span id="roundBadge" class="badge">Round 1</span>
-          </div>
-
-          <div id="challengeCard" class="challenge-card">
-            <small id="challengeType">⚡ Défi réflexe</small>
-            <h3 id="challengeText">Prêt ?</h3>
-            <p id="instructionText">Lance un défi. Le dernier perd une vie.</p>
-          </div>
-
-          <div id="resultBox" class="result-box hidden">
-            <h3 id="resultTitle"></h3>
-            <p id="punishmentText"></p>
-          </div>
-
-          <div class="survivor-actions">
-            <button id="newChallengeBtn" class="btn primary big-btn">Nouveau défi ⚡</button>
-            <button id="chooseLoserBtn" class="btn secondary big-btn">Choisir le perdant 💔</button>
-            <button id="resetGameBtn" class="btn danger full">Reset la partie</button>
-          </div>
-
-        </div>
-
-        <aside class="survivor-panel">
-
-          <h3>Survivants</h3>
-
-          <div class="info-box">
-            <p><strong>Mode</strong> <span id="modeText">Party</span></p>
-            <p><strong>Niveau</strong> <span id="drinkLevelText">Normal</span></p>
-            <p><strong>Joueurs</strong> <span id="playersText">0</span></p>
-          </div>
-
-          <ul id="playersList" class="survivor-list"></ul>
-
-          <div class="history-box">
-            <h4>Historique</h4>
-            <ul id="historyList"></ul>
-          </div>
-
-        </aside>
-
-      </div>
-
-      <div id="endScreen" class="end-screen hidden">
-        <div class="end-card">
-          <span class="badge">Survivor</span>
-          <h2>Victoire</h2>
-          <p id="winnerText"></p>
-
-          <button id="restartBtn" class="btn primary full">Rejouer</button>
-          <button id="finalBackBtn" class="btn danger full">Retour lobby</button>
-        </div>
-      </div>
-
-    </section>
   </main>
 
   <script src="../../partyhub-fx.js"></script>
-<script type="module" src="survivor.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
