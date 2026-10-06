@@ -6,9 +6,15 @@
 
   <title>PartyHub - Roulette Chaos</title>
 
-  <link rel="stylesheet" href="../../global-ui.css" />
-  <link rel="stylesheet" href="../../style.css" />
+  <meta name="theme-color" content="#08061a" />
+  <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
+  <link rel="stylesheet" href="../../neon-club.css" />
+  <link rel="stylesheet" href="../../neon-game.css" />
   <link rel="stylesheet" href="roulette.css" />
+  <link rel="stylesheet" href="roulette-neon.css" />
 </head>
 
 <body>
@@ -20,7 +26,7 @@
 
     <section class="screen active">
 
-      <div class="roulette-header">
+      <div class="game-header roulette-header">
         <button id="backToLobbyBtn" class="btn danger small">
           Retour lobby
         </button>
@@ -59,7 +65,7 @@
 
         <aside class="roulette-panel">
 
-          <h3>🔥 Résultat</h3>
+          <h3>Résultat</h3>
 
           <div id="eventBanner" class="event-banner hidden"></div>
 
@@ -71,26 +77,26 @@
           </div>
 
           <div class="info-box">
-            <p><strong>Mode :</strong> <span id="modeText">Party</span></p>
-            <p><strong>Niveau :</strong> <span id="drinkLevelText">Normal</span></p>
-            <p><strong>Joueurs :</strong> <span id="playersText">0</span></p>
+            <p><strong>Mode</strong> <span id="modeText">Party</span></p>
+            <p><strong>Niveau</strong> <span id="drinkLevelText">Normal</span></p>
+            <p><strong>Joueurs</strong> <span id="playersText">0</span></p>
           </div>
 
           <div class="stats-box">
-            <h4>📊 Stats live</h4>
+            <h4>Stats live</h4>
 
             <p>
-              🎯 Plus ciblé :
+              Plus ciblé
               <span id="mostTargeted">-</span>
             </p>
 
             <p>
-              🔥 Catégorie dominante :
+              Catégorie dominante
               <span id="topCategory">-</span>
             </p>
 
             <p>
-              🎡 Spins :
+              Spins
               <span id="spinCount">0</span>
             </p>
           </div>
@@ -100,7 +106,7 @@
           </button>
 
           <div class="history-box">
-            <h4>📜 Historique</h4>
+            <h4>Historique</h4>
             <ul id="historyList"></ul>
           </div>
 

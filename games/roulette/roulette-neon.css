@@ -1,0 +1,239 @@
+/* =========================================================
+   Roulette Chaos — habillage Néon Club
+   Chargé APRÈS roulette.css. On ne touche PAS à la roue, au pointeur ni
+   aux labels (alignement catégorie tirée ↔ pointeur) : seulement l'en-tête,
+   le panneau de résultat, les stats et l'historique.
+   ========================================================= */
+
+/* La roue reste centrée et respire au-dessus du bouton */
+.roulette-layout {
+  gap: 18px;
+}
+
+#spinBtn {
+  width: 100%;
+  max-width: 460px;
+}
+
+#rerollBtn {
+  width: 100%;
+}
+
+/* ---------- Panneau de droite ---------- */
+
+.roulette-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: var(--nc-radius-lg);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.roulette-panel > h3,
+.roulette-panel h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--nc-font-display);
+  font-size: 16px;
+}
+
+.roulette-panel > h3::before,
+.stats-box h4::before,
+.history-box h4::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--nc-neon-border);
+  box-shadow: 0 0 10px var(--nc-pink-glow);
+}
+
+/* Événement rare */
+.event-banner {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--nc-radius-sm);
+  background: rgba(250, 204, 21, 0.14);
+  border: 1.5px solid var(--nc-yellow);
+  box-shadow: 0 0 26px rgba(250, 204, 21, 0.3);
+  color: #fde68a;
+  font-weight: 800;
+}
+
+/* ---------- Carte résultat ---------- */
+
+.roulette-result {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: var(--nc-radius);
+  background: var(--nc-pink-soft);
+  border: 1.5px solid var(--nc-pink);
+  box-shadow: 0 0 30px rgba(224, 31, 160, 0.3);
+}
+
+.roulette-result span {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  font-family: var(--nc-font-display);
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.roulette-result small {
+  align-self: flex-start;
+  margin: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--nc-text-2);
+}
+
+.roulette-result h4 {
+  margin: 4px 0 0;
+  font-family: var(--nc-font-display);
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.roulette-result p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--nc-text);
+}
+
+/* Couleur de la carte selon la catégorie tirée (mêmes teintes que la roue) */
+.roulette-result.category-bois { border-color: #ff8a18; background: rgba(255, 138, 24, 0.14); box-shadow: 0 0 30px rgba(255, 138, 24, 0.35); }
+.roulette-result.category-distribue { border-color: #9b5cff; background: rgba(155, 92, 255, 0.14); box-shadow: 0 0 30px rgba(155, 92, 255, 0.35); }
+.roulette-result.category-duel { border-color: #ffd21f; background: rgba(255, 210, 31, 0.12); box-shadow: 0 0 30px rgba(255, 210, 31, 0.3); }
+.roulette-result.category-tous { border-color: #ff334e; background: rgba(255, 51, 78, 0.14); box-shadow: 0 0 30px rgba(255, 51, 78, 0.35); }
+.roulette-result.category-chance { border-color: #22f36f; background: rgba(34, 243, 111, 0.1); box-shadow: 0 0 30px rgba(34, 243, 111, 0.3); }
+.roulette-result.category-chaos { border-color: #b44cff; background: rgba(180, 76, 255, 0.16); box-shadow: 0 0 40px rgba(180, 76, 255, 0.5); }
+
+/* ---------- Infos / stats / historique ---------- */
+
+.info-box {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+.info-box p,
+.stats-box p {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--nc-radius-sm);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  font-size: 15px;
+  font-weight: 700;
+  min-width: 0;
+}
+
+.info-box p strong {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--nc-muted);
+}
+
+.stats-box,
+.history-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+.stats-box p {
+  font-size: 13px;
+  color: var(--nc-muted);
+}
+
+.stats-box span {
+  font-size: 16px;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+#historyList li {
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+  font-size: 14px;
+  color: var(--nc-text-2);
+}
+
+@media (min-width: 900px) {
+  .roulette-layout {
+    grid-template-columns: minmax(0, 1fr) 360px;
+  }
+
+  .roulette-panel {
+    position: sticky;
+    top: 24px;
+  }
+}
+
+@media (max-width: 899px) {
+  .roulette-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .roulette-panel {
+    position: static;
+  }
+}
+
+/* En-tête : on reprend le comportement commun (game-header) */
+.roulette-header {
+  margin: 0;
+  align-items: flex-start;
+}
+
+.roulette-header h2 {
+  margin: 0;
+}
