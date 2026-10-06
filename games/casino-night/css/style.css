@@ -600,51 +600,114 @@
 
 /* ---------- Dés du Diable ---------- */
 
+/* Vrais dés en 3D : un cube à 6 faces qui roule puis se pose sur la bonne face.
+   L'orientation des faces .f1….f6 doit correspondre à SHOW dans js/dice.js. */
+
 .dice-stage {
+  --die-size: 88px;
   display: flex;
   justify-content: center;
-  gap: 26px;
-  padding: 26px 0;
-  perspective: 600px;
+  gap: 40px;
+  padding: 40px 0 30px;
+  perspective: 700px;
 }
 
 .die {
-  width: 96px;
-  height: 96px;
+  position: relative;
+  width: var(--die-size);
+  height: var(--die-size);
+}
+
+.die-cube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.die-face {
+  position: absolute;
+  inset: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  padding: 14px;
-  border-radius: 20px;
-  background: radial-gradient(circle at 30% 25%, #d4234f, var(--cs-blood) 65%, #4a0718);
-  box-shadow: 0 0 30px rgba(212, 35, 79, 0.5), inset 0 -6px 12px rgba(0, 0, 0, 0.4), 0 14px 26px rgba(0, 0, 0, 0.5);
+  padding: 13%;
+  border-radius: 18%;
+  background: radial-gradient(circle at 30% 25%, #e0335c, var(--cs-blood) 62%, #5a0920);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.12),
+    inset 0 -8px 14px rgba(0, 0, 0, 0.35),
+    inset 0 6px 10px rgba(255, 255, 255, 0.12);
+  backface-visibility: hidden;
 }
 
+.die-face.f1 { transform: translateZ(calc(var(--die-size) / 2)); }
+.die-face.f6 { transform: rotateY(180deg) translateZ(calc(var(--die-size) / 2)); }
+.die-face.f2 { transform: rotateY(90deg) translateZ(calc(var(--die-size) / 2)); }
+.die-face.f5 { transform: rotateY(-90deg) translateZ(calc(var(--die-size) / 2)); }
+.die-face.f3 { transform: rotateX(90deg) translateZ(calc(var(--die-size) / 2)); }
+.die-face.f4 { transform: rotateX(-90deg) translateZ(calc(var(--die-size) / 2)); }
+
 .pip {
-  width: 15px;
-  height: 15px;
+  width: 66%;
+  height: 66%;
   margin: auto;
   border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  background: radial-gradient(circle at 40% 35%, #ffffff, #f1e4e8);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.35), 0 0 6px rgba(255, 255, 255, 0.5);
 }
 
 .pip.empty {
   visibility: hidden;
 }
 
-.die.rolling {
-  animation: dieTumble 0.25s linear infinite;
+/* Ombre au sol : se rétrécit quand le dé est en l'air */
+.die-shadow {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -18px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.6), transparent 70%);
+  filter: blur(2px);
 }
 
-.die:nth-child(2).rolling {
-  animation-direction: reverse;
+/* Lancer : saut + rebond (propriété `translate`, qui s'ajoute à la rotation du cube) */
+.die.thrown .die-cube {
+  animation: dieThrow 1.25s cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
 
-@keyframes dieTumble {
-  0% { transform: rotateX(0) rotateZ(0) translateY(0); }
-  50% { transform: rotateX(180deg) rotateZ(90deg) translateY(-14px); }
-  100% { transform: rotateX(360deg) rotateZ(180deg) translateY(0); }
+.die.thrown .die-shadow {
+  animation: dieShadow 1.25s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+
+.die:nth-child(2).thrown .die-cube,
+.die:nth-child(2).thrown .die-shadow {
+  animation-delay: 0.06s;
+}
+
+@keyframes dieThrow {
+  0% { translate: 0 0; }
+  30% { translate: 0 -70px; }
+  62% { translate: 0 0; }
+  76% { translate: 0 -16px; }
+  88% { translate: 0 0; }
+  94% { translate: 0 -4px; }
+  100% { translate: 0 0; }
+}
+
+@keyframes dieShadow {
+  0%, 62%, 88%, 100% { transform: scale(1); opacity: 1; }
+  30% { transform: scale(0.45); opacity: 0.35; }
+  76% { transform: scale(0.85); opacity: 0.8; }
+}
+
+@media (min-width: 720px) {
+  .dice-stage {
+    --die-size: 104px;
+    gap: 56px;
+  }
 }
 
 /* ---------- Poker (aperçu) ---------- */
