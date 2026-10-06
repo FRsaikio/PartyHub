@@ -22,9 +22,17 @@ function hashName(name) {
 }
 
 // Clé Firestore sûre (pas de « . », de « / » ni d'espace).
+// Profil + pseudo : deux onglets du même navigateur partagent le même profil, mais ont
+// chacun leur pseudo dans la room, donc chacun son portefeuille.
 export function walletKeyFor(profileId, name) {
   const id = String(profileId || "").replace(/[^a-zA-Z0-9_-]/g, "");
-  return id ? `p_${id}` : hashName(name || "Joueur");
+  return id ? `p_${id}_${hashName(name || "Joueur")}` : hashName(name || "Joueur");
+}
+
+// Ancienne clé (profil seul) : on y reprend les jetons déjà gagnés ce soir.
+export function legacyWalletKeyFor(profileId) {
+  const id = String(profileId || "").replace(/[^a-zA-Z0-9_-]/g, "");
+  return id ? `p_${id}` : null;
 }
 
 export function createWallet({ roomCode, me, spectator = false, onChange = () => {}, onEvent = () => {} }) {
@@ -46,7 +54,7 @@ export function createWallet({ roomCode, me, spectator = false, onChange = () =>
   }
 
   function leaderboard() {
-    const rows = Object.entries(wallets).map(([key, w]) => ({
+    const rows = Object.entries(wallets).filter(([, w]) => w).map(([key, w]) => ({
       key,
       name: w?.name || "Joueur",
       chips: Math.max(0, Number(w?.chips) || 0),
@@ -88,10 +96,21 @@ export function createWallet({ roomCode, me, spectator = false, onChange = () =>
       if (serverMine) {
         mine = { name: serverMine.name || me.name, chips: Math.max(0, Number(serverMine.chips) || 0), shields: Number(serverMine.shields) || 0 };
       } else if (!spectator) {
-        // Première visite au casino ce soir : on ouvre le compte.
-        updateDoc(roomRef, {
-          [path()]: { name: me.name, chips: START_CHIPS, shields: 0, joinedAt: Date.now(), updatedAt: Date.now() }
-        }).catch(error => console.error("Casino : ouverture du compte impossible", error));
+        // Première visite au casino ce soir : on ouvre le compte, en reprenant si besoin
+        // les jetons enregistrés sous l'ancienne clé (profil seul) au même pseudo.
+        const legacy = me.legacyKey && wallets[me.legacyKey];
+        const inherit = legacy && legacy.name === me.name;
+        const patch = {
+          [path()]: {
+            name: me.name,
+            chips: inherit ? Math.max(0, Number(legacy.chips) || 0) : START_CHIPS,
+            shields: inherit ? Number(legacy.shields) || 0 : 0,
+            joinedAt: Date.now(),
+            updatedAt: Date.now()
+          }
+        };
+        if (inherit) patch[`casino.wallets.${me.legacyKey}`] = null;
+        updateDoc(roomRef, patch).catch(error => console.error("Casino : ouverture du compte impossible", error));
       }
 
       const event = casino.lastEvent;
