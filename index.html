@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PartyHub</title>
-  <link rel="stylesheet" href="global-ui.css" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="neon-premium-v2.css" />
+  <meta name="theme-color" content="#08061a" />
+  <link rel="icon" href="partyhub-logo-neon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
+  <link rel="stylesheet" href="neon-club.css" />
 </head>
 <body>
 
@@ -16,15 +19,15 @@
 
     <section id="home" class="screen active">
       <div class="hero">
-        <div class="ph-brand-logo" aria-label="PartyHub logo"></div>
-        <span class="badge">NEON PARTY CLUB</span>
+        <div class="ph-brand-logo" role="img" aria-label="Logo PartyHub"></div>
+        <span class="badge">Neon Party Club</span>
         <h1>PartyHub</h1>
         <p>La plateforme où le téléphone devient la manette et la TV devient le centre du chaos.</p>
 
         <div class="hero-stats">
-          <span>⚡ Rooms live</span>
-          <span>🎮 Mini-jeux</span>
-          <span>🔥 XP & badges</span>
+          <span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Rooms live</span>
+          <span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M7 11v3M5.5 12.5h3M16 12h.01M18 14h.01"/></svg>Mini-jeux</span>
+          <span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.7 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg>XP &amp; badges</span>
         </div>
 
         <div class="home-grid">
@@ -94,7 +97,7 @@
     <section id="lobby" class="screen">
   <div class="lobby-hero">
     <div>
-      <span class="badge">🍻 PartyHub Lobby</span>
+      <span class="badge">Room live</span>
       <h2>Room <span id="roomCodeDisplay">AB12</span></h2>
       <p class="muted">Invite tes potes, choisis l’ambiance, lance les mini-jeux.</p>
     </div>
@@ -123,7 +126,7 @@
 
   <div id="qrInvitePanel" class="qr-invite-panel" hidden>
     <div>
-      <h3>📲 Invite rapide</h3>
+      <h3>Invite rapide</h3>
       <p>Scanne le QR code ou partage le lien pour rejoindre directement la room.</p>
       <input id="inviteLinkInput" readonly />
     </div>
@@ -131,17 +134,18 @@
   </div>
 
   <div class="party-modes">
-    <button class="mode-card selected" data-mode="chill">😇<strong>Chill</strong><small>soirée tranquille</small></button>
-    <button class="mode-card" data-mode="party">🍻<strong>Party</strong><small>fun + alcool</small></button>
-    <button class="mode-card" data-mode="chaos">💀<strong>Chaos</strong><small>questions sales</small></button>
-    <button class="mode-card" data-mode="hardcore">☠️<strong>Hardcore</strong><small>pour les vrais</small></button>
+    <button class="mode-card selected" data-mode="chill"><strong>Chill</strong><small>tranquille</small></button>
+    <button class="mode-card" data-mode="party"><strong>Party</strong><small>fun + alcool</small></button>
+    <button class="mode-card" data-mode="chaos"><strong>Chaos</strong><small>questions sales</small></button>
+    <button class="mode-card" data-mode="hardcore"><strong>Hardcore</strong><small>pour les vrais</small></button>
   </div>
 
   <div class="lobby-layout ultimate">
 
-    <div class="panel">
+   <div class="lobby-col">
+    <div class="panel players-panel">
       <div class="panel-title">
-        <h3>👥 Joueurs</h3>
+        <h3>Joueurs</h3>
         <span id="playerCount">0/20</span>
       </div>
 
@@ -153,9 +157,16 @@
       </div>
     </div>
 
-    <div class="panel">
+    <div class="panel activity-panel">
+      <h3>Activité live</h3>
+      <ul id="activityList" class="activity-list"></ul>
+    </div>
+   </div>
+
+   <div class="lobby-col">
+    <div class="panel games-panel">
       <div class="panel-title">
-        <h3>🎮 Mini-jeux</h3>
+        <h3>Mini-jeux</h3>
         <span class="host-label">Host</span>
       </div>
 
@@ -243,9 +254,11 @@
 
       </div>
     </div>
+   </div>
 
-    <div class="panel">
-      <h3>⚙️ Réglages soirée</h3>
+   <div class="lobby-col">
+    <div class="panel settings-panel">
+      <h3>Réglages soirée</h3>
 
       <div class="setting-row">
         <span>Mode alcool</span>
@@ -285,33 +298,29 @@
     </div>
 
     <div class="panel preview-panel">
-      <h3>🔥 Aperçu</h3>
+      <h3>Aperçu</h3>
 
       <div class="preview-box">
-        <p><strong>Ambiance :</strong> <span id="partyModeText">Chill</span></p>
-        <p><strong>Mini-jeu :</strong> <span id="selectedGameText">Qui est le plus susceptible ?</span></p>
-        <p><strong>Alcool :</strong> <span id="modeText">Activé</span></p>
-        <p><strong>Niveau :</strong> <span id="drinkText">Normal</span></p>
-        <p><strong>Durée :</strong> <span id="durationText">Moyenne</span></p>
-        <p><strong>Rotation :</strong> <span id="rotationText">Désactivée</span></p>
+        <p><strong>Ambiance</strong> <span id="partyModeText">Chill</span></p>
+        <p><strong>Mini-jeu</strong> <span id="selectedGameText">Qui est le plus susceptible ?</span></p>
+        <p><strong>Alcool</strong> <span id="modeText">Activé</span></p>
+        <p><strong>Niveau</strong> <span id="drinkText">Normal</span></p>
+        <p><strong>Durée</strong> <span id="durationText">Moyenne</span></p>
+        <p><strong>Rotation</strong> <span id="rotationText">Désactivée</span></p>
       </div>
 
-      <button id="startGameBtn" class="btn primary full big-btn">Lancer la soirée 🚀</button>
-      <button id="endPartyBtn" class="btn secondary full">🏁 Bilan fin de soirée</button>
+      <button id="startGameBtn" class="btn primary full big-btn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="fill:currentColor;stroke:none"><path d="M7 4l13 8-13 8z"/></svg>Lancer la soirée</button>
+      <button id="endPartyBtn" class="btn secondary full">Bilan fin de soirée</button>
     </div>
-
-    <div class="panel activity-panel">
-      <h3>📢 Activité live</h3>
-      <ul id="activityList" class="activity-list"></ul>
-    </div>
+   </div>
 
   </div>
 </section>
   
     <section id="endPartyOverlay" class="v22-end-overlay hidden">
       <div class="v22-end-card">
-        <button id="closeEndPartyBtn" class="v22-end-close">×</button>
-        <span class="badge">🏁 Fin de soirée</span>
+        <button id="closeEndPartyBtn" class="v22-end-close" aria-label="Fermer">×</button>
+        <span class="badge">Fin de soirée</span>
         <h2>Résumé PartyHub</h2>
         <div id="endPartyStats" class="v22-end-stats"></div>
         <div id="endPartyAwards" class="v22-awards"></div>
