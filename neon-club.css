@@ -1298,6 +1298,331 @@ select option {
   }
 }
 
+/* =========================================================
+   COUCHE « SOIRÉE » : couleurs par jeu / ambiance, fond animé,
+   vitrine de la room. Plus riche sur grand écran.
+   ========================================================= */
+
+:root {
+  --nc-violet: #8b5cf6;
+  --nc-neon-border: linear-gradient(120deg, var(--nc-pink), var(--nc-violet) 50%, var(--nc-cyan));
+}
+
+/* Couleur propre à chaque jeu (pastille d'icône, sélection, survol) */
+.game-card { --g: var(--nc-pink); }
+.game-card[data-game="most-likely"] { --g: #e01fa0; }
+.game-card[data-game="roulette"] { --g: #22d3ee; }
+.game-card[data-game="never-have-i-ever"] { --g: #a78bfa; }
+.game-card[data-game="chaos-kings"] { --g: #facc15; }
+.game-card[data-game="survivor"] { --g: #fb923c; }
+.game-card[data-game="bomb"] { --g: #ff5c7a; }
+.game-card[data-game="truth-or-drink"] { --g: #f472b6; }
+.game-card[data-game="traitor"] { --g: #34d399; }
+.game-card[data-game="monopolit"] { --g: #60a5fa; }
+.game-card[data-game="casino-night"] { --g: #fbbf24; }
+
+.game-card > span {
+  background: color-mix(in srgb, var(--g) 20%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--g) 45%, transparent);
+}
+
+.game-card:hover {
+  border-color: color-mix(in srgb, var(--g) 55%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--g) 22%, transparent);
+}
+
+.game-card.selected {
+  border: 1.5px solid var(--g);
+  background: color-mix(in srgb, var(--g) 14%, transparent);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--g) 35%, transparent);
+}
+
+.game-card.selected > span {
+  background: var(--g);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--g) 70%, transparent);
+}
+
+/* Couleur propre à chaque ambiance */
+.mode-card { --m: var(--nc-pink); }
+.mode-card[data-mode="chill"] { --m: #0ea5c6; }
+.mode-card[data-mode="party"] { --m: #e01fa0; }
+.mode-card[data-mode="chaos"] { --m: #7c3aed; }
+.mode-card[data-mode="hardcore"] { --m: #e11d48; }
+
+.mode-card.selected {
+  background: var(--m);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--m) 65%, transparent);
+}
+
+/* Fond : halos qui dérivent + grille rétro en perspective */
+.background::before {
+  animation: ncDriftA 18s ease-in-out infinite alternate;
+}
+
+.background::after {
+  animation: ncDriftB 22s ease-in-out infinite alternate;
+}
+
+@keyframes ncDriftA {
+  to { transform: translate(140px, 90px) scale(1.15); }
+}
+
+@keyframes ncDriftB {
+  to { transform: translate(-160px, -80px) scale(1.1); }
+}
+
+/* Bouton principal : halo qui respire + reflet qui passe */
+.btn.big-btn {
+  position: relative;
+  overflow: hidden;
+  animation: ncBreathe 2.8s ease-in-out infinite;
+}
+
+.btn.big-btn::after {
+  content: "";
+  position: absolute;
+  inset: -40% auto -40% -60%;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  animation: ncShine 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.btn.big-btn:disabled {
+  animation: none;
+}
+
+@keyframes ncBreathe {
+  0%, 100% { box-shadow: 0 0 22px var(--nc-pink-glow), 0 10px 26px rgba(0, 0, 0, 0.4); }
+  50% { box-shadow: 0 0 46px rgba(224, 31, 160, 0.7), 0 10px 26px rgba(0, 0, 0, 0.4); }
+}
+
+@keyframes ncShine {
+  0%, 55% { left: -60%; }
+  85%, 100% { left: 130%; }
+}
+
+/* Titres de panneau : petit trait néon */
+.panel > h3,
+.panel-title h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel > h3::before,
+.panel-title h3::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--nc-neon-border);
+  box-shadow: 0 0 10px var(--nc-pink-glow);
+}
+
+/* Panneaux : liseré lumineux en haut */
+.card,
+.panel,
+.profile-card {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+@media (min-width: 1000px) {
+  /* Grille synthwave au sol (calque séparé pour ne pas masquer les halos) */
+  body::before {
+    content: "";
+    position: fixed;
+    left: -50%;
+    right: -50%;
+    bottom: 0;
+    height: 75%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(rgba(224, 31, 160, 0.55) 2px, transparent 2px) 0 0 / 100% 64px,
+      linear-gradient(90deg, rgba(34, 211, 238, 0.45) 2px, transparent 2px) 0 0 / 64px 100%;
+    transform: perspective(700px) rotateX(58deg);
+    transform-origin: 50% 100%;
+    -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 70%);
+    mask-image: linear-gradient(to top, #000 0%, transparent 70%);
+    opacity: 0.5;
+    animation: ncGridScroll 6s linear infinite;
+  }
+
+  @keyframes ncGridScroll {
+    to { background-position: 0 64px, 0 0; }
+  }
+
+  /* Vitrine de la room */
+  .lobby-hero {
+    position: relative;
+    padding: 32px 36px;
+    border-radius: 32px;
+    border: 1.5px solid transparent;
+    background:
+      radial-gradient(120% 140% at 0% 0%, rgba(224, 31, 160, 0.22), transparent 55%) padding-box,
+      radial-gradient(100% 140% at 100% 100%, rgba(34, 211, 238, 0.16), transparent 55%) padding-box,
+      linear-gradient(var(--nc-bg-raised), var(--nc-bg-raised)) padding-box,
+      var(--nc-neon-border) border-box;
+    box-shadow: 0 0 60px rgba(139, 92, 246, 0.22), 0 30px 80px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+  }
+
+  #roomCodeDisplay {
+    font-size: 104px;
+    animation: ncCodePulse 3.2s ease-in-out infinite;
+  }
+
+  @keyframes ncCodePulse {
+    0%, 100% { text-shadow: 0 0 24px var(--nc-pink-glow); }
+    50% { text-shadow: 0 0 42px rgba(224, 31, 160, 0.8), 0 0 90px rgba(139, 92, 246, 0.45); }
+  }
+
+  .lobby-hero .muted {
+    font-size: 17px;
+  }
+
+  /* Progression : 3 cartes avec chiffres néon */
+  .v22-stat-card {
+    padding: 16px 18px;
+    border-radius: var(--nc-radius);
+  }
+
+  .v22-stat-card strong {
+    font-size: 26px;
+    color: #fff;
+    text-shadow: 0 0 18px rgba(139, 92, 246, 0.6);
+  }
+
+  /* Ambiances : plus hautes, texte plus grand */
+  .mode-card {
+    min-height: 72px;
+  }
+
+  .mode-card strong {
+    font-family: var(--nc-font-display);
+    font-size: 17px;
+  }
+
+  .mode-card small {
+    font-size: 13px;
+  }
+
+  /* Page plus large, colonne des jeux plus large, jeux en tuiles */
+  .app {
+    width: min(1360px, 100%);
+  }
+
+  .lobby-layout {
+    grid-template-columns: minmax(300px, 1fr) minmax(0, 1.55fr) minmax(300px, 1fr);
+  }
+
+  .btn.big-btn {
+    white-space: nowrap;
+  }
+
+  .setting-row > span {
+    white-space: nowrap;
+  }
+
+  .setting-row select {
+    min-width: 0;
+    width: 140px;
+  }
+
+  .game-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .game-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    min-height: 168px;
+    padding: 18px;
+    border-radius: 22px;
+    background:
+      radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--g) 16%, transparent), transparent 60%),
+      var(--nc-surface);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  .game-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .game-card > span {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    font-size: 30px;
+  }
+
+  .game-card strong {
+    font-family: var(--nc-font-display);
+    font-size: 15px;
+    line-height: 1.25;
+  }
+
+  .game-card em {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    margin: 0;
+  }
+
+  /* Joueurs : avatar plus grand avec anneau lumineux */
+  .players li {
+    min-height: 64px;
+  }
+
+  .players .mini-avatar {
+    width: 44px;
+    height: 44px;
+    box-shadow: 0 0 14px rgba(34, 211, 238, 0.35);
+  }
+
+  /* Accueil : logo et titre plus présents */
+  .ph-brand-logo {
+    width: 124px;
+    height: 124px;
+    border-radius: 34px;
+    animation: ncFloat 5s ease-in-out infinite;
+  }
+
+  @keyframes ncFloat {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+
+  .hero h1 {
+    font-size: 112px;
+    background: linear-gradient(100deg, #fff 30%, #ffc2ea 50%, #fff 70%) 0 0 / 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: ncTitleSheen 6s linear infinite;
+    text-shadow: none;
+    filter: drop-shadow(0 0 30px var(--nc-pink-glow));
+  }
+
+  @keyframes ncTitleSheen {
+    to { background-position: -250% 0; }
+  }
+
+  .home-grid .card {
+    padding: 28px;
+    border: 1.5px solid transparent;
+    background:
+      linear-gradient(rgba(18, 14, 43, 0.92), rgba(18, 14, 43, 0.92)) padding-box,
+      var(--nc-neon-border) border-box;
+    box-shadow: 0 0 50px rgba(224, 31, 160, 0.18), 0 30px 80px rgba(0, 0, 0, 0.4);
+  }
+}
+
 /* Écrans étroits : on garde les 4 ambiances lisibles */
 @media (max-width: 380px) {
   .mode-card small {
