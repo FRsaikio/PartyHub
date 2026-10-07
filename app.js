@@ -54,11 +54,11 @@ const GAME_CONFIG = {
     url: "games/bomb-timer/bomb-timer.html"
   },
   "truth-or-drink": {
-    label: "Vérité ou Bois",
+    label: "Action ou Vérité",
     url: "games/truth-or-drink/truth-or-drink.html"
   },
   "verite-ou-bois": {
-    label: "Vérité ou Bois",
+    label: "Action ou Vérité",
     url: "games/truth-or-drink/truth-or-drink.html"
   },
   traitor: {

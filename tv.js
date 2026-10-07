@@ -23,8 +23,8 @@ const GAME_CONFIG = {
   "chaos-kings": { label: "Chaos Kings", url: "games/chaos-kings/chaos-kings.html" },
   survivor: { label: "Survivor", url: "games/survivor/survivor.html" },
   bomb: { label: "Bomb Timer", url: "games/bomb-timer/bomb-timer.html" },
-  "truth-or-drink": { label: "Vérité ou Bois", url: "games/truth-or-drink/truth-or-drink.html" },
-  "verite-ou-bois": { label: "Vérité ou Bois", url: "games/truth-or-drink/truth-or-drink.html" },
+  "truth-or-drink": { label: "Action ou Vérité", url: "games/truth-or-drink/truth-or-drink.html" },
+  "verite-ou-bois": { label: "Action ou Vérité", url: "games/truth-or-drink/truth-or-drink.html" },
   traitor: { label: "Mission Traître", url: "games/mission-traitre/mission-traitre.html" },
   monopolit: { label: "Monopoly", url: "games/monopolit/index.html" },
   "casino-night": { label: "Casino Night", url: "games/casino-night/index.html" },
@@ -742,31 +742,12 @@ function renderLiveGame(data){
   const labelLower = String(label || "").toLowerCase();
   // Casino Night a sa propre vue TV (classement + annonces), pas de page intégrée :
   // l'intégrer créerait un faux portefeuille « TV » dans la room.
-  // Survivor, Mission Traître, la Bombe, Chaos Kings, la Roulette, Most Likely et Je n'ai jamais : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
-  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || activeId === "chaos-kings" || activeId === "roulette" || activeId === "most-likely" || activeId === "never-have-i-ever" || labelLower.includes("poker") || labelLower.includes("monopoly");
+  // Survivor, Mission Traître, la Bombe, Chaos Kings, la Roulette, Most Likely, Je n'ai jamais et Action ou Vérité : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
+  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || activeId === "chaos-kings" || activeId === "roulette" || activeId === "most-likely" || activeId === "never-have-i-ever" || activeId === "truth-or-drink" || activeId === "verite-ou-bois" || labelLower.includes("poker") || labelLower.includes("monopoly");
   if(wantsStream && renderGameStream(activeId, data, label)) return;
 
   if(data.roomStatus !== "in-game" && !data.gameStarted){
     liveGameEl.innerHTML = `<div class="tv-live-empty">La room est au lobby. Lance un jeu pour voir la partie en direct.</div>`;
-    return;
-  }
-
-  if(activeId === "truth-or-drink" || activeId === "verite-ou-bois"){
-    const state = data.truthOrDrinkState || data.gameState?.truth || data.gameState || {};
-    const target = state.currentTarget?.name || state.currentTarget?.pseudo || state.targetName || "-";
-    liveGameEl.innerHTML = `
-      <div class="tv-live-focus">
-        <span class="tv-live-kicker">🍻 Vérité ou Bois · Question ${formatLiveValue(state.currentQuestion, "1")}</span>
-        <h3>${formatLiveValue(state.question, "Question en chargement...")}</h3>
-        <p class="tv-live-player">🎯 Joueur ciblé : ${formatLiveValue(target)}</p>
-        <p class="tv-live-action">🍺 Punition : ${formatLiveValue(state.currentPunishment, "-")}</p>
-        <div class="tv-live-stats big">
-          <span>🎤 Réponses : <strong>${formatLiveValue(state.answered, 0)}</strong></span>
-          <span>🍺 Boissons : <strong>${formatLiveValue(state.drinks, 0)}</strong></span>
-        </div>
-        ${historyList(state.history)}
-      </div>
-    `;
     return;
   }
 
