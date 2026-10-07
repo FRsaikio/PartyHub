@@ -49,6 +49,8 @@ There is no build step, package manager, linter, or test suite. Serve the repo r
 
 **Mission Traître** (`games/mission-traitre/js/`): same architecture as Survivor — `traitor-logic.js` (pure: roles, day / council / banish / night / morning, win checks), `traitor-content.js` (missions, secret words, punishments), `app.js` (room field `traitor`, transactions, TV view with `?tv=1`, never shows roles). Traitors per game scale with player count (1 / 2 / 3). At night every alive player picks someone (traitors: victim, innocents: suspicion) so nobody can tell who the traitors are from who is tapping.
 
+**La Bombe** (`games/bomb-timer/js/`): `bomb-logic.js` (pure), `bomb-content.js` (categories, questions, punishments), `words.js` (50k-word dictionary, dynamically imported only for the Syllables mode), `app.js` (room field `bomb`). Timing never compares phone clocks: the state stores the remaining fuse (ms) and a `handId` at each hand-off; every phone counts locally from when it received that hand, the holder sends `explode` (others do it as a backup after `BACKUP_DELAY_MS`), and actions carrying an old `handId` are ignored.
+
 **Script loading quirks**
 - Most games use `<script type="module">` with static imports from `../../firebase.js`. Casino Night and Monopoly use classic scripts and pull Firebase with dynamic `import("../../firebase.js")`; Poker lives one level deeper (`games/casino-night/poker/`) so its paths use `../../../`.
 - `GAME_CONFIG["verite-ou-bois"]` is a legacy alias kept for old rooms; it points to `games/truth-or-drink/`.
