@@ -746,8 +746,8 @@ function renderLiveGame(data){
   const labelLower = String(label || "").toLowerCase();
   // Casino Night a sa propre vue TV (classement + annonces), pas de page intégrée :
   // l'intégrer créerait un faux portefeuille « TV » dans la room.
-  // Survivor, Mission Traître et la Bombe : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
-  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || labelLower.includes("poker") || labelLower.includes("monopoly");
+  // Survivor, Mission Traître, la Bombe et Chaos Kings : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
+  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || activeId === "chaos-kings" || labelLower.includes("poker") || labelLower.includes("monopoly");
   if(wantsStream && renderGameStream(activeId, data, label)) return;
 
   if(data.roomStatus !== "in-game" && !data.gameStarted){
@@ -902,36 +902,6 @@ function renderLiveGame(data){
         ${voteBarsHtml}
         ${state.voteComplete && revealReady ? `<div class="tv-result-chip ${state.tie ? "tie" : ""}"><span>${state.tie ? "🤝" : "👑"}</span><strong>${escapeHtml(resultName)}</strong><em>${escapeHtml(state.penalty || state.hint || "Résultat validé")}</em></div>` : ""}
         <ul class="tv-live-scoreboard">${scoreRows || "<li>Aucun score pour le moment.</li>"}</ul>
-      </div>
-    `;
-    return;
-  }
-
-  if(activeId === "chaos-kings"){
-    const state = data.chaosKingsState || data.gameState?.chaosKings || {};
-    if(state.type === "draw" || state.ruleName || state.cardValue){
-      showBroadcastReveal(`chaos-kings:${state.actionId || state.turn}:${state.cardValue || "card"}:${state.ruleName || "rule"}`, {
-        kicker: "CHAOS KINGS",
-        icon: state.cardIcon || "👑",
-        title: `${state.cardValue || "?"}${state.cardSuit || ""}`,
-        subtitle: state.playerName ? `${state.playerName} pioche...` : "Carte tirée",
-        text: state.ruleName || state.ruleText || "Nouvelle règle"
-      });
-    }
-    liveGameEl.innerHTML = `
-      <div class="tv-live-cardgame">
-        <div class="tv-big-card">
-          <div>${formatLiveValue(state.cardValue, "?")}${formatLiveValue(state.cardSuit, "")}</div>
-          <span>${formatLiveValue(state.cardIcon, "👑")}</span>
-        </div>
-        <div class="tv-live-result-card">
-          <span class="tv-live-kicker">👑 Chaos Kings · Tour ${formatLiveValue(state.turn, "1")}</span>
-          <h3>${formatLiveValue(state.ruleName, "Pioche une carte")}</h3>
-          <p class="tv-live-player">🎯 ${formatLiveValue(state.playerName, "-")}</p>
-          <p class="tv-live-action">${formatLiveValue(state.ruleText, "La règle apparaîtra ici.")}</p>
-          <div class="tv-live-stats"><span>🔥 Chaos : <strong>${formatLiveValue(state.chaosLevel, 0)}%</strong></span><span>👑 Rois : <strong>${formatLiveValue(state.kingCount, 0)}/4</strong></span></div>
-          ${historyList(state.historyItems)}
-        </div>
       </div>
     `;
     return;
