@@ -47,6 +47,8 @@ There is no build step, package manager, linter, or test suite. Serve the repo r
 
 **Survivor** (`games/survivor/js/`): `survivor-logic.js` is pure (applyAction: start / submit / judge / openCouncil / vote / play / closeCouncil / next / juryVote / restart; testable in Node), `minigames.js` holds the phone challenges (scores measured locally with performance.now), `app.js` syncs the room field `survivor` via runTransaction (host re-read from the room) and also renders the TV view (`?tv=1`, embedded by tv.js). A new game starts when `survivor.session` differs from `activeGame.startedAt`. Starting torches scale with tribe size (3 / 2 / 1).
 
+**Mission Traître** (`games/mission-traitre/js/`): same architecture as Survivor — `traitor-logic.js` (pure: roles, day / council / banish / night / morning, win checks), `traitor-content.js` (missions, secret words, punishments), `app.js` (room field `traitor`, transactions, TV view with `?tv=1`, never shows roles). Traitors per game scale with player count (1 / 2 / 3). At night every alive player picks someone (traitors: victim, innocents: suspicion) so nobody can tell who the traitors are from who is tapping.
+
 **Script loading quirks**
 - Most games use `<script type="module">` with static imports from `../../firebase.js`. Casino Night and Monopoly use classic scripts and pull Firebase with dynamic `import("../../firebase.js")`; Poker lives one level deeper (`games/casino-night/poker/`) so its paths use `../../../`.
 - `GAME_CONFIG["verite-ou-bois"]` is a legacy alias kept for old rooms; it points to `games/truth-or-drink/`.

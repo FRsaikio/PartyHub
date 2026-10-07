@@ -766,8 +766,8 @@ function renderLiveGame(data){
   const labelLower = String(label || "").toLowerCase();
   // Casino Night a sa propre vue TV (classement + annonces), pas de page intégrée :
   // l'intégrer créerait un faux portefeuille « TV » dans la room.
-  // Survivor : la page du jeu a sa propre vue TV (?tv=1), en lecture seule.
-  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || labelLower.includes("poker") || labelLower.includes("monopoly");
+  // Survivor et Mission Traître : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
+  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || labelLower.includes("poker") || labelLower.includes("monopoly");
   if(wantsStream && renderGameStream(activeId, data, label)) return;
 
   if(data.roomStatus !== "in-game" && !data.gameStarted){
@@ -995,20 +995,6 @@ function renderLiveGame(data){
           <div class="tv-live-stats"><span>🔥 Chaos : <strong>${formatLiveValue(state.chaosLevel, 0)}%</strong></span><span>👑 Rois : <strong>${formatLiveValue(state.kingCount, 0)}/4</strong></span></div>
           ${historyList(state.historyItems)}
         </div>
-      </div>
-    `;
-    return;
-  }
-
-  if(activeId === "traitor"){
-    const state = data.traitorState || data.gameState?.traitor || {};
-    liveGameEl.innerHTML = `
-      <div class="tv-live-focus">
-        <span class="tv-live-kicker">🕵️ Mission Traître</span>
-        <h3>Rôles distribués</h3>
-        <p>Les rôles restent privés sur les téléphones des joueurs.</p>
-        <div class="tv-live-stats big"><span>👥 Joueurs : <strong>${getPlayers(data).length}</strong></span><span>🕵️ Traître : <strong>caché</strong></span></div>
-        ${historyList(state.publicHistory || state.history)}
       </div>
     `;
     return;
