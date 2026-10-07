@@ -55,6 +55,10 @@ There is no build step, package manager, linter, or test suite. Serve the repo r
 
 **Je n'ai jamais** (`games/never-have-i-ever/js/`): `never-logic.js` (pure), `never-content.js`, `app.js` on room field `never`. Answers (did / never) and a guess of how many did it stay hidden until everyone answered, then flip all at once; closest guesses score; per-player did counts and streaks.
 
+**Action ou Vérité** (`games/truth-or-drink/`, game id `truth-or-drink`, formerly « Vérité ou Bois »): `truth-logic.js` (pure), `truth-content.js` (truths, punishments), `dare-content.js` (dares), `app.js` on room field `truth`. Fixed turn order; the target picks Action or Vérité, then answers or refuses; the others judge secretly (✅ / 🙄), majority "bidon" = punishment anyway (a tie favours the target).
+
+All refreshed games (Survivor, Mission Traître, Bombe, Chaos Kings, Roulette, Most Likely, Je n'ai jamais, Action ou Vérité, poker) are streamed on the TV through their own page with `?tv=1&spectator=1&embed=1` (see `wantsStream` in tv.js). Each one starts a fresh game when its room field's `session` differs from `activeGame.startedAt`, and every write goes through `runTransaction` with the host re-read from the room (`hostNameOf`).
+
 **Script loading quirks**
 - Most games use `<script type="module">` with static imports from `../../firebase.js`. Casino Night and Monopoly use classic scripts and pull Firebase with dynamic `import("../../firebase.js")`; Poker lives one level deeper (`games/casino-night/poker/`) so its paths use `../../../`.
 - `GAME_CONFIG["verite-ou-bois"]` is a legacy alias kept for old rooms; it points to `games/truth-or-drink/`.
