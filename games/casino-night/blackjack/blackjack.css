@@ -1,0 +1,679 @@
+/* =========================================================
+   Salle de blackjack — Néon Club + or et feutre du casino
+   Base : neon-club.css, neon-game.css, ../css/style.css.
+   ========================================================= */
+
+.bk-app {
+  width: min(1120px, 100%);
+}
+
+.bk-header {
+  align-items: center;
+}
+
+.bk-wallet {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  width: fit-content;
+  margin-top: 10px;
+  padding: 6px 16px;
+  border-radius: var(--nc-radius);
+  border: 1px solid rgba(245, 196, 81, 0.35);
+  background: rgba(245, 196, 81, 0.08);
+}
+
+.bk-wallet-chips {
+  font-family: var(--nc-font-display);
+  font-size: 20px;
+  color: var(--cs-gold);
+  text-shadow: 0 0 18px var(--cs-gold-glow);
+}
+
+.bk-offline {
+  display: grid;
+  gap: 6px;
+  padding: 28px;
+  text-align: center;
+  border-radius: var(--nc-radius-lg);
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface);
+}
+
+.bk-room {
+  display: grid;
+  gap: 16px;
+}
+
+/* ---------- Tables de la salle ---------- */
+
+.bk-tables {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.bk-table-btn {
+  flex: 0 0 auto;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface);
+  color: var(--nc-muted);
+  font: 700 13px var(--nc-font-body);
+  cursor: pointer;
+}
+
+.bk-table-btn.active {
+  color: #1a1204;
+  border-color: var(--cs-gold);
+  background: linear-gradient(135deg, #ffe08a, var(--cs-gold) 55%, var(--cs-gold-deep));
+  box-shadow: 0 0 18px var(--cs-gold-glow);
+}
+
+/* ---------- La table en demi-lune ---------- */
+
+.bk-stage {
+  padding: 10px 0 0;
+}
+
+.bk-felt {
+  position: relative;
+  min-height: 560px;
+  padding: 18px 18px 26px;
+  border-radius: 34px 34px 50% 50% / 34px 34px 46% 46%;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, 0.09), transparent 60%),
+    radial-gradient(ellipse at center, #13563f 0%, var(--cs-felt) 55%, var(--cs-felt-deep) 100%);
+  box-shadow:
+    0 0 0 10px #4a2c12,
+    0 0 0 12px rgba(245, 196, 81, 0.55),
+    0 0 0 16px rgba(8, 6, 26, 0.9),
+    0 0 0 17px rgba(224, 31, 160, 0.55),
+    0 0 60px rgba(224, 31, 160, 0.3),
+    0 30px 70px rgba(0, 0, 0, 0.6),
+    inset 0 0 70px rgba(0, 0, 0, 0.5);
+  margin: 16px;
+}
+
+/* Croupier */
+.bk-dealer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bk-dealer-face {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 36px;
+  background: radial-gradient(circle at 35% 30%, #2a2245, #0d0a1e);
+  border: 2px solid var(--cs-gold);
+  box-shadow: 0 0 0 4px rgba(8, 6, 26, 0.9), 0 0 24px var(--cs-gold-glow);
+}
+
+.bk-dealer-plate {
+  position: relative;
+  z-index: 1;
+  margin-top: -8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--cs-gold);
+  color: #1a1204;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.bk-speech {
+  position: relative;
+  max-width: min(440px, 90%);
+  margin: 8px 0 0;
+  padding: 7px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #16121f;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.bk-speech::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  margin-left: -6px;
+  border: 6px solid transparent;
+  border-top: 0;
+  border-bottom-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Banque */
+.bk-bank {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  min-height: 96px;
+  margin-top: 12px;
+}
+
+.bk-shoe {
+  position: absolute;
+  right: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.bk-arc {
+  display: grid;
+  justify-items: center;
+  margin-top: 14px;
+  font-family: var(--nc-font-display);
+  color: rgba(245, 196, 81, 0.5);
+  letter-spacing: 0.2em;
+  pointer-events: none;
+}
+
+.bk-arc span {
+  font-size: clamp(14px, 2.4vw, 22px);
+  font-weight: 800;
+}
+
+.bk-arc small {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* ---------- Cartes ---------- */
+
+.bk-cards {
+  display: flex;
+}
+
+.bk-card {
+  --w: 54px;
+  position: relative;
+  width: var(--w);
+  aspect-ratio: 5 / 7;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 2px;
+  padding: calc(var(--w) * 0.08) calc(var(--w) * 0.1);
+  background: linear-gradient(160deg, #ffffff, #ece6f3);
+  color: #16121f;
+  font-family: var(--nc-font-display);
+  line-height: 1;
+  box-shadow: -3px 6px 14px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.bk-card + .bk-card {
+  margin-left: calc(var(--w) * -0.42);
+}
+
+.bk-card.red {
+  color: #d1123f;
+}
+
+.bk-rank {
+  font-size: calc(var(--w) * 0.34);
+  font-weight: 800;
+}
+
+.bk-suit {
+  font-size: calc(var(--w) * 0.34);
+}
+
+.bk-card.back {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.12) 0 4px, transparent 4px 9px),
+    linear-gradient(150deg, var(--nc-pink), #6d1bd1);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45), inset 0 0 0 3px rgba(255, 255, 255, 0.85);
+}
+
+#bkDealerCards .bk-card {
+  --w: 62px;
+}
+
+.bk-card.dealt {
+  animation: bk-deal 0.45s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+
+@keyframes bk-deal {
+  from { opacity: 0; transform: translate(120px, -160px) rotate(-30deg) scale(0.5); }
+  to { opacity: 1; transform: none; }
+}
+
+.bk-total {
+  min-width: 34px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font: 800 13px var(--nc-font-display);
+  color: #fff;
+  text-align: center;
+}
+
+.bk-total.dealer {
+  font-size: 16px;
+  border-color: rgba(245, 196, 81, 0.6);
+  color: var(--cs-gold);
+}
+
+.bk-total.bust {
+  background: rgba(209, 18, 63, 0.75);
+  border-color: #ff5c7a;
+}
+
+.bk-total.bj {
+  background: linear-gradient(135deg, #ffe08a, var(--cs-gold));
+  color: #1a1204;
+}
+
+/* ---------- Places en arc ---------- */
+
+.bk-seats {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bk-seat {
+  --sx: 50%;
+  --sy: 80%;
+  position: absolute;
+  left: var(--sx);
+  top: var(--sy);
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 150px;
+  pointer-events: auto;
+  transition: opacity 0.3s;
+}
+
+/* place 1 = à gauche du croupier (à droite pour les joueurs), comme au casino */
+.bk-seat.slot-0 { --sx: 88%; --sy: 60%; }
+.bk-seat.slot-1 { --sx: 70%; --sy: 76%; }
+.bk-seat.slot-2 { --sx: 50%; --sy: 82%; }
+.bk-seat.slot-3 { --sx: 30%; --sy: 76%; }
+.bk-seat.slot-4 { --sx: 12%; --sy: 60%; }
+
+.bk-hands {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  min-height: 70px;
+  align-items: flex-end;
+}
+
+.bk-hand {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 10px;
+}
+
+.bk-hand .bk-card {
+  --w: 44px;
+}
+
+.bk-hands:has(.bk-hand + .bk-hand) .bk-card {
+  --w: 34px;
+}
+
+.bk-hand.active {
+  outline: 2px solid var(--cs-gold);
+  box-shadow: 0 0 22px var(--cs-gold-glow);
+}
+
+.bk-hand .bk-total {
+  position: absolute;
+  top: -10px;
+  right: -12px;
+}
+
+.bk-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--nc-cyan);
+}
+
+.bk-avatar {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  font-size: 27px;
+  background: radial-gradient(circle at 35% 30%, #2d2350, #120d28);
+  border: 2px solid var(--nc-line-strong);
+  box-shadow: 0 0 0 4px rgba(8, 6, 26, 0.85), 0 10px 22px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+
+.bk-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bk-plate {
+  display: grid;
+  justify-items: center;
+  min-width: 96px;
+  max-width: 100%;
+  padding: 4px 10px;
+  margin-top: -10px;
+  border-radius: 10px;
+  background: rgba(8, 6, 26, 0.92);
+  border: 1px solid var(--nc-line);
+  z-index: 1;
+}
+
+.bk-plate strong {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+}
+
+.bk-wait {
+  min-height: 14px;
+  font-size: 11px;
+  color: var(--nc-muted);
+}
+
+.bk-net {
+  font: 800 13px var(--nc-font-display);
+}
+
+.bk-net.up { color: var(--nc-success); }
+.bk-net.down { color: var(--nc-danger); }
+
+.bk-chip {
+  position: relative;
+  padding: 3px 10px 3px 26px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(245, 196, 81, 0.5);
+  font: 800 12px var(--nc-font-display);
+  color: var(--cs-gold);
+  white-space: nowrap;
+}
+
+.bk-chip::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 15px;
+  height: 15px;
+  margin-top: -7.5px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(var(--nc-pink) 0 30deg, #fff 30deg 60deg);
+  box-shadow: inset 0 0 0 3px #a3127a;
+}
+
+.bk-chip.allin {
+  border-color: var(--nc-pink);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(224, 31, 160, 0.5);
+}
+
+/* états */
+.bk-seat.me .bk-avatar { border-color: var(--nc-cyan); }
+.bk-seat.me .bk-plate { border-color: rgba(34, 211, 238, 0.5); }
+
+.bk-seat.turn .bk-avatar {
+  border-color: var(--cs-gold);
+  transform: scale(1.08);
+  animation: bk-turn 1.2s ease-in-out infinite;
+}
+
+@keyframes bk-turn {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(8, 6, 26, 0.85), 0 0 0 7px rgba(245, 196, 81, 0.45), 0 0 30px var(--cs-gold-glow); }
+  50% { box-shadow: 0 0 0 4px rgba(8, 6, 26, 0.85), 0 0 0 11px rgba(245, 196, 81, 0.15), 0 0 44px var(--cs-gold-glow); }
+}
+
+.bk-seat.won .bk-avatar { border-color: var(--nc-success); box-shadow: 0 0 0 4px rgba(8, 6, 26, 0.85), 0 0 30px rgba(52, 211, 153, 0.6); }
+.bk-seat.lost { opacity: 0.7; }
+
+.bk-seat.empty {
+  width: 86px;
+}
+
+.bk-sit,
+.bk-free {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font: 800 11px var(--nc-font-body);
+  border: 2px dashed rgba(255, 255, 255, 0.22);
+  background: rgba(8, 6, 26, 0.55);
+  color: var(--nc-muted);
+}
+
+.bk-sit {
+  cursor: pointer;
+  border-color: rgba(245, 196, 81, 0.6);
+  color: var(--cs-gold);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.bk-sit:hover {
+  transform: scale(1.06);
+  background: rgba(245, 196, 81, 0.12);
+}
+
+.bk-kick {
+  position: absolute;
+  top: 70px;
+  right: 18px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--nc-line);
+  background: rgba(8, 6, 26, 0.9);
+  color: var(--nc-muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/* ---------- Actions ---------- */
+
+.bk-controls {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--nc-radius-lg);
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface);
+}
+
+.bk-controls:empty {
+  display: none;
+}
+
+.bk-betpick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.bk-actions {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.bk-actions.two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.bk-actions .btn {
+  min-height: 52px;
+  padding-inline: 6px;
+}
+
+.bk-note {
+  margin: 0;
+  color: var(--nc-muted);
+  font-weight: 700;
+}
+
+.bk-leave,
+.bk-force {
+  justify-self: start;
+}
+
+.bk-rules {
+  border-radius: var(--nc-radius);
+  border: 1px solid var(--nc-line);
+  background: var(--nc-surface);
+  padding: 12px 16px;
+}
+
+.bk-rules summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.bk-rules ul {
+  display: grid;
+  gap: 6px;
+  color: var(--nc-muted);
+  line-height: 1.5;
+}
+
+/* ---------- Téléphone : places en grille sur le feutre ---------- */
+
+@media (max-width: 760px) {
+  .bk-header .muted {
+    display: none;
+  }
+
+  .bk-felt {
+    min-height: 0;
+    margin: 12px 8px 20px;
+    padding: 14px 10px 34px;
+    border-radius: 26px 26px 46% 46% / 26px 26px 18% 18%;
+  }
+
+  .bk-shoe {
+    top: -6px;
+    right: 4px;
+    transform: none;
+  }
+
+  #bkDealerCards .bk-card {
+    --w: 50px;
+  }
+
+  .bk-arc {
+    margin: 10px 0 6px;
+  }
+
+  .bk-seats {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px 6px;
+  }
+
+  .bk-arc small {
+    display: none;
+  }
+
+  .bk-seat,
+  .bk-seat.empty {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: calc(33.333% - 6px);
+  }
+
+  .bk-hand .bk-card {
+    --w: 34px;
+  }
+
+  .bk-hands:has(.bk-hand + .bk-hand) .bk-card {
+    --w: 26px;
+  }
+
+  .bk-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 23px;
+  }
+
+  .bk-plate {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .bk-plate strong {
+    max-width: 90px;
+  }
+
+  .bk-sit,
+  .bk-free {
+    width: 52px;
+    height: 52px;
+  }
+
+  .bk-kick {
+    top: 54px;
+    right: 4px;
+  }
+
+  .bk-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bk-actions .bk-hit {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------- TV / spectateur ---------- */
+
+.bk-spectator .bk-controls,
+.bk-spectator .bk-rules {
+  display: none;
+}
+
+.bk-embed .bk-header,
+.bk-embed .bk-tables {
+  display: none;
+}

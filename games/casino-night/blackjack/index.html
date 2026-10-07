@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blackjack · PartyHub</title>
+  <meta name="theme-color" content="#08061a" />
+  <link rel="icon" href="../../../partyhub-logo-neon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
+  <link rel="stylesheet" href="../../../neon-club.css" />
+  <link rel="stylesheet" href="../../../neon-game.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="blackjack.css" />
+</head>
+<body>
+
+  <div class="background"></div>
+
+  <main class="app casino-app bk-app">
+
+    <!-- En-tête -->
+    <div class="game-header casino-header bk-header">
+      <button id="backCasinoBtn" class="btn small" type="button">← Casino</button>
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>Black<span class="casino-gold">jack</span></h2>
+        <p class="muted">5 places par table. Le croupier distribue dès que tout le monde a misé, chacun joue à son tour.</p>
+        <div class="bk-wallet" aria-label="Tes jetons au casino">
+          <span class="wallet-label">Au casino</span>
+          <strong id="walletChips" class="bk-wallet-chips">…</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hors room -->
+    <section id="bkOffline" class="bk-offline" hidden>
+      <strong>🃏 La salle se joue dans une room</strong>
+      <p>Rejoins une room depuis le lobby PartyHub. En attendant, tu peux jouer seul contre la banque dans le hall du casino.</p>
+    </section>
+
+    <section id="bkRoom" class="bk-room">
+
+      <nav id="bkTables" class="bk-tables" aria-label="Tables de la salle"></nav>
+
+      <!-- La table en demi-lune -->
+      <div class="bk-stage">
+        <div class="bk-felt">
+          <div class="bk-dealer" aria-live="polite">
+            <div class="bk-dealer-face" aria-hidden="true"><span>🤵</span></div>
+            <div class="bk-dealer-plate">Croupier</div>
+            <p id="bkSpeech" class="bk-speech">Bonsoir !</p>
+          </div>
+
+          <div class="bk-bank">
+            <div id="bkDealerCards"></div>
+            <strong id="bkDealerTotal" class="bk-total dealer" hidden></strong>
+            <span id="bkShoe" class="bk-shoe">Sabot neuf</span>
+          </div>
+
+          <div class="bk-arc" aria-hidden="true">
+            <span>BLACKJACK PAIE ×3</span>
+            <small>LA BANQUE TIRE JUSQU'À 17 · ASSURANCE 2 CONTRE 1</small>
+          </div>
+
+          <div id="bkSeats" class="bk-seats"></div>
+        </div>
+      </div>
+
+      <div id="bkControls" class="bk-controls"></div>
+      <div id="bkResult" class="casino-result" hidden aria-live="polite"></div>
+
+      <details class="bk-rules">
+        <summary>📘 Règles du blackjack</summary>
+        <ul>
+          <li><strong>But</strong> : approcher 21 sans dépasser, et battre la banque. Figures = 10, As = 1 ou 11.</li>
+          <li><strong>Déroulé</strong> : chacun mise (jetons du casino) ; dès que tous les joueurs assis ont misé, le croupier distribue. On joue à son tour, dans l'ordre des places : les cartes que tu tires changent celles des suivants.</li>
+          <li><strong>Blackjack</strong> (As + figure ou 10 d'entrée) : paie ×3. La banque tire jusqu'à 17.</li>
+          <li><strong>Doubler</strong> : sur tes 2 premières cartes, tu doubles ta mise et reçois une seule carte.</li>
+          <li><strong>Séparer</strong> : 2 cartes de même valeur → 2 mains (une mise chacune), jusqu'à 4 mains. Les As séparés reçoivent une seule carte.</li>
+          <li><strong>Assurance</strong> : si la banque montre un As, tu peux miser la moitié de ta mise sur son blackjack (payée 2 contre 1).</li>
+          <li><strong>Abandonner</strong> : sur tes 2 premières cartes, tu récupères la moitié de ta mise… et tu bois 2 gorgées.</li>
+          <li><strong>Défaite</strong> : mise perdue + sanction selon ta main. L'hôte peut faire « rester » un joueur absent.</li>
+        </ul>
+      </details>
+    </section>
+
+  </main>
+
+  <script src="../../../partyhub-fx.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

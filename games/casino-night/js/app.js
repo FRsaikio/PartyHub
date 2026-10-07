@@ -8,7 +8,6 @@ import { createWallet, walletKeyFor, legacyWalletKeyFor, SHIELD_PRICE } from "./
 import { sound, toast, formatChips } from "./ui.js";
 import { initSlots } from "./slots.js";
 import { initBlackjack } from "./blackjack.js";
-import { initBjTable } from "./bj-table.js";
 import { initDice } from "./dice.js";
 
 const MIN_BET = 50;
@@ -40,7 +39,7 @@ const me = {
 };
 let isHost = resolveIsHost(savedData);
 // Si l'hôte ne répond plus, un autre joueur reprend la main (et le bouton « faire jouer l'absent »).
-if (!spectator) watchHost(roomCode, savedData, value => { isHost = value; bjTableApi?.refresh(); });
+if (!spectator) watchHost(roomCode, savedData, value => { isHost = value; });
 
 // ---------- Éléments ----------
 
@@ -61,7 +60,6 @@ roomBadge.textContent = roomCode ? `Room ${roomCode}` : "Hors room";
 // ---------- Portefeuille partagé ----------
 
 let blackjackApi = null;
-let bjTableApi = null;
 let displayedChips = null;
 
 const wallet = createWallet({
@@ -72,7 +70,6 @@ const wallet = createWallet({
     renderWallet(mine);
     renderLeaderboard(leaderboard);
     blackjackApi?.refresh();
-    bjTableApi?.refresh();
   },
   onEvent: event => {
     sound.chip();
@@ -131,7 +128,6 @@ let bet = (() => {
 let allInArmed = false;
 
 function renderBet() {
-  bjTableApi?.refresh(); // le bouton « Miser » de la table affiche la mise choisie
   const chips = wallet.chips;
   betValueEl.textContent = allInArmed ? `ALL IN · ${formatChips(chips)}` : formatChips(bet);
   betStepsEl.querySelectorAll("button").forEach(btn => {
@@ -210,23 +206,6 @@ const ctx = {
     return { amount, allIn };
   },
 
-  // Pour la table multijoueur : la mise choisie, SANS la prélever (la transaction de la
-  // table s'en charge). null si impossible.
-  peekBet() {
-    if (spectator) return null;
-    const chips = wallet.chips;
-    const amount = allInArmed ? chips : bet;
-    if (chips < MIN_BET || amount > chips) return null;
-    return { amount, allIn: allInArmed };
-  },
-
-  // La mise a été posée à la table : on désarme ALL IN.
-  betUsed() {
-    allInArmed = false;
-    sound.chip();
-    renderBet();
-  },
-
   // Boutons proposés après une sanction : utiliser une protection ou assumer.
   sanctionChoices() {
     if (wallet.shields <= 0) return [];
@@ -270,7 +249,9 @@ openTab((() => {
 
 // Lien Poker : garde la room
 const pokerLink = document.getElementById("pokerNightBtn");
-if (pokerLink && roomCode) pokerLink.href = `poker/index.html?room=${encodeURIComponent(roomCode)}&v=3`;
+if (pokerLink && roomCode) pokerLink.href = `poker/index.html?room=${encodeURIComponent(roomCode)}`;
+const bjSalleLink = document.getElementById("bjSalleBtn");
+if (bjSalleLink && roomCode) bjSalleLink.href = `blackjack/index.html?room=${encodeURIComponent(roomCode)}`;
 
 // ---------- Retour au lobby (même logique que les autres jeux) ----------
 
@@ -329,7 +310,6 @@ setBjMode((() => {
 
 initSlots(ctx);
 blackjackApi = initBlackjack(ctx);
-bjTableApi = initBjTable(ctx, { roomCode: wallet.online && !spectator ? roomCode : "", me, isHost: () => isHost });
 initDice(ctx);
 wallet.start();
 renderBet();

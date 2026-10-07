@@ -185,7 +185,8 @@ export function applyAction(table, type, payload, me, w) {
       if (mySeat) return;
       const taken = new Set(Object.values(table.seats).map(s => s.index));
       if (taken.size >= MAX_SEATS) throw new Error("La table est complète.");
-      let index = 0;
+      // payload.index : la place touchée à l'écran, si elle est libre ; sinon la première libre.
+      let index = Number.isInteger(payload.index) && payload.index >= 0 && payload.index < MAX_SEATS && !taken.has(payload.index) ? payload.index : 0;
       while (taken.has(index)) index++;
       table.seats[me.key] = { name: me.name, index, bet: 0, allIn: false, hands: [], insurance: 0, insuranceDecided: false, result: null };
       return;
