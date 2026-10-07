@@ -742,8 +742,8 @@ function renderLiveGame(data){
   const labelLower = String(label || "").toLowerCase();
   // Casino Night a sa propre vue TV (classement + annonces), pas de page intégrée :
   // l'intégrer créerait un faux portefeuille « TV » dans la room.
-  // Survivor, Mission Traître, la Bombe, Chaos Kings et la Roulette : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
-  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || activeId === "chaos-kings" || activeId === "roulette" || labelLower.includes("poker") || labelLower.includes("monopoly");
+  // Survivor, Mission Traître, la Bombe, Chaos Kings, la Roulette et Most Likely : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
+  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || activeId === "chaos-kings" || activeId === "roulette" || activeId === "most-likely" || labelLower.includes("poker") || labelLower.includes("monopoly");
   if(wantsStream && renderGameStream(activeId, data, label)) return;
 
   if(data.roomStatus !== "in-game" && !data.gameStarted){
@@ -783,54 +783,6 @@ function renderLiveGame(data){
           <span>🍺 Boissons : <strong>${formatLiveValue(state.drinks, 0)}</strong></span>
         </div>
         ${historyList(state.history)}
-      </div>
-    `;
-    return;
-  }
-
-  if(activeId === "most-likely"){
-    const state = data.mostLikelyState || data.gameState?.mostLikely || {};
-    const scores = state.scores || state.scoreboard || {};
-    const scoreRows = Object.entries(scores).slice(0,5).map(([name, score], i) => `<li><strong>${i+1}. ${escapeHtml(name)}</strong><span>${escapeHtml(score)}</span></li>`).join("");
-    const players = getPlayers(data);
-    const resultName = state.tie ? "Égalité" : (state.resultPlayer || state.winnerName || "Résultat");
-    const revealKey = state.voteComplete ? `most-likely:${state.actionId || state.round}:${resultName}:${Object.keys(state.votes || {}).length}` : "";
-    let voteBarsHtml = renderVoteBars(state.votes, players);
-    let revealReady = true;
-
-    if(state.voteComplete){
-      const expected = Math.max(players.length, Object.keys(state.votes || {}).length);
-      const sameBreakdown = voteBreakdownSnapshot?.key === revealKey;
-      if(!sameBreakdown || !voteBreakdownSnapshot?.completed){
-        revealReady = false;
-        if(!sameBreakdown){
-          startVoteBreakdown(revealKey, state.votes, players, () => {
-            showBroadcastReveal(revealKey, {
-              kicker: "QUI EST LE PLUS SUSCEPTIBLE ?",
-              icon: state.tie ? "🤝" : "👑",
-              title: resultName,
-              subtitle: "Dépouillement terminé",
-              text: state.tie ? "Personne ne prend la majorité." : (state.penalty || "Majorité du groupe")
-            });
-          });
-        }
-      }
-      const counts = sameBreakdown && voteBreakdownSnapshot ? voteBreakdownSnapshot.counts : {};
-      voteBarsHtml = renderProgressVoteBars(counts, players, {
-        title: voteBreakdownSnapshot?.completed ? "Résultat des votes" : "Dépouillement en direct",
-        current: voteBreakdownSnapshot?.current || 0,
-        expectedTotal: expected
-      });
-    }
-
-    liveGameEl.innerHTML = `
-      <div class="tv-live-focus ${state.voteComplete ? "tv-live-revealed" : ""}">
-        <span class="tv-live-kicker">🏆 Qui est le plus susceptible ? · Manche ${formatLiveValue(state.round, "1")}</span>
-        <h3>${formatLiveValue(state.question, "Question en chargement...")}</h3>
-        <p>${state.voteComplete ? (revealReady ? "Votes terminés" : "Analyse des votes...") : "Vote en cours"}</p>
-        ${voteBarsHtml}
-        ${state.voteComplete && revealReady ? `<div class="tv-result-chip ${state.tie ? "tie" : ""}"><span>${state.tie ? "🤝" : "👑"}</span><strong>${escapeHtml(resultName)}</strong><em>${escapeHtml(state.penalty || state.hint || "Résultat validé")}</em></div>` : ""}
-        <ul class="tv-live-scoreboard">${scoreRows || "<li>Aucun score pour le moment.</li>"}</ul>
       </div>
     `;
     return;

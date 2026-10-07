@@ -1,87 +1,7 @@
-import {
-  db,
-  doc,
-  getDoc,
-  updateDoc,
-  onSnapshot
-} from "../../firebase.js";
-import { resolveIsHost, lobbyWrite, watchHost } from "../../game-common.js";
-import { escapeHtml } from "../../html-safe.js";
+// Questions de Most Likely (par mode de soirée) et punitions (par niveau d'alcool).
+// Reprises de l'ancienne version.
 
-const backToLobbyBtn = document.getElementById("backToLobbyBtn");
-const finalBackBtn = document.getElementById("finalBackBtn");
-const restartGameBtn = document.getElementById("restartGameBtn");
-
-const roomBadge = document.getElementById("roomBadge");
-const gameModeBadge = document.getElementById("gameModeBadge");
-const roundBadge = document.getElementById("roundBadge");
-const progressBadge = document.getElementById("progressBadge");
-const questionCategory = document.getElementById("questionCategory");
-
-const questionText = document.getElementById("questionText");
-const voteGrid = document.getElementById("voteGrid");
-
-const resultBox = document.getElementById("resultBox");
-const resultText = document.getElementById("resultText");
-const drinkPenalty = document.getElementById("drinkPenalty");
-const resultHint = document.getElementById("resultHint");
-
-const nextQuestionBtn = document.getElementById("nextQuestionBtn");
-const skipQuestionBtn = document.getElementById("skipQuestionBtn");
-const finishGameBtn = document.getElementById("finishGameBtn");
-
-const scoreList = document.getElementById("scoreList");
-const endScreen = document.getElementById("endScreen");
-const winnerText = document.getElementById("winnerText");
-const finalScores = document.getElementById("finalScores");
-
-const savedData = JSON.parse(localStorage.getItem("partyhubGameData"));
-
-if (!savedData) {
-  alert("Aucune partie trouvée. Retour au lobby.");
-  window.location.href = "../../index.html";
-}
-
-let players = savedData.players || [];
-const selectedPartyMode = savedData.selectedPartyMode || "Party";
-const alcoholMode = savedData.alcoholMode;
-const drinkLevel = savedData.drinkLevel || "normal";
-const gameDuration = savedData.gameDuration || "medium";
-const roomCode = savedData.roomCode || "----";
-const currentPlayer = savedData.currentPlayer || "";
-let isHost = resolveIsHost(savedData);
-// Si l'hôte ne répond plus (téléphone éteint, onglet fermé), un autre joueur reprend la main.
-watchHost(roomCode, savedData, value => { isHost = value; });
-
-const roomRef = doc(db, "rooms", roomCode);
-
-function handleGlobalLobbyReturn(data) {
-  if (data && data.gameStarted === false) {
-    localStorage.setItem(
-      "partyhubReturnLobby",
-      "true"
-    );
-
-    window.location.href =
-      "../../index.html";
-
-    return true;
-  }
-
-  return false;
-}
-
-
-let currentRound = 1;
-let maxRounds = getMaxRounds();
-let usedQuestions = [];
-let scores = {};
-let votes = {};
-let currentQuestion = "";
-let resultPlayer = null;
-let lastActionId = null;
-
-const questions = {
+export const QUESTIONS = {
   Chill: [
     "Qui est le plus susceptible de finir la soirée à parler philo dans un coin ?",
     "Qui est le plus susceptible d’oublier son téléphone partout ?",
@@ -404,7 +324,7 @@ const questions = {
   ]
 };
 
-const drinkPenalties = {
+export const PENALTIES = {
   soft: [
     "Boit 1 gorgée 🍺",
     "Boit 2 gorgées 🍺",
@@ -512,491 +432,70 @@ const drinkPenalties = {
   ],
 };
 
-async function initGame() {
-  const roomSnap = await getDoc(roomRef);
-
-  if (roomSnap.exists()) {
-    const roomData = roomSnap.data();
-    players = roomData.players || players;
-  }
-
-  roomBadge.textContent = `Room ${roomCode}`;
-  gameModeBadge.textContent = `Mode ${selectedPartyMode}`;
-
-  scores = buildDefaultScores();
-  renderScores();
-
-  if (players.length < 2) {
-    questionText.textContent = "Ajoute au moins 2 joueurs pour jouer.";
-    nextQuestionBtn.disabled = true;
-    skipQuestionBtn.disabled = true;
-    return;
-  }
-
-  if (!isHost) {
-    nextQuestionBtn.disabled = true;
-    skipQuestionBtn.disabled = true;
-    finishGameBtn.disabled = true;
-    restartGameBtn.disabled = true;
-
-    nextQuestionBtn.textContent = "À toi de jouer";
-    skipQuestionBtn.textContent = "Action dispo skip";
-    finishGameBtn.textContent = "Action dispo termine";
-  }
-
-  listenToMostLikelyState();
-
-  if (isHost) {
-    publishState({
-      type: "question",
-      round: 1,
-      maxRounds,
-      usedQuestions: [],
-      scores: buildDefaultScores(),
-      votes: {},
-      question: getRandomQuestionFromUsed([]),
-      resultPlayer: null,
-      penalty: null,
-      hint: null,
-      voteComplete: false,
-      tie: false,
-      finished: false
-    });
-  }
-}
-
-function buildDefaultScores() {
-  const base = {};
-
-  players.forEach(player => {
-    base[player.name] = 0;
-  });
-
-  return base;
-}
-
-function getMaxRounds() {
-  if (gameDuration === "short") return 5;
-  if (gameDuration === "medium") return 10;
-  if (gameDuration === "long") return 15;
-  if (gameDuration === "infinite") return 999;
-  return 10;
-}
-
-function updateRoundUI() {
-  const progress = Math.min(Math.round(((currentRound - 1) / maxRounds) * 100), 100);
-
-  roundBadge.textContent = `Manche ${currentRound}/${maxRounds}`;
-  progressBadge.textContent = `Progression ${progress}%`;
-  questionCategory.textContent = getCategoryLabel();
-}
-
-function getCategoryLabel() {
-  if (selectedPartyMode === "Chill") return "😇 Question chill";
-  if (selectedPartyMode === "Party") return "🍺 Question soirée";
-  if (selectedPartyMode === "Chaos") return "💀 Question chaos";
-  if (selectedPartyMode === "Hardcore") return "☠️ Question hardcore";
-  return "🍻 Question";
-}
-
-function getQuestionPool() {
-  return questions[selectedPartyMode] || questions.Party;
-}
-
-function getRandomQuestionFromUsed(currentUsed) {
-  const pool = getQuestionPool();
-  let localUsed = [...currentUsed];
-
-  if (localUsed.length >= pool.length) {
-    localUsed = [];
-  }
-
-  let question;
-
-  do {
-    question = pool[Math.floor(Math.random() * pool.length)];
-  } while (localUsed.includes(question));
-
-  return question;
-}
-
-function getDrinkPenalty() {
-  if (!alcoholMode) {
-    const softGages = [
-      "Mode soft : mini-gage choisi par le groupe 😇",
-      "Mode soft : vérité obligatoire",
-      "Mode soft : imitation ridicule",
-      "Mode soft : danse de 10 secondes"
-    ];
-
-    return softGages[Math.floor(Math.random() * softGages.length)];
-  }
-
-  const effectiveDrinkLevel = drinkLevel === "extreme" ? "danger" : drinkLevel;
-  const pool = drinkPenalties[effectiveDrinkLevel] || drinkPenalties.normal;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
-function getResultHint(playerName) {
-  const hints = [
-    `${playerName}, le groupe a parlé. Aucun recours possible.`,
-    `${playerName}, accepte ton destin.`,
-    `${playerName}, c’est ton moment de gloire.`,
-    `${playerName}, la démocratie a décidé.`,
-    `${playerName}, ça sent le débrief demain.`,
-    `${playerName}, visiblement tout le monde avait quelque chose à dire.`,
-    `${playerName}, c’est pas personnel… enfin normalement.`
-  ];
-
-  return hints[Math.floor(Math.random() * hints.length)];
-}
-
-async function publishState(state) {
-  await updateDoc(roomRef, {
-    mostLikelyState: {
-      actionId: Date.now(),
-      ...state
-    }
-  });
-}
-
-function listenToMostLikelyState() {
-  onSnapshot(roomRef, snapshot => {
-    if (!snapshot.exists()) return;
-
-    const data = snapshot.data();
-
-    if (handleGlobalLobbyReturn(data)) return;
-
-    const state = data.mostLikelyState;
-
-    if (!state) return;
-    if (state.actionId === lastActionId) return;
-
-    lastActionId = state.actionId;
-    applyState(state);
-  });
-}
-
-function applyState(state) {
-  currentRound = state.round || 1;
-  maxRounds = state.maxRounds || getMaxRounds();
-  usedQuestions = state.usedQuestions || [];
-  scores = state.scores || buildDefaultScores();
-  votes = state.votes || {};
-  currentQuestion = state.question || "";
-  resultPlayer = state.resultPlayer || null;
-
-  updateRoundUI();
-  renderScores();
-
-  questionText.textContent = currentQuestion;
-
-  if (state.finished) {
-    showFinalScreen();
-    return;
-  }
-
-  endScreen.classList.add("hidden");
-  renderVoteButtons();
-
-  if (state.voteComplete && state.tie) {
-    resultBox.classList.remove("hidden");
-    resultText.textContent = "🤝 Égalité !";
-    drinkPenalty.textContent = "Aucune punition pour cette manche.";
-    resultHint.textContent = "Personne n’a été sélectionné plus que les autres.";
-    return;
-  }
-
-  if (state.voteComplete && resultPlayer) {
-    resultBox.classList.remove("hidden");
-    let target=`🍺 ${resultPlayer} est désigné par la majorité !`;
-    resultText.textContent="";
-    let i=0;
-    const anim=setInterval(()=>{ i++; resultText.textContent=target.slice(0,i); if(i>=target.length) clearInterval(anim); },40);
-    drinkPenalty.textContent = state.penalty || "";
-    resultHint.textContent = state.hint || "";
-  } else {
-    resultBox.classList.add("hidden");
-  }
-}
-
-function renderVoteButtons() {
-  voteGrid.innerHTML = "";
-
-  const hasCurrentPlayerVoted = !!votes[currentPlayer];
-
-  players.forEach(player => {
-    const btn = document.createElement("button");
-    btn.className = "vote-btn";
-    btn.textContent = player.name;
-    btn.dataset.initial = String(player.name || "?").trim().charAt(0).toUpperCase();
-
-    if (hasCurrentPlayerVoted) {
-      btn.disabled = true;
-    }
-
-    if (votes[currentPlayer] === player.name) {
-      btn.classList.add("voted");
-    }
-
-    btn.addEventListener("click", () => {
-      voteForPlayer(player.name);
-    });
-
-    voteGrid.appendChild(btn);
-  });
-}
-
-async function voteForPlayer(playerName) {
-  if (votes[currentPlayer]) return;
-
-  const nextVotes = {
-    ...votes,
-    [currentPlayer]: playerName
-  };
-
-  const allPlayersVoted = Object.keys(nextVotes).length >= players.length;
-  const nextScores = { ...scores };
-
-  let majorityPlayer = null;
-  let penalty = null;
-  let hint = null;
-  let tie = false;
-
-  if (allPlayersVoted) {
-    const voteCounts = {};
-
-    Object.values(nextVotes).forEach(votedName => {
-      voteCounts[votedName] = (voteCounts[votedName] || 0) + 1;
-    });
-
-    let maxVotes = 0;
-
-    Object.values(voteCounts).forEach(count => {
-      if (count > maxVotes) {
-        maxVotes = count;
-      }
-    });
-
-    const winners = Object.keys(voteCounts).filter(name => voteCounts[name] === maxVotes);
-
-    if (winners.length === 1) {
-      majorityPlayer = winners[0];
-      nextScores[majorityPlayer] = (nextScores[majorityPlayer] || 0) + 1;
-      penalty = getDrinkPenalty();
-      hint = getResultHint(majorityPlayer);
-    } else {
-      tie = true;
-    }
-  }
-
-  await publishState({
-    type: "vote",
-    round: currentRound,
-    maxRounds,
-    usedQuestions,
-    scores: nextScores,
-    votes: nextVotes,
-    question: currentQuestion,
-    resultPlayer: majorityPlayer,
-    penalty,
-    hint,
-    voteComplete: allPlayersVoted,
-    tie,
-    finished: false
-  });
-}
-
-async function goToNextRound() {
-  if (!isHost) return;
-
-  const nextRound = currentRound + 1;
-
-  if (nextRound > maxRounds) {
-    await finishGame();
-    return;
-  }
-
-  const nextUsed = [...usedQuestions, currentQuestion];
-  const nextQuestion = getRandomQuestionFromUsed(nextUsed);
-
-  await publishState({
-    type: "question",
-    round: nextRound,
-    maxRounds,
-    usedQuestions: nextUsed,
-    scores,
-    votes: {},
-    question: nextQuestion,
-    resultPlayer: null,
-    penalty: null,
-    hint: null,
-    voteComplete: false,
-    tie: false,
-    finished: false
-  });
-}
-
-async function skipQuestion() {
-  if (!isHost) return;
-
-  const nextUsed = [...usedQuestions, currentQuestion];
-  const nextQuestion = getRandomQuestionFromUsed(nextUsed);
-
-  await publishState({
-    type: "question",
-    round: currentRound,
-    maxRounds,
-    usedQuestions: nextUsed,
-    scores,
-    votes: {},
-    question: nextQuestion,
-    resultPlayer: null,
-    penalty: null,
-    hint: null,
-    voteComplete: false,
-    tie: false,
-    finished: false
-  });
-}
-
-async function finishGame() {
-  if (!isHost) return;
-
-  await publishState({
-    type: "finish",
-    round: currentRound,
-    maxRounds,
-    usedQuestions,
-    scores,
-    votes,
-    question: currentQuestion,
-    resultPlayer,
-    penalty: null,
-    hint: null,
-    finished: true
-  });
-}
-
-async function restartGame() {
-  if (!isHost) return;
-
-  await publishState({
-    type: "question",
-    round: 1,
-    maxRounds,
-    usedQuestions: [],
-    scores: buildDefaultScores(),
-    votes: {},
-    question: getRandomQuestionFromUsed([]),
-    resultPlayer: null,
-    penalty: null,
-    hint: null,
-    voteComplete: false,
-    tie: false,
-    finished: false
-  });
-}
-
-// Classement avec gestion des égalités : même score = même rang (1, 1, 3...).
-// "leader" = à égalité en tête avec au moins 1 vote.
-function rankPlayers() {
-  const sorted = [...players].sort((a, b) => (scores[b.name] || 0) - (scores[a.name] || 0));
-  const topScore = scores[sorted[0]?.name] || 0;
-
-  return sorted.map((player, index) => {
-    const score = scores[player.name] || 0;
-    const firstWithScore = sorted.findIndex(p => (scores[p.name] || 0) === score);
-    return {
-      player,
-      score,
-      rank: (index === firstWithScore ? index : firstWithScore) + 1,
-      leader: topScore > 0 && score === topScore
-    };
-  });
-}
-
-function joinNames(names) {
-  return names.length > 1 ? `${names.slice(0, -1).join(", ")} et ${names[names.length - 1]}` : names[0] || "";
-}
-
-function renderScores() {
-  scoreList.innerHTML = "";
-
-  rankPlayers().forEach(({ player, score, rank, leader }) => {
-    const li = document.createElement("li");
-    li.classList.toggle("leader", leader);
-
-    li.innerHTML = `<span>${leader ? "👑" : `${rank}.`} ${escapeHtml(player.name)}</span><strong>${escapeHtml(score)}</strong>`;
-
-    scoreList.appendChild(li);
-  });
-}
-
-function showFinalScreen() {
-  const ranking = rankPlayers();
-  const leaders = ranking.filter(entry => entry.leader);
-  const votesLabel = count => `${count} vote${count > 1 ? "s" : ""}`;
-
-  if (!leaders.length) {
-    winnerText.textContent = "🤝 Personne n’a reçu de vote pendant cette partie.";
-  } else if (leaders.length === 1) {
-    winnerText.textContent = `💀 ${leaders[0].player.name} est la cible officielle de la soirée avec ${votesLabel(leaders[0].score)}.`;
-  } else {
-    winnerText.textContent = `🤝 Égalité ! ${joinNames(leaders.map(entry => entry.player.name))} se partagent la place de cible officielle avec ${votesLabel(leaders[0].score)} chacun.`;
-  }
-
-  finalScores.innerHTML = "";
-
-  ranking.forEach(({ player, score, rank, leader }) => {
-    const row = document.createElement("div");
-    row.className = "final-score-row";
-    row.classList.toggle("leader", leader);
-    row.innerHTML = `<span>${rank}. ${escapeHtml(player.name)}</span><strong>${escapeHtml(votesLabel(score))}</strong>`;
-    finalScores.appendChild(row);
-  });
-
-  endScreen.classList.remove("hidden");
-}
-
-nextQuestionBtn.addEventListener("click", goToNextRound);
-skipQuestionBtn.addEventListener("click", skipQuestion);
-finishGameBtn.addEventListener("click", finishGame);
-restartGameBtn.addEventListener("click", restartGame);
-
-async function returnToLobby() {
-
-  if (isHost) {
-    try {
-      await lobbyWrite(updateDoc(roomRef, {
-        gameStarted: false,
-        roomStatus: "lobby",
-        screen: "lobby",
-        activeGame: null,
-        gameState: {},
-        forceNavigation: { target: "lobby", at: Date.now() }
-      }));
-    } catch (error) {
-      console.error("Erreur retour lobby global :", error);
-    }
-  }
-
-  localStorage.setItem(
-    "partyhubReturnLobby",
-    "true"
-  );
-
-  window.location.href =
-    "../../index.html";
-
-}
-
-backToLobbyBtn.addEventListener("click", returnToLobby);
-finalBackBtn.addEventListener("click", returnToLobby);
-
-
-
-
-
-initGame();
+// Questions ajoutées (modes Party et Chaos, qui en avaient moins).
+export const MORE_QUESTIONS = {
+  Party: [
+    "Qui est le plus susceptible de s'endormir en pleine soirée ?",
+    "Qui est le plus susceptible de perdre son téléphone ce soir ?",
+    "Qui est le plus susceptible de lancer un karaoké sans prévenir ?",
+    "Qui est le plus susceptible de finir la soirée en pyjama chez quelqu'un d'autre ?",
+    "Qui est le plus susceptible de commander un kebab à 4 h du matin ?",
+    "Qui est le plus susceptible de raconter la même anecdote trois fois ?",
+    "Qui est le plus susceptible de se faire refouler d'une boîte ?",
+    "Qui est le plus susceptible de danser sur une table ?",
+    "Qui est le plus susceptible d'envoyer un message vocal de 5 minutes ?",
+    "Qui est le plus susceptible de partir sans dire au revoir ?",
+    "Qui est le plus susceptible de devenir célèbre sur TikTok ?",
+    "Qui est le plus susceptible d'oublier l'anniversaire de son meilleur ami ?",
+    "Qui est le plus susceptible de rater son train ou son avion ?",
+    "Qui est le plus susceptible de tomber amoureux en vacances ?",
+    "Qui est le plus susceptible de dire « c'est la dernière » et de reprendre un verre ?",
+    "Qui est le plus susceptible de se perdre dans sa propre ville ?",
+    "Qui est le plus susceptible de faire un discours émouvant bourré ?",
+    "Qui est le plus susceptible de mettre trois heures à se préparer ?",
+    "Qui est le plus susceptible de devenir influenceur ?",
+    "Qui est le plus susceptible de gagner à un jeu télé ?",
+    "Qui est le plus susceptible de rire à un enterrement ?",
+    "Qui est le plus susceptible de se lancer dans un business improbable ?",
+    "Qui est le plus susceptible d'appeler son ex ce soir ?",
+    "Qui est le plus susceptible de mentir sur son âge ?",
+    "Qui est le plus susceptible de survivre à une apocalypse zombie ?",
+    "Qui est le plus susceptible de mourir en premier dans un film d'horreur ?",
+    "Qui est le plus susceptible de partir vivre à l'autre bout du monde ?",
+    "Qui est le plus susceptible de tout dépenser le jour de la paie ?",
+    "Qui est le plus susceptible de stalker quelqu'un sur Instagram jusqu'en 2015 ?",
+    "Qui est le plus susceptible de se battre avec un distributeur de boissons ?"
+  ],
+  Chaos: [
+    "Qui est le plus susceptible de finir la soirée au poste de police ?",
+    "Qui est le plus susceptible d'embrasser quelqu'un de la room ce soir ?",
+    "Qui est le plus susceptible d'avoir un dossier compromettant sur tout le monde ?",
+    "Qui est le plus susceptible de mentir pendant ce jeu ?",
+    "Qui est le plus susceptible de se réveiller sans savoir où il est ?",
+    "Qui est le plus susceptible de créer un drama de groupe ?",
+    "Qui est le plus susceptible de faire un truc illégal pour un pari ?",
+    "Qui est le plus susceptible d'avoir déjà menti à tout le monde ici ?",
+    "Qui est le plus susceptible de se faire larguer par message ?",
+    "Qui est le plus susceptible de larguer quelqu'un par message ?",
+    "Qui est le plus susceptible de vomir avant minuit ?",
+    "Qui est le plus susceptible de faire un tatouage regrettable ?",
+    "Qui est le plus susceptible de s'incruster à un mariage ?",
+    "Qui est le plus susceptible d'avoir un compte secret sur les réseaux ?",
+    "Qui est le plus susceptible de se faire virer pour une connerie ?",
+    "Qui est le plus susceptible de trahir un secret après deux verres ?",
+    "Qui est le plus susceptible de flirter avec le serveur ou la serveuse ?",
+    "Qui est le plus susceptible de dormir dans la baignoire ?",
+    "Qui est le plus susceptible de parier toute sa paie au casino ?",
+    "Qui est le plus susceptible de faire une déclaration d'amour bourré ?",
+    "Qui est le plus susceptible de se battre pour la dernière part de pizza ?",
+    "Qui est le plus susceptible d'avoir déjà été recalé d'un date ?",
+    "Qui est le plus susceptible de garder une capture d'écran de chaque conversation ?",
+    "Qui est le plus susceptible de mettre le feu à une cuisine ?",
+    "Qui est le plus susceptible de partir en Vegas sur un coup de tête ?",
+    "Qui est le plus susceptible d'avoir un plan B pour chaque soirée ?",
+    "Qui est le plus susceptible d'être le traître dans Mission Traître ?",
+    "Qui est le plus susceptible d'avoir triché à un examen ?",
+    "Qui est le plus susceptible de se marier sur un coup de tête ?",
+    "Qui est le plus susceptible de finir dans un reportage « Enquête exclusive » ?"
+  ]
+};
