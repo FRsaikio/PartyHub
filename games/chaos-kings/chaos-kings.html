@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>PartyHub - Chaos Kings</title>
-
+  <title>Chaos Kings · PartyHub</title>
   <meta name="theme-color" content="#08061a" />
   <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -18,86 +16,57 @@
 
 <body>
   <div class="background"></div>
-  <div id="confettiLayer" class="confetti-layer"></div>
 
-  <main class="app">
-    <section class="screen active">
+  <main class="app ck-app">
 
-      <div class="game-header king-header">
-        <button id="backToLobbyBtn" class="btn danger small">Retour lobby</button>
-
-        <div>
-          <span id="roomBadge" class="badge">Room</span>
-          <h2>Chaos Kings</h2>
-          <p class="muted">King’s Cup digital, cartes chaos, règles actives et événements rares.</p>
-        </div>
+    <div class="game-header ck-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>Chaos <span class="ck-gold">Kings</span></h2>
+        <p class="muted">52 cartes, 4 rois, une coupe. Celui qui tire le dernier roi la boit.</p>
       </div>
+      <span id="ckTurn" class="ck-turn">Avant-partie</span>
+    </div>
 
-      <div class="king-layout">
-
-        <div class="king-main">
-
-          <div class="round-info">
-            <span id="modeBadge" class="badge">Mode Party</span>
-            <span id="levelBadge" class="badge">Normal</span>
-            <span id="turnBadge" class="badge">Tour 1</span>
-            <span id="chaosBadge" class="badge">Chaos 0%</span>
+    <div class="ck-layout">
+      <section class="ck-stage">
+        <div class="ck-table">
+          <div id="ckDeck" class="ck-deck">🂠 52 cartes</div>
+          <div id="ckCard" class="ck-card back"><span class="ck-card-logo">👑</span></div>
+          <div id="ckCup" class="ck-cup" aria-label="La Chaos Cup">
+            <div class="ck-cup-glass"><span class="ck-cup-liquid"></span></div>
+            <span class="ck-cup-label">0/4 rois</span>
           </div>
-
-          <div id="eventBanner" class="event-banner hidden"></div>
-
-          <div id="cardZone" class="card-zone">
-            <div id="kingCard" class="king-card">
-              <div class="card-top" id="cardValue">?</div>
-              <div class="card-center" id="cardIcon">👑</div>
-              <div class="card-bottom" id="cardSuit">CHAOS</div>
-            </div>
-          </div>
-
-          <div class="effect-card">
-            <small id="targetText">Pioche une carte pour commencer</small>
-            <h3 id="effectTitle">Chaos Kings</h3>
-            <p id="effectDescription">
-              Chaque carte applique une règle. Plus la partie avance, plus le chaos monte.
-            </p>
-          </div>
-
-          <div class="king-actions">
-            <button id="drawCardBtn" class="btn primary big-btn">Piocher une carte 🃏</button>
-            <button id="resetGameBtn" class="btn secondary">Réinitialiser la partie</button>
-          </div>
-
         </div>
+        <div id="ckChaos" class="ck-chaos" aria-label="Niveau de chaos">
+          <span>🔥 Chaos</span>
+          <div class="ck-chaos-bar"><i></i></div>
+          <em>0%</em>
+        </div>
+      </section>
 
-        <aside class="king-panel">
+      <section class="ck-side">
+        <div id="ckPanel" class="ck-panel" aria-live="polite"></div>
+        <div id="ckHost" class="ck-host" hidden></div>
+        <div class="ck-box">
+          <h3>📜 Règles en vigueur</h3>
+          <ul id="ckRules" class="ck-rules"></ul>
+        </div>
+        <div class="ck-box">
+          <h3>Les joueurs</h3>
+          <div id="ckPlayers" class="ck-players"></div>
+        </div>
+        <details class="ck-box ck-log">
+          <summary>📜 Journal</summary>
+          <ol id="ckLog"></ol>
+        </details>
+      </section>
+    </div>
 
-          <h3>Infos</h3>
-
-          <div class="info-box">
-            <p><strong>Mode</strong> <span id="modeText">Party</span></p>
-            <p><strong>Niveau</strong> <span id="drinkLevelText">Normal</span></p>
-            <p><strong>Joueurs</strong> <span id="playersText">0</span></p>
-            <p><strong>Rois tirés</strong> <span id="kingCountText">0/4</span></p>
-          </div>
-
-          <div class="active-box">
-            <h4>Effets actifs</h4>
-            <ul id="activeEffectsList"></ul>
-          </div>
-
-          <div class="history-box">
-            <h4>Historique</h4>
-            <ul id="historyList"></ul>
-          </div>
-
-        </aside>
-
-      </div>
-
-    </section>
   </main>
 
   <script src="../../partyhub-fx.js"></script>
-<script type="module" src="chaos-kings.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
