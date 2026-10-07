@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>PartyHub - Mission Traître</title>
-
+  <title>Mission Traître · PartyHub</title>
   <meta name="theme-color" content="#08061a" />
   <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,101 +15,42 @@
 </head>
 
 <body>
-
   <div class="background"></div>
-  <div id="confettiLayer" class="confetti-layer"></div>
 
-  <main class="app">
+  <main class="app mt-app">
 
-    <section class="screen active">
+    <div class="game-header mt-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>Mission <span class="mt-red">Traître</span></h2>
+        <p class="muted">Des traîtres se cachent parmi vous. Démasquez-les avant qu'il ne soit trop tard.</p>
+      </div>
+      <span id="mtRound" class="mt-round">Avant-partie</span>
+    </div>
 
-      <div class="game-header traitor-header">
-        <button id="backToLobbyBtn" class="btn danger small">
-          Retour lobby
-        </button>
-
-        <div>
-          <span id="roomBadge" class="badge">Room</span>
-          <h2>Mission Traître</h2>
-          <p class="muted">
-            Un traître se cache parmi vous. Sa mission : réussir sans se faire griller.
-          </p>
-        </div>
+    <div class="mt-layout">
+      <div class="mt-main">
+        <section id="mtStage" class="mt-stage" aria-live="polite"></section>
+        <div id="mtHost" class="mt-host" hidden></div>
+        <section id="mtRole" class="mt-role" hidden aria-label="Ton rôle secret"></section>
       </div>
 
-      <div class="traitor-layout">
-
-        <div class="traitor-main">
-
-          <div class="round-info">
-            <span id="modeBadge" class="badge">Mode Party</span>
-            <span id="levelBadge" class="badge">Normal</span>
-            <span id="phaseBadge" class="badge">Phase préparation</span>
-          </div>
-
-          <div id="roleCard" class="role-card">
-            <small id="roleLabel">🎭 Rôle secret</small>
-            <h3 id="roleTitle">Prêt à distribuer les rôles ?</h3>
-            <p id="roleDescription">
-              Chaque joueur passe devant l’écran pour voir son rôle sans le montrer aux autres.
-            </p>
-          </div>
-
-          <div class="traitor-actions">
-            <button id="revealRoleBtn" class="btn primary big-btn">
-              Voir le rôle du joueur actuel 👀
-            </button>
-
-            <button id="nextPlayerBtn" class="btn secondary big-btn hidden">
-              Joueur suivant
-            </button>
-
-            <button id="startDebateBtn" class="btn primary full hidden">
-              Lancer le débat 🔥
-            </button>
-
-            <button id="endGameBtn" class="btn danger full hidden">
-              Révéler le traître 🕵️
-            </button>
-          </div>
-
-        </div>
-
-        <aside class="traitor-panel">
-
-          <h3>Infos</h3>
-
-          <div class="info-box">
-            <p><strong>Mode</strong> <span id="modeText">Party</span></p>
-            <p><strong>Niveau</strong> <span id="drinkLevelText">Normal</span></p>
-            <p><strong>Joueurs</strong> <span id="playersText">0</span></p>
-            <p><strong>Joueur actuel</strong> <span id="currentPlayerText">-</span></p>
-          </div>
-
-          <div id="missionBox" class="mission-box hidden">
-            <h4>Mission du traître</h4>
-            <p id="missionText"></p>
-          </div>
-
-          <div id="resultBox" class="result-box hidden">
-            <h4 id="resultTitle"></h4>
-            <p id="resultText"></p>
-          </div>
-
-          <div class="history-box">
-            <h4>Historique</h4>
-            <ul id="historyList"></ul>
-          </div>
-
-        </aside>
-
-      </div>
-
-    </section>
+      <aside class="mt-side">
+        <section class="mt-players-box">
+          <h3>Les joueurs</h3>
+          <div id="mtPlayers" class="mt-players"></div>
+        </section>
+        <details class="mt-log">
+          <summary>📜 Journal</summary>
+          <ol id="mtLog"></ol>
+        </details>
+      </aside>
+    </div>
 
   </main>
 
   <script src="../../partyhub-fx.js"></script>
-<script type="module" src="mission-traitre.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
