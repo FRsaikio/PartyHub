@@ -742,30 +742,12 @@ function renderLiveGame(data){
   const labelLower = String(label || "").toLowerCase();
   // Casino Night a sa propre vue TV (classement + annonces), pas de page intégrée :
   // l'intégrer créerait un faux portefeuille « TV » dans la room.
-  // Survivor, Mission Traître, la Bombe, Chaos Kings, la Roulette et Most Likely : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
-  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || activeId === "chaos-kings" || activeId === "roulette" || activeId === "most-likely" || labelLower.includes("poker") || labelLower.includes("monopoly");
+  // Survivor, Mission Traître, la Bombe, Chaos Kings, la Roulette, Most Likely et Je n'ai jamais : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
+  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || activeId === "chaos-kings" || activeId === "roulette" || activeId === "most-likely" || activeId === "never-have-i-ever" || labelLower.includes("poker") || labelLower.includes("monopoly");
   if(wantsStream && renderGameStream(activeId, data, label)) return;
 
   if(data.roomStatus !== "in-game" && !data.gameStarted){
     liveGameEl.innerHTML = `<div class="tv-live-empty">La room est au lobby. Lance un jeu pour voir la partie en direct.</div>`;
-    return;
-  }
-
-  if(activeId === "never-have-i-ever"){
-    const state = data.neverHaveIEverState || data.gameState?.never || data.gameState || {};
-    liveGameEl.innerHTML = `
-      <div class="tv-live-focus">
-        <span class="tv-live-kicker">🙋 Je n’ai jamais · Question ${formatLiveValue(state.number, "1")}</span>
-        <h3>${formatLiveValue(state.questionText, "Question en chargement...")}</h3>
-        <p>${formatLiveValue(state.instruction, "Ceux qui l’ont déjà fait boivent.")}</p>
-        <div class="tv-live-stats big">
-          <span>🍻 Ont bu : <strong>${formatLiveValue(state.drinkCount, 0)}</strong></span>
-          <span>😇 Sauvés : <strong>${formatLiveValue(state.safeCount, 0)}</strong></span>
-          <span>🌟 Rare : <strong>${state.rare ? "Oui" : "Non"}</strong></span>
-        </div>
-        ${historyList(state.history)}
-      </div>
-    `;
     return;
   }
 

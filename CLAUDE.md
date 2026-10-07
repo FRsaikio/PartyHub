@@ -53,6 +53,8 @@ There is no build step, package manager, linter, or test suite. Serve the repo r
 
 **Most Likely** (`games/most-likely/js/`): `ml-logic.js` (pure), `ml-content.js`, `app.js` on room field `mostLikely`. Each round everyone votes secretly AND predicts who will be designated; votes are revealed one by one; correct predictions score "devin" points. Rounds come from the lobby `gameDuration`.
 
+**Je n'ai jamais** (`games/never-have-i-ever/js/`): `never-logic.js` (pure), `never-content.js`, `app.js` on room field `never`. Answers (did / never) and a guess of how many did it stay hidden until everyone answered, then flip all at once; closest guesses score; per-player did counts and streaks.
+
 **Script loading quirks**
 - Most games use `<script type="module">` with static imports from `../../firebase.js`. Casino Night and Monopoly use classic scripts and pull Firebase with dynamic `import("../../firebase.js")`; Poker lives one level deeper (`games/casino-night/poker/`) so its paths use `../../../`.
 - `GAME_CONFIG["verite-ou-bois"]` is a legacy alias kept for old rooms; it points to `games/truth-or-drink/`.

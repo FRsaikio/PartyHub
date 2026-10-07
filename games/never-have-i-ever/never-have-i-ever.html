@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>PartyHub - Je n’ai jamais</title>
-
+  <title>Je n'ai jamais · PartyHub</title>
   <meta name="theme-color" content="#08061a" />
   <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,91 +15,40 @@
 </head>
 
 <body>
-
   <div class="background"></div>
-  <div id="confettiLayer" class="confetti-layer"></div>
 
-  <main class="app">
+  <main class="app nv-app">
 
-    <section class="screen active">
-
-      <div class="game-header never-header">
-        <button id="backToLobbyBtn" class="btn danger small">
-          Retour lobby
-        </button>
-
-        <div>
-          <span id="roomBadge" class="badge">Room</span>
-          <h2>Je n’ai jamais</h2>
-          <p class="muted">
-            Si tu as déjà fait l’action affichée, tu bois.
-          </p>
-        </div>
+    <div class="game-header nv-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>Je n'ai <span class="nv-violet">jamais</span></h2>
+        <p class="muted">Réponses secrètes, révélation d'un coup. Les masques tombent.</p>
       </div>
+      <span id="nvRound" class="nv-round">Avant-partie</span>
+    </div>
 
-      <div class="never-layout">
-
-        <div class="never-main">
-
-          <div class="round-info">
-            <span id="modeBadge" class="badge">Mode Party</span>
-            <span id="roundBadge" class="badge">Question 1</span>
-            <span id="levelBadge" class="badge">Normal</span>
-          </div>
-
-          <div id="questionCard" class="never-card">
-            <small id="categoryText">🥂 Question</small>
-            <h3 id="questionText">Chargement...</h3>
-            <p id="instructionText">Ceux qui l’ont déjà fait boivent.</p>
-          </div>
-
-          <div class="never-actions">
-            <button id="didItBtn" class="btn primary big-btn">
-              Je l’ai déjà fait 🍻
-            </button>
-
-            <button id="safeBtn" class="btn secondary big-btn">
-              Jamais 😇
-            </button>
-
-            <button id="nextQuestionBtn" class="btn primary full">
-              Question suivante
-            </button>
-          </div>
-
-        </div>
-
-        <aside class="never-panel">
-
-          <h3>Infos</h3>
-
-          <div class="info-box">
-            <p><strong>Mode</strong> <span id="modeText">Party</span></p>
-            <p><strong>Niveau</strong> <span id="drinkLevelText">Normal</span></p>
-            <p><strong>Joueurs</strong> <span id="playersText">0</span></p>
-            <p><strong>Questions</strong> <span id="questionCountText">0</span></p>
-          </div>
-
-          <div class="stats-box">
-            <h4>Stats</h4>
-            <p>Ont bu <span id="drinkCounter">0</span></p>
-            <p>Sauvés <span id="safeCounter">0</span></p>
-          </div>
-
-          <div class="history-box">
-            <h4>Historique</h4>
-            <ul id="historyList"></ul>
-          </div>
-
-        </aside>
-
+    <div class="nv-layout">
+      <div class="nv-main">
+        <section id="nvStage" class="nv-stage" aria-live="polite"></section>
+        <div id="nvHost" class="nv-host" hidden></div>
       </div>
-
-    </section>
+      <aside class="nv-side">
+        <section class="nv-box">
+          <h3>Classement <small>🍻 déjà fait · 🔮 pronostics</small></h3>
+          <div id="nvBoard" class="nv-board"></div>
+        </section>
+        <details class="nv-box nv-hist">
+          <summary>📜 Questions jouées</summary>
+          <ol id="nvHistory"></ol>
+        </details>
+      </aside>
+    </div>
 
   </main>
 
- <script src="../../partyhub-fx.js"></script>
-<script type="module" src="never-have-i-ever.js"></script>
+  <script src="../../partyhub-fx.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
