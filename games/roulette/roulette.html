@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>PartyHub - Roulette Chaos</title>
-
+  <title>Roulette · PartyHub</title>
   <meta name="theme-color" content="#08061a" />
   <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,37 +13,27 @@
   <link rel="stylesheet" href="../../neon-game.css" />
   <link rel="stylesheet" href="roulette.css" />
   <link rel="stylesheet" href="roulette-neon.css" />
+  <link rel="stylesheet" href="roulette-game.css" />
 </head>
 
 <body>
-
   <div class="background"></div>
-  <div id="confettiLayer" class="confetti-layer"></div>
 
-  <main class="app">
+  <main class="app rl-app">
 
-    <section class="screen active">
-
-      <div class="game-header roulette-header">
-        <button id="backToLobbyBtn" class="btn danger small">
-          Retour lobby
-        </button>
-
-        <div>
-          <span id="roomBadge" class="badge">Room</span>
-          <h2>Roulette Chaos</h2>
-          <p class="muted">
-            Lance la roulette. Un joueur, une catégorie, une action finale.
-          </p>
-        </div>
+    <div class="game-header roulette-header rl-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>Roulette <span class="rl-pink">Chaos</span></h2>
+        <p class="muted">Chacun son tour, chacun son destin. Le jeu compte vos gorgées.</p>
       </div>
+      <span id="rlTurn" class="rl-turn">Avant-partie</span>
+    </div>
 
-      <div class="roulette-layout">
-
-        <div class="roulette-zone">
-
-          <div class="roulette-pointer">▼</div>
-
+    <div class="rl-layout">
+      <section class="roulette-zone rl-zone">
+        <div class="roulette-pointer">▼</div>
           <div id="wheel" class="wheel">
                         <div class="segment-label label-1" data-category="bois"><span><svg class="wheel-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h10l-1.2 16H7.2z"/><path d="M16 8h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2.4"/><path d="M6.4 9h9.2"/></svg></span><strong>BOIS</strong></div>
             <div class="segment-label label-2" data-category="distribue"><span><svg class="wheel-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/><path d="M12 8v13"/><path d="M12 8C10 4 6.5 4.5 7.5 7.2 8 8 12 8 12 8z"/><path d="M12 8c2-4 5.5-3.5 4.5-.8C16 8 12 8 12 8z"/></svg></span><strong>DISTRIBUE</strong></div>
@@ -56,69 +44,27 @@
 
             <div class="wheel-center"><span>SPIN</span><small>PARTYHUB</small></div>
           </div>
+        <div id="rlSpinZone" class="rl-spin-zone"></div>
+      </section>
 
-          <button id="spinBtn" class="btn primary big-btn">
-            Lancer la roulette 🎡
-          </button>
-
+      <section class="rl-side">
+        <div id="rlPanel" class="rl-panel" aria-live="polite"></div>
+        <div id="rlHost" class="rl-host" hidden></div>
+        <div id="rlBag" class="rl-bag" hidden></div>
+        <div class="rl-box">
+          <h3>🍺 Compteur de gorgées</h3>
+          <div id="rlBoard" class="rl-board"></div>
         </div>
-
-        <aside class="roulette-panel">
-
-          <h3>Résultat</h3>
-
-          <div id="eventBanner" class="event-banner hidden"></div>
-
-          <div id="resultBox" class="roulette-result hidden">
-            <span id="targetPlayer"></span>
-            <small id="categoryText"></small>
-            <h4 id="challengeText"></h4>
-            <p id="penaltyText"></p>
-          </div>
-
-          <div class="info-box">
-            <p><strong>Mode</strong> <span id="modeText">Party</span></p>
-            <p><strong>Niveau</strong> <span id="drinkLevelText">Normal</span></p>
-            <p><strong>Joueurs</strong> <span id="playersText">0</span></p>
-          </div>
-
-          <div class="stats-box">
-            <h4>Stats live</h4>
-
-            <p>
-              Plus ciblé
-              <span id="mostTargeted">-</span>
-            </p>
-
-            <p>
-              Catégorie dominante
-              <span id="topCategory">-</span>
-            </p>
-
-            <p>
-              Spins
-              <span id="spinCount">0</span>
-            </p>
-          </div>
-
-          <button id="rerollBtn" class="btn secondary full">
-            Relancer 🎲
-          </button>
-
-          <div class="history-box">
-            <h4>Historique</h4>
-            <ul id="historyList"></ul>
-          </div>
-
-        </aside>
-
-      </div>
-
-    </section>
+        <details class="rl-box rl-log">
+          <summary>📜 Journal</summary>
+          <ol id="rlLog"></ol>
+        </details>
+      </section>
+    </div>
 
   </main>
 
   <script src="../../partyhub-fx.js"></script>
-<script type="module" src="roulette.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
