@@ -1,171 +1,54 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>PartyHub - Qui est le plus susceptible ?</title>
-
+  <title>Most Likely · PartyHub</title>
   <meta name="theme-color" content="#08061a" />
   <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
-
-  <!-- CSS GLOBAL (Néon Club) -->
   <link rel="stylesheet" href="../../neon-club.css" />
   <link rel="stylesheet" href="../../neon-game.css" />
-
-  <!-- CSS DU JEU -->
   <link rel="stylesheet" href="most-likely.css" />
 </head>
 
 <body>
-
   <div class="background"></div>
 
-  <main class="app">
+  <main class="app ml-app">
 
-    <section class="screen active">
-
-      <div class="game-header">
-
-        <button id="backToLobbyBtn" class="btn danger small">
-          Retour lobby
-        </button>
-
-        <div>
-          <span id="roomBadge" class="badge">
-            Room
-          </span>
-
-          <h2>
-            Qui est le plus susceptible ?
-          </h2>
-
-          <p class="muted">
-            Vote pour la personne la plus concernée.
-            La personne désignée boit.
-          </p>
-        </div>
-
+    <div class="game-header ml-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>Most <span class="ml-cyan">Likely</span></h2>
+        <p class="muted">Votez en secret, pariez sur le résultat, assumez le verdict.</p>
       </div>
+      <span id="mlRound" class="ml-round">Avant-partie</span>
+    </div>
 
-      <div class="game-layout">
-
-        <div class="main-game">
-
-          <div class="round-info">
-
-            <span id="gameModeBadge" class="badge">
-              Mode Party
-            </span>
-
-            <span id="roundBadge" class="badge">
-              Manche 1/10
-            </span>
-
-            <span id="progressBadge" class="badge">
-              Progression 0%
-            </span>
-
-          </div>
-
-          <div class="question-card">
-
-            <small id="questionCategory">
-              🍺 Question de soirée
-            </small>
-
-            <h3 id="questionText">
-              Chargement...
-            </h3>
-
-          </div>
-
-          <div id="voteGrid" class="vote-grid"></div>
-
-          <div id="resultBox" class="result-box hidden">
-
-            <h3 id="resultText"></h3>
-
-            <p id="drinkPenalty"></p>
-
-            <small id="resultHint"></small>
-
-          </div>
-
-          <div class="game-actions">
-
-            <button id="nextQuestionBtn" class="btn primary full big-btn">
-              Question suivante
-            </button>
-
-            <button id="skipQuestionBtn" class="btn secondary full">
-              Passer la question
-            </button>
-
-            <button id="finishGameBtn" class="btn danger full">
-              Finir la partie
-            </button>
-
-          </div>
-
-        </div>
-
-        <aside class="score-panel">
-
-          <h3>
-            Classement
-          </h3>
-
-          <p class="score-hint">
-            Le joueur le plus voté devient la cible de la soirée.
-          </p>
-
-          <ul id="scoreList" class="score-list"></ul>
-
-        </aside>
-
+    <div class="ml-layout">
+      <div class="ml-main">
+        <section id="mlStage" class="ml-stage" aria-live="polite"></section>
+        <div id="mlHost" class="ml-host" hidden></div>
       </div>
-
-      <div id="endScreen" class="end-screen hidden">
-
-        <div class="end-card">
-
-          <span class="badge">
-            Résumé final
-          </span>
-
-          <h2>
-            Fin de partie
-          </h2>
-
-          <p id="winnerText"></p>
-
-          <div id="finalScores"></div>
-
-          <button id="restartGameBtn" class="btn primary full">
-            Rejouer
-          </button>
-
-          <button id="finalBackBtn" class="btn danger full">
-            Retour lobby
-          </button>
-
-        </div>
-
-      </div>
-
-    </section>
+      <aside class="ml-side">
+        <section class="ml-box">
+          <h3>Classement <small>🎯 désigné · 🔮 devin</small></h3>
+          <div id="mlBoard" class="ml-board"></div>
+        </section>
+        <details class="ml-box ml-hist">
+          <summary>📜 Questions jouées</summary>
+          <ol id="mlHistory"></ol>
+        </details>
+      </aside>
+    </div>
 
   </main>
 
-  <!-- JS DU JEU -->
   <script src="../../partyhub-fx.js"></script>
-<script type="module" src="most-likely.js"></script>
-
+  <script type="module" src="js/app.js"></script>
 </body>
-
 </html>
