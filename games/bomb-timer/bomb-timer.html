@@ -2,10 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <title>PartyHub - Bomb Timer</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Bombe · PartyHub</title>
   <meta name="theme-color" content="#08061a" />
   <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -13,154 +11,63 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
   <link rel="stylesheet" href="../../neon-club.css" />
   <link rel="stylesheet" href="../../neon-game.css" />
-  <link rel="stylesheet" href="bomb-timer.css">
+  <link rel="stylesheet" href="bomb-timer.css" />
 </head>
 
 <body>
+  <div class="background"></div>
+  <div id="bbBoom" class="bb-boom" hidden aria-hidden="true"><span>💥</span></div>
 
-<div class="background"></div>
+  <main class="app bb-app">
 
-<div id="explosionOverlay" class="explosion-overlay hidden">
-  <h1>💥 EXPLOSION 💥</h1>
-</div>
-
-<div id="confettiLayer" class="confetti-layer"></div>
-
-<main class="app">
-
-  <section class="screen active">
-
-    <div class="game-header bomb-header">
-
-      <button id="backToLobbyBtn" class="btn danger small">
-        Retour lobby
-      </button>
-
+    <div class="game-header bb-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
       <div>
         <span id="roomBadge" class="badge">Room</span>
-
-        <h2>Bomb Timer</h2>
-
-        <p class="muted">
-          Réponds vite… ou prends la punition.
-        </p>
+        <h2>La <span class="bb-orange">Bombe</span></h2>
+        <p class="muted">Réponds, passe, prie. Personne ne sait quand elle va exploser.</p>
       </div>
-
+      <span id="bbRound" class="bb-round">Avant-partie</span>
     </div>
 
-    <div class="bomb-layout">
-
-      <div class="bomb-zone">
-
-        <div id="bombWrapper" class="bomb-wrapper">
-
-          <div class="bomb-glow"></div>
-
-          <div class="bomb">
-
-            <div class="bomb-top"></div>
-
-            <div id="timerText" class="timer-text">
-              15
-            </div>
-
+    <div class="bb-layout">
+      <section class="bb-arena">
+        <div id="bbRing" class="bb-ring" data-direction="cw">
+        </div>
+        <div class="bb-center">
+          <div class="bb-bomb" aria-hidden="true">
+            <span class="bb-spark"></span>
+            <span class="bb-body">💣</span>
           </div>
-
+          <strong id="bbFuse" class="bb-fuse" aria-live="off"></strong>
         </div>
+      </section>
 
-        <div class="question-card">
-
-          <small id="categoryText">
-            🍻 Party
-          </small>
-
-          <h3 id="questionText">
-            Chargement...
-          </h3>
-
-          <p id="instructionText">
-            Passe la bombe avant l’explosion.
-          </p>
-
-        </div>
-
-        <button id="passBombBtn" class="btn primary big-btn">
-          Passer la bombe 💣
-        </button>
-        <button id="nextBombBtn" class="btn secondary big-btn hidden">
-          Nouvelle bombe 🔥
-        </button>
-
-      </div>
-
-      <aside class="bomb-panel">
-
-        <h3>Infos</h3>
-
-        <div class="info-box">
-
-          <p>
-            <strong>Mode</strong>
-            <span id="modeText">Party</span>
-          </p>
-
-          <p>
-            <strong>Niveau</strong>
-            <span id="drinkLevelText">Normal</span>
-          </p>
-
-          <p>
-            <strong>Joueurs</strong>
-            <span id="playersText">0</span>
-          </p>
-
-          <p>
-            <strong>Round</strong>
-            <span id="roundText">1</span>
-          </p>
-
-        </div>
-
-        <div class="player-box">
-
-          <h4>Joueur actuel</h4>
-
-          <div id="currentPlayer" class="current-player">
-            Alex
-          </div>
-
-        </div>
-
-        <div id="resultBox" class="result-box hidden">
-
-          <h4 id="resultTitle">
-            💀 Explosion
-          </h4>
-
-          <p id="resultText">
-            Punition...
-          </p>
-
-        </div>
-
-        <div class="history-box">
-
-          <h4>Historique</h4>
-
-          <ul id="historyList"></ul>
-
-        </div>
-
-      </aside>
-
+      <section class="bb-side">
+        <div id="bbPrompt" class="bb-card" aria-live="polite"></div>
+        <div id="bbActions" class="bb-actions"></div>
+        <div id="bbPanel" class="bb-panel"></div>
+        <div id="bbHost" class="bb-host" hidden></div>
+        <details class="bb-log">
+          <summary>📜 Journal</summary>
+          <ol id="bbLog"></ol>
+        </details>
+        <details class="bb-rules">
+          <summary>📘 Règles</summary>
+          <ul>
+            <li>La bombe tourne dans le cercle. Quand tu l'as : réponds (catégorie, syllabe ou question) puis passe-la.</li>
+            <li>La mèche est cachée : les secondes n'apparaissent qu'à la fin. Celui qui tient la bombe quand elle explose perd une vie et boit.</li>
+            <li>⚡ Un pouvoir surprise par bombe : +5 s, demi-tour, saut, piège ou patate chaude.</li>
+            <li>🚫 Mode Catégories / Questions : si la majorité conteste ta réponse, la bombe te revient.</li>
+            <li>👻 Les éliminés deviennent fantômes : une fois par bombe, ils peuvent la secouer (-3 s).</li>
+          </ul>
+        </details>
+      </section>
     </div>
 
-  </section>
+  </main>
 
-</main>
-
-<script src="../../partyhub-fx.js"></script>
-<script type="module" src="bomb-timer.js"></script>
-
+  <script src="../../partyhub-fx.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

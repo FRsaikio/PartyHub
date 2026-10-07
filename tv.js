@@ -77,7 +77,6 @@ let lastRoomStatus = "";
 let lastPlayerCount = 0;
 let latestRoomData = null;
 let cinemaMode = localStorage.getItem("partyhubTvCinema") === "true";
-let bombCountdownTimer = null;
 let lastBroadcastRevealKey = "";
 let broadcastRevealRunning = false;
 
@@ -281,25 +280,6 @@ async function toggleCinemaMode(){
       await document.exitFullscreen();
     }
   }catch{}
-}
-
-function startBombCountdown(state){
-  if(bombCountdownTimer){
-    clearInterval(bombCountdownTimer);
-    bombCountdownTimer = null;
-  }
-
-  const valueEl = document.getElementById("tvBombCountdownValue");
-  if(!valueEl || !state?.startedAt || !state?.duration || state.type === "explode") return;
-
-  const tick = () => {
-    const elapsed = Math.floor((Date.now() - Number(state.startedAt)) / 1000);
-    const left = Math.max(0, Number(state.duration) - elapsed);
-    valueEl.textContent = left;
-    valueEl.classList.toggle("danger", left <= 5);
-  };
-  tick();
-  bombCountdownTimer = setInterval(tick, 500);
 }
 
 function setHostStatus(text){
@@ -766,8 +746,8 @@ function renderLiveGame(data){
   const labelLower = String(label || "").toLowerCase();
   // Casino Night a sa propre vue TV (classement + annonces), pas de page intégrée :
   // l'intégrer créerait un faux portefeuille « TV » dans la room.
-  // Survivor et Mission Traître : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
-  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || labelLower.includes("poker") || labelLower.includes("monopoly");
+  // Survivor, Mission Traître et la Bombe : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
+  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || labelLower.includes("poker") || labelLower.includes("monopoly");
   if(wantsStream && renderGameStream(activeId, data, label)) return;
 
   if(data.roomStatus !== "in-game" && !data.gameStarted){
@@ -839,49 +819,6 @@ function renderLiveGame(data){
     } else {
       lastTvRouletteRotation = rotation;
     }
-    return;
-  }
-
-  if(activeId === "bomb"){
-    const state = data.bombTimerState || data.gameState?.bomb || data.gameState || {};
-    const playerName = state.loser || state.currentPlayerName || getPlayerNameFromIndex(data, state.playerIndex);
-    if(state.type === "explode"){
-      showBroadcastReveal(`bomb:${state.actionId || state.round}:${playerName}`, {
-        kicker: "BOMB TIMER",
-        icon: "💥",
-        title: playerName || "EXPLOSION",
-        subtitle: "La bombe a explosé",
-        text: state.punishment || "Punition !"
-      });
-    }
-    const exploded = state.type === "explode" || state.type === "gameover";
-    const isSyllables = state.bombGameMode === "syllables";
-    const usedWords = Array.isArray(state.usedWords) ? state.usedWords : [];
-    const lives = state.lives || {};
-    const players = getPlayers(data);
-    const livesHtml = isSyllables ? `<div class="tv-live-stats big">${players.map(player => {
-      const key = String(player.profileId || player.id || player.uid || player.name || player.pseudo || "").trim().toLowerCase();
-      const life = lives[key] ?? 3;
-      const dead = (state.eliminatedKeys || []).includes(key);
-      return `<span>${escapeHtml(player.name || player.pseudo || "Joueur")} <strong>${dead ? "💀" : "❤️".repeat(Math.max(0, life))}</strong></span>`;
-    }).join("")}</div>` : "";
-    liveGameEl.innerHTML = `
-      <div class="tv-live-bomb ${exploded ? "exploded" : ""}">
-        <div class="tv-bomb-visual">
-          <div class="tv-bomb-fuse"></div>
-          <div class="tv-bomb-circle"><span id="tvBombCountdownValue">${exploded ? "💥" : formatLiveValue(state.duration, "--")}</span></div>
-        </div>
-        <div class="tv-live-result-card">
-          <span class="tv-live-kicker">💣 Bomb Timer · ${isSyllables ? "Syllabes" : "Libre"} · Manche ${formatLiveValue(state.round, "1")}</span>
-          <h3>${exploded ? (state.winner ? "Victoire" : "Explosion") : (isSyllables ? formatLiveValue(state.syllable, "SYLLABE") : formatLiveValue(state.category, "Question"))}</h3>
-          <p class="tv-live-player">🎯 ${formatLiveValue(playerName)}</p>
-          <p class="tv-live-action">${exploded ? `${formatLiveValue(state.lifeMessage, "")} ${formatLiveValue(state.punishment, "Punition !")}` : formatLiveValue(state.question, "Question en attente...")}</p>
-          ${livesHtml}
-          ${isSyllables && usedWords.length ? `<p class="tv-live-muted">Mots utilisés : ${usedWords.slice(-8).map(escapeHtml).join(" · ")}</p>` : ""}
-        </div>
-      </div>
-    `;
-    startBombCountdown(state);
     return;
   }
 
