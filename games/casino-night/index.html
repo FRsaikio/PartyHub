@@ -109,31 +109,20 @@
           <div class="table-head">
             <h3>Blackjack Extreme</h3>
             <div class="bj-mode" role="group" aria-label="Mode de jeu">
-              <button class="bj-mode-btn" type="button" data-mode="table" aria-pressed="false">Table de la room</button>
+              <button class="bj-mode-btn" type="button" data-mode="table" aria-pressed="false">Salle multijoueur</button>
               <button class="bj-mode-btn" type="button" data-mode="solo" aria-pressed="false">Jouer seul</button>
             </div>
           </div>
 
-          <!-- Table partagée (bj-table.js) -->
+          <!-- Salle de blackjack (page blackjack/) -->
           <div id="bjTableMode" class="bj-mode-panel">
-            <p class="bjt-offline" hidden>La table de la room n'est disponible que dans une room PartyHub. Tu peux jouer seul en attendant.</p>
-            <div class="bjt-online">
-              <div class="bjt-topline">
-                <strong id="bjtStatus" class="bjt-status" aria-live="polite">Connexion à la table…</strong>
-                <span id="bjtShoe" class="table-tag">Sabot neuf</span>
+            <div class="poker-teaser">
+              <div class="poker-cards" aria-hidden="true">
+                <span class="playing-card"><span class="pc-corner">A♠</span><span class="pc-suit">♠</span><span class="pc-corner pc-corner-bottom">A♠</span></span>
+                <span class="playing-card red"><span class="pc-corner">K♦</span><span class="pc-suit">♦</span><span class="pc-corner pc-corner-bottom">K♦</span></span>
               </div>
-
-              <div class="bj-table">
-                <div class="bj-zone">
-                  <div class="bj-zone-head"><span>Banque</span><strong id="bjtDealerTotal">–</strong></div>
-                  <div id="bjtDealerCards"></div>
-                </div>
-                <div class="bj-divider" aria-hidden="true">UN SEUL SABOT POUR TOUTE LA TABLE · CHACUN JOUE À SON TOUR</div>
-                <div id="bjtSeats" class="bjt-seats"></div>
-              </div>
-
-              <div id="bjtControls" class="bjt-controls"></div>
-              <div id="bjtResult" class="casino-result" aria-live="polite"></div>
+              <p>Une vraie salle de blackjack : plusieurs tables de 5 places, un croupier qui distribue dès que tout le monde a misé, et chacun joue à son tour avec les jetons du casino.</p>
+              <a id="bjSalleBtn" class="btn primary big-btn" href="blackjack/index.html">Entrer dans la salle</a>
             </div>
           </div>
 
@@ -168,7 +157,7 @@
           <details class="table-rules">
             <summary>Règles du blackjack</summary>
             <ul>
-              <li><strong>Table de la room</strong> : jusqu'à 5 joueurs, un seul sabot. Chacun mise, puis joue à son tour dans l'ordre des places : les cartes que tu tires changent celles des suivants. L'hôte peut faire « rester » un joueur absent.</li>
+              <li><strong>Salle multijoueur</strong> : plusieurs tables de 5 joueurs, un sabot par table. Chacun mise, puis joue à son tour dans l'ordre des places : les cartes que tu tires changent celles des suivants. L'hôte peut faire « rester » un joueur absent.</li>
               <li><strong>But</strong> : approcher 21 sans dépasser, et battre la banque. Figures = 10, As = 1 ou 11.</li>
               <li><strong>Blackjack</strong> (As + figure ou 10 d'entrée) : paie ×3. La banque tire jusqu'à 17.</li>
               <li><strong>Doubler</strong> : sur tes 2 premières cartes, tu doubles ta mise et reçois une seule carte.</li>
@@ -200,7 +189,7 @@
         <section class="casino-panel" data-panel="poker" role="tabpanel" hidden>
           <div class="table-head">
             <h3>Poker Night</h3>
-            <span class="table-tag">Texas Hold'em · jusqu'à 4</span>
+            <span class="table-tag">Texas Hold'em · 6 par table</span>
           </div>
           <div class="poker-teaser">
             <div class="poker-cards" aria-hidden="true">

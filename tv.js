@@ -1042,8 +1042,10 @@ function renderLiveGame(data){
     const fmt = n => Math.round(n).toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0");
     const eventFresh = event?.at && Date.now() - Number(event.at) < 5 * 60 * 1000;
 
-    // Table de blackjack partagée (games/casino-night/js/bj-table-logic.js)
-    const bj = casino.bjTable;
+    // Salle de blackjack (games/casino-night/blackjack/) : la table la plus remplie.
+    const bj = Object.values(casino.blackjack || {})
+      .filter(t => t && Object.keys(t.seats || {}).length)
+      .sort((x, y) => Object.keys(y.seats).length - Object.keys(x.seats).length)[0] || null;
     const bjSeats = Object.entries(bj?.seats || {}).sort((a, b) => a[1].index - b[1].index);
     const bjCardValue = code => { const r = String(code).slice(0, -1); return r === "A" ? 1 : ["J", "Q", "K"].includes(r) ? 10 : Number(r); };
     const bjTotal = codes => {
