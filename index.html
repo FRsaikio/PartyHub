@@ -337,16 +337,22 @@
       <div class="v22-end-card">
         <button id="closeEndPartyBtn" class="v22-end-close" aria-label="Fermer">×</button>
         <span class="badge">Fin de soirée</span>
-        <h2>Résumé PartyHub</h2>
+        <h2>Bilan de la soirée</h2>
         <div id="endPartyStats" class="v22-end-stats"></div>
         <div id="endPartyAwards" class="v22-awards"></div>
+        <div class="v22-end-lists">
+          <div id="endPartyRanking" class="v22-end-list"></div>
+          <div id="endPartyTimeline" class="v22-end-list"></div>
+        </div>
+        <button id="showRecapOnTvBtn" class="btn secondary full" type="button" hidden>📺 Afficher sur la TV</button>
         <button id="copyEndSummaryBtn" class="btn primary full">Copier le résumé</button>
+        <button id="newSoireeBtn" class="btn danger small" type="button" hidden>🧹 Nouvelle soirée (efface le bilan)</button>
       </div>
     </section>
 
   </main>
 
   <script src="partyhub-fx.js"></script>
-  <script type="module" src="app.js?v=20261008b"></script>
+  <script type="module" src="app.js?v=20261008c"></script>
 </body>
 </html>

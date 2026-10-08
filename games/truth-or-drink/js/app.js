@@ -3,7 +3,7 @@
 // qui applique truth-logic.js. La cible choisit et répond sur son téléphone, les autres jugent.
 
 import { db, doc, onSnapshot, runTransaction, updateDoc } from "../../../firebase.js";
-import { resolveIsHost, lobbyWrite, watchHost, hostNameOf } from "../../../game-common.js";
+import { resolveIsHost, lobbyWrite, watchHost, hostNameOf, recordGameEnd } from "../../../game-common.js";
 import { safeImageSrc } from "../../../html-safe.js";
 import { newGame, applyAction, pending, judgesOf, maxTurns } from "./truth-logic.js";
 
@@ -149,6 +149,8 @@ function applyState(next) {
   if (state && (next?.v || 0) < (state.v || 0) && next.session === state.session) return;
   const before = state;
   state = next;
+  // Fin de partie : journal de soirée (hôte) + XP du joueur.
+  if (next.phase === "end" && !spectator) recordGameEnd({ roomCode, gameId: "truth", state: next, isHost, myName });
   if (before && !spectator) {
     if (next.phase === "choose" && next.current === myName && (before.current !== myName || before.phase !== "choose")) { navigator.vibrate?.([80, 60, 80]); toast("🎯 C'est ton tour : Action ou Vérité ?", "gold"); }
     if (next.phase === "judge" && before.phase !== "judge" && next.current !== myName) { navigator.vibrate?.([50, 40, 50]); toast(`⚖️ Juge la réponse de ${next.current} !`, "gold"); }

@@ -3,7 +3,7 @@
 // qui applique kings-logic.js.
 
 import { db, doc, onSnapshot, runTransaction, updateDoc } from "../../../firebase.js";
-import { resolveIsHost, lobbyWrite, watchHost, hostNameOf } from "../../../game-common.js";
+import { resolveIsHost, lobbyWrite, watchHost, hostNameOf, recordGameEnd } from "../../../game-common.js";
 import { safeImageSrc } from "../../../html-safe.js";
 import { newGame, applyAction, parseCard, matesOf, REFLEX_FAIL } from "./kings-logic.js";
 
@@ -156,6 +156,8 @@ function applyState(next) {
   if (state && (next?.v || 0) < (state.v || 0) && next.session === state.session) return;
   const before = state;
   state = next;
+  // Fin de partie : journal de soirée (hôte) + XP du joueur.
+  if (next.phase === "end" && !spectator) recordGameEnd({ roomCode, gameId: "kings", state: next, isHost, myName });
   react(before, next);
   render();
 }

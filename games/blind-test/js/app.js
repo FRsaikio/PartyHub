@@ -3,7 +3,7 @@
 // TV est ouvert (il le signale via le champ `blindTv`), sinon du téléphone de l'hôte.
 
 import { db, doc, onSnapshot, runTransaction, updateDoc } from "../../../firebase.js";
-import { resolveIsHost, lobbyWrite, watchHost, hostNameOf } from "../../../game-common.js";
+import { resolveIsHost, lobbyWrite, watchHost, hostNameOf, recordGameEnd } from "../../../game-common.js";
 import { safeImageSrc } from "../../../html-safe.js";
 import { newGame, applyAction, pending, current, ANSWER_WINDOW, ROUND_CHOICES } from "./bt-logic.js";
 import { THEMES, buildRounds, freshPreview } from "./bt-deezer.js";
@@ -202,6 +202,8 @@ function applyState(next) {
   if (state && (next?.v || 0) < (state.v || 0) && next.session === state.session) return;
   const before = state;
   state = next;
+  // Fin de partie : journal de soirée (hôte) + XP du joueur.
+  if (next.phase === "end" && !spectator) recordGameEnd({ roomCode, gameId: "blindtest", state: next, isHost, myName });
   const newRound = !before || before.index !== next.index || before.phase !== next.phase;
   if (next.phase === "listen" && newRound) {
     roundSeenAt = performance.now();

@@ -3,7 +3,7 @@
 // qui applique mono-logic.js. Chacun joue à son tour sur son téléphone.
 
 import { db, doc, onSnapshot, runTransaction, updateDoc } from "../../../firebase.js";
-import { resolveIsHost, lobbyWrite, watchHost, hostNameOf } from "../../../game-common.js";
+import { resolveIsHost, lobbyWrite, watchHost, hostNameOf, recordGameEnd } from "../../../game-common.js";
 import { safeImageSrc } from "../../../html-safe.js";
 import { TILES, QUARTERS, MAX_LEVEL, newGame, applyAction, rentOf, wealth, upgradeCost, quarterOwned } from "./mono-logic.js";
 
@@ -177,6 +177,8 @@ function applyState(next) {
   if (state && (next?.v || 0) < (state.v || 0) && next.session === state.session) return;
   const before = state;
   state = next;
+  // Fin de partie : journal de soirée (hôte) + XP du joueur.
+  if (next.phase === "end" && !spectator) recordGameEnd({ roomCode, gameId: "monopoly", state: next, isHost, myName });
   if (before && before.session === next.session) {
     if (next.dice && JSON.stringify(next.dice) !== JSON.stringify(before.dice)) { sound.dice(); diceSpin(); }
     animateMoves(before, next);

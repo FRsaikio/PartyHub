@@ -3,7 +3,7 @@
 // qui applique roulette-logic.js. Chacun fait tourner la roue sur son téléphone, à son tour.
 
 import { db, doc, onSnapshot, runTransaction, updateDoc } from "../../../firebase.js";
-import { resolveIsHost, lobbyWrite, watchHost, hostNameOf } from "../../../game-common.js";
+import { resolveIsHost, lobbyWrite, watchHost, hostNameOf, recordGameEnd } from "../../../game-common.js";
 import { safeImageSrc } from "../../../html-safe.js";
 import { BONUSES, RARE, DUELS, DUEL_FAIL, SPIN_MS, newGame, applyAction } from "./roulette-logic.js";
 
@@ -188,6 +188,8 @@ function applyState(next) {
   if (state && (next?.v || 0) < (state.v || 0) && next.session === state.session) return;
   const before = state;
   state = next;
+  // Fin de partie : journal de soirée (hôte) + XP du joueur.
+  if (next.phase === "end" && !spectator) recordGameEnd({ roomCode, gameId: "roulette", state: next, isHost, myName });
   playWheel(next, firstState);
   if (before && !spectator) {
     if (next.phase === "play" && next.current === myName && before.current !== myName) { navigator.vibrate?.([80, 60, 80]); toast("🎡 À toi de faire tourner la roue !", "gold"); }

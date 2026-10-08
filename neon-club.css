@@ -1663,3 +1663,48 @@ select option {
   opacity: 1;
   transform: translate(-50%, 0);
 }
+
+/* Bilan de soirée : classement et liste des parties */
+.v22-end-lists {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.v22-end-list h3 {
+  margin: 0 0 8px;
+  font: 800 15px var(--nc-font-display);
+}
+
+.v22-end-list ol {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.v22-end-list li {
+  padding: 8px 10px;
+  border-radius: var(--nc-radius-sm);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+}
+
+.v22-end-list li strong {
+  display: block;
+}
+
+.v22-end-list li span {
+  color: var(--nc-muted);
+  font-size: 13px;
+}
+
+.v22-end-card [hidden] {
+  display: none !important;
+}
+
+@media (max-width: 700px) {
+  .v22-end-lists {
+    grid-template-columns: 1fr;
+  }
+}
