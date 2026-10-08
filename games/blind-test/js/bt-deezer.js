@@ -39,6 +39,28 @@ function jsonp(url, timeout = 10000) {
   });
 }
 
+// Appel à l'API Deezer. Deezer limite à ~50 requêtes par 5 secondes : s'il répond « quota
+// dépassé » (erreur 4), on réessaie un peu plus tard au lieu d'abandonner le thème.
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+async function deezer(url, tries = 4) {
+  for (let i = 0; ; i++) {
+    const data = await jsonp(url);
+    if (data?.error?.code === 4 && i < tries - 1) { await sleep(1500 * (i + 1)); continue; }
+    if (data?.error) throw new Error(data.error.message || "Deezer a refusé la demande.");
+    return data;
+  }
+}
+
+// Lance fn sur chaque élément, au plus `limit` à la fois (pour rester sous la limite de Deezer).
+async function mapLimit(items, limit, fn) {
+  const out = new Array(items.length);
+  let next = 0;
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) { const i = next++; out[i] = await fn(items[i], i); }
+  }));
+  return out;
+}
+
 // Nom de l'œuvre caché dans le titre : (De "La Reine des Neiges"…), (From "God of War"), (B. O. "Le Roi Lion")…
 export function workName(title) {
   const t = String(title);
@@ -101,7 +123,7 @@ export function labelFor(track, kind) {
 }
 
 async function playlistTracks(id) {
-  const data = await jsonp(`https://api.deezer.com/playlist/${id}/tracks?limit=200`);
+  const data = await deezer(`https://api.deezer.com/playlist/${id}/tracks?limit=200`);
   return (data?.data || []).filter(t => t && t.readable !== false && t.preview);
 }
 
@@ -119,10 +141,12 @@ const shuffle = list => {
 export async function buildRounds(themeKeys, count) {
   const wanted = [].concat(themeKeys || "mix").filter(k => THEMES[k]);
   const keys = !wanted.length || wanted.includes("mix") ? Object.keys(THEMES).filter(k => k !== "mix") : wanted;
-  // Toutes les playlists sont demandées en même temps (le grand mix en compte une vingtaine).
-  const loaded = await Promise.all(keys.map(async key => {
-    const lists = await Promise.all(THEMES[key].playlists.map(id => playlistTracks(id).catch(() => [])));
-    return { key, answers: shuffle(answersFor(THEMES[key], lists.flat())) };
+  // Playlists chargées 6 par 6 (le grand mix en compte une trentaine) : sous la limite de Deezer.
+  const jobs = keys.flatMap(key => THEMES[key].playlists.map(id => ({ key, id })));
+  const lists = await mapLimit(jobs, 6, job => playlistTracks(job.id).catch(() => []));
+  const loaded = keys.map(key => ({
+    key,
+    answers: shuffle(answersFor(THEMES[key], jobs.flatMap((job, i) => (job.key === key ? lists[i] : []))))
   }));
   const pools = loaded.filter(p => p.answers.length >= 4);
   if (!pools.length) return [];
@@ -177,7 +201,7 @@ export function answersFor(theme, tracks) {
 
 // Lien d'extrait frais (les liens expirent au bout de ~15 min).
 export async function freshPreview(trackId) {
-  const data = await jsonp(`https://api.deezer.com/track/${trackId}`);
+  const data = await deezer(`https://api.deezer.com/track/${trackId}`);
   if (!data?.preview) throw new Error("Extrait indisponible.");
   return data.preview;
 }

@@ -6,7 +6,7 @@ import { db, doc, onSnapshot, runTransaction, updateDoc } from "../../../firebas
 import { resolveIsHost, lobbyWrite, watchHost, hostNameOf, recordGameEnd } from "../../../game-common.js";
 import { initHowTo } from "../../../how-to-play.js";
 import { safeImageSrc } from "../../../html-safe.js";
-import { newGame, applyAction, pending, current, ANSWER_WINDOW, ROUND_CHOICES } from "./bt-logic.js";
+import { newGame, applyAction, pending, current, roundKey, SPARES, ANSWER_WINDOW, ROUND_CHOICES } from "./bt-logic.js";
 import { THEMES, buildRounds, freshPreview } from "./bt-deezer.js";
 
 // ---------- Qui joue ----------
@@ -105,47 +105,83 @@ function unlockAudio() {
   audio.play().catch(() => {});
 }
 
-// TV présente ? Elle met à jour `blindTv` toutes les 15 s ; on mesure avec NOTRE montre
+// TV présente ? Elle met à jour `blindTv` toutes les 30 s ; on mesure avec NOTRE montre
 // depuis quand ce champ n'a pas bougé.
 let tvSign = null;
 let tvSeenAt = 0;
-const tvAlive = () => Date.now() - tvSeenAt < 40000;
-const iPlayMusic = () => isTv || (!spectator && isHost && !tvAlive());
+const tvAlive = () => Date.now() - tvSeenAt < 75000;
+// Qui joue la musique : la TV ; sinon (pas de TV, ou TV dont le son est encore bloqué pour cette
+// manche) le téléphone de l'hôte.
+// Filet de sécurité : si personne n'a signalé « la musique joue » 3 s après le début de la manche
+// (TV éteinte, figée ou hors ligne), l'hôte la lance lui-même pour cette manche.
+let takeoverKey = "";
+const TAKEOVER_MS = 3000;
+const iPlayMusic = () => isTv || (!spectator && isHost && (!tvAlive()
+  || (state?.blocked && state.blocked === roundKey(state))
+  || (takeoverKey && state && takeoverKey === roundKey(state))));
+
+// Signaux écrits par l'appareil qui joue la musique (champs de blindtest, hors transaction) :
+// playing = la musique de cette manche joue → les téléphones affichent les propositions et lancent
+// le chrono ; blocked = son de la TV bloqué → l'hôte prend le relais ; failed = extrait impossible
+// à charger → l'hôte remplace la manche.
+const signal = (field, key) => updateDoc(roomRef, { [`blindtest.${field}`]: key }).catch(() => {});
 
 let playingRound = null;
 async function playRound(s) {
   const round = current(s);
   if (!round || !iPlayMusic()) return;
-  const id = `${s.session}:${s.index}`;
+  const id = roundKey(s);
   if (playingRound === id) return;
   playingRound = id;
-  try {
-    const url = await freshPreview(round.trackId);
-    if (playingRound !== id) return;
-    audio.src = url;
-    audio.currentTime = 0;
-    await audio.play();
-    soundEl.hidden = true;
-  } catch (error) {
-    // Lecture bloquée (pas encore de geste) : bouton pour lancer le son.
-    console.warn("Blind test : lecture impossible", error);
-    soundEl.hidden = false;
+  let lastError = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const url = await freshPreview(round.trackId);
+      if (playingRound !== id) return;
+      audio.src = url;
+      audio.currentTime = 0;
+      await audio.play();
+      if (playingRound !== id) return;
+      soundEl.hidden = true;
+      if (state?.playing !== id) signal("playing", id);
+      if (isTv && state?.blocked === id) signal("blocked", null);
+      return;
+    } catch (error) {
+      if (playingRound !== id) return;
+      lastError = error;
+      // Son bloqué par le navigateur (pas encore de geste) : inutile de réessayer.
+      if (error?.name === "NotAllowedError") break;
+    }
   }
+  console.warn("Blind test : lecture impossible", lastError);
+  if (lastError?.name === "NotAllowedError") {
+    soundEl.hidden = false;
+    if (isTv) signal("blocked", id);
+  } else if (isTv) {
+    signal("failed", id);
+  } else if (isHost) {
+    mutate("skip", { key: id });
+  }
+  playingRound = null;
 }
 
 soundEl.addEventListener("click", () => {
   const playing = state && (state.phase === "listen" || state.phase === "reveal");
+  audioUnlocked = true;
+  soundEl.hidden = true;
   if (!playing || !audio.src || audio.src === SILENCE) {
     // Rien à jouer pour l'instant : on débloque le son pour la suite.
-    audioUnlocked = true;
     audio.src = SILENCE;
     audio.play().catch(() => {});
-    soundEl.hidden = true;
     playingRound = null;
     if (playing) playRound(state);
     return;
   }
-  audio.play().then(() => { soundEl.hidden = true; }).catch(() => {
+  audio.play().then(() => {
+    const id = roundKey(state);
+    if (isTv && state?.blocked === id) signal("blocked", null);
+    if (state?.playing !== id) signal("playing", id);
+  }).catch(() => {
     playingRound = null;
     playRound(state);
   });
@@ -197,7 +233,24 @@ async function ensureGame(data) {
   }
 }
 
-let roundSeenAt = 0; // heure locale de réception de la manche (pour chronométrer la réponse)
+// Chrono : il ne démarre (et les propositions n'apparaissent) que quand la musique joue vraiment
+// (signal `playing`), mesuré avec la montre de CE téléphone. Sans signal au bout de 6 s (son bloqué
+// partout), on démarre quand même pour ne pas bloquer la partie.
+const START_FALLBACK_MS = 6000;
+let roundSeenAt = 0;      // début du chrono de la manche (montre locale)
+let roundReceivedAt = 0;  // réception de la manche
+let timerKey = "";        // manche dont le chrono a démarré
+let lastRoundKey = "";
+let skipAsked = "";
+const timerRunning = () => state?.phase === "listen" && timerKey === roundKey(state);
+function startTimer() {
+  if (timerRunning()) return;
+  timerKey = roundKey(state);
+  roundSeenAt = performance.now();
+  if (!spectator) navigator.vibrate?.(60);
+  render();
+}
+
 let firstState = true;
 function applyState(next) {
   if (state && (next?.v || 0) < (state.v || 0) && next.session === state.session) return;
@@ -205,12 +258,20 @@ function applyState(next) {
   state = next;
   // Fin de partie : journal de soirée (hôte) + XP du joueur.
   if (next.phase === "end" && !spectator) recordGameEnd({ roomCode, gameId: "blindtest", state: next, isHost, myName });
-  const newRound = !before || before.index !== next.index || before.phase !== next.phase;
-  if (next.phase === "listen" && newRound) {
-    roundSeenAt = performance.now();
+  const key = roundKey(next);
+  if (next.phase === "listen" && key !== lastRoundKey) {
+    lastRoundKey = key;
+    roundReceivedAt = performance.now();
     autoClosed = false;
-    if (!spectator && before) navigator.vibrate?.(60);
   }
+  if (next.phase === "listen" && next.playing === key) startTimer();
+  // Extrait impossible à charger sur la TV : l'hôte remplace la manche (une seule fois).
+  if (next.phase === "listen" && next.failed === key && isHost && !spectator && skipAsked !== key) {
+    skipAsked = key;
+    mutate("skip", { key });
+  }
+  // Cet appareil ne doit plus jouer (la TV a repris la main) : on coupe.
+  if (!iPlayMusic() && playingRound) { audio.pause(); playingRound = null; }
   if (next.phase === "listen" || next.phase === "reveal") playRound(next);
   if (next.phase === "end" || next.phase === "intro") { audio.pause(); playingRound = null; }
   if (before && next.phase === "reveal" && before.phase !== "reveal" && !spectator) {
@@ -225,6 +286,15 @@ function applyState(next) {
 let autoClosed = false;
 setInterval(() => {
   if (!state || state.phase !== "listen") return;
+  if (!timerRunning()) {
+    const waited = performance.now() - roundReceivedAt;
+    if (isHost && !spectator && waited > TAKEOVER_MS && takeoverKey !== roundKey(state)) {
+      takeoverKey = roundKey(state);
+      playRound(state);
+    }
+    if (waited > START_FALLBACK_MS) startTimer();
+    return;
+  }
   const left = Math.max(0, ANSWER_WINDOW + 5000 - (performance.now() - roundSeenAt));
   const bar = document.querySelector(".bt-timer i");
   if (bar) bar.style.width = `${(left / (ANSWER_WINDOW + 5000)) * 100}%`;
@@ -284,6 +354,12 @@ function stageListen(s) {
     h("span", "bt-kicker", `${theme.icon} ${theme.name} · extrait ${s.index + 1}/${s.rounds.length}`),
     h("div", "bt-eq", Array.from({ length: 12 }, () => h("i"))),
     h("div", "bt-timer", h("i")));
+  if (!timerRunning()) {
+    // La musique se charge : pas encore de propositions (personne ne répond au hasard).
+    card.classList.add("bt-loading");
+    card.append(h("h3", "", "🎵 L'extrait arrive…"), h("p", "muted", "Les propositions s'affichent dès que la musique démarre."));
+    return card;
+  }
   if (spectator || !s.players.some(p => p.name === myName)) {
     card.append(h("h3", "", "Qu'est-ce que c'est ?"), h("div", "bt-choices view", round.choices.map((c, i) => h("div", `bt-choice ${CHOICE_COLORS[i]}`, c))));
   } else if (answered !== undefined) {
@@ -354,7 +430,7 @@ function renderHost() {
     preparing = true;
     render();
     try {
-      const rounds = await buildRounds(themesOf(s), s.maxRounds);
+      const rounds = await buildRounds(themesOf(s), s.maxRounds + SPARES);
       await mutate("start", { rounds });
     } catch (error) {
       toast(error.message || "Impossible de charger la musique.", "bad");
@@ -393,7 +469,7 @@ onSnapshot(roomRef, snap => {
 if (isTv) {
   const beat = () => updateDoc(roomRef, { blindTv: Date.now() }).catch(() => {});
   beat();
-  setInterval(beat, 15000);
+  setInterval(beat, 30000);
   soundEl.hidden = false; // la TV a besoin d'un clic pour avoir le droit de jouer du son
 }
 
