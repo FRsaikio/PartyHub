@@ -382,7 +382,7 @@ function stageEnd(s) {
       h("div", "mt-roles", s.players.map(p => h("div", `mt-role-chip ${p.role}`, avatarEl(p.name), h("strong", "", p.name), h("span", "", p.role === "traitor" ? "😈 Traître" : "😇 Innocent")))),
       s.missionLog.length ? h("div", "mt-missions-done", h("small", "", "Missions réussies"), s.missionLog.map(x => h("span", "", `🎯 ${x.name} : ${x.title} (manche ${x.round})`))) : null,
       h("div", "mt-sanctions",
-        h("p", "", h("strong", "", "🍻 Perdants : "), r.punishment),
+        h("p", "", h("strong", "", "🍻 Les perdants, chacun : "), r.punishment),
         h("p", "", h("strong", "", "👑 Gagnants : "), r.reward)))
   };
 }

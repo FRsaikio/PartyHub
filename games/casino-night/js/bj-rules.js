@@ -39,39 +39,39 @@ export function freshShoe() {
 // ---------- Sanctions ----------
 
 export function bustSanction(score) {
-  if (score === 22) return "🔥 22 pile : double shot.";
+  if (score === 22) return "🔥 22 pile : un shot (ou 5 gorgées).";
   if (score === 23) return "🍺 23 : bois avec ton voisin.";
   if (score === 24) return "😈 24 : le dernier à rire boit avec toi.";
-  if (score === 25) return "☠️ 25 : verre cul sec.";
-  if (score <= 27) return "🚨 26-27 : tu bois à chaque prénom entendu pendant 5 minutes.";
-  if (score <= 29) return "💣 28-29 : défi humiliation obligatoire.";
-  return "☠️ 30+ CASINO COLLAPSE : chaque joueur te donne une sanction.";
+  if (score === 25) return "☠️ 25 : demi-verre cul sec.";
+  if (score <= 27) return "🚨 26-27 : jusqu'à ta prochaine main, tu bois 1 gorgée à chaque prénom prononcé.";
+  if (score <= 29) return "💣 28-29 : gage choisi par la table.";
+  return "☠️ 30+ CASINO COLLAPSE : chaque joueur te donne 1 gorgée.";
 }
 
 export function losingHandSanction(score) {
   const map = {
-    20: "👑 Main finale 20 : distribue 20 gorgées.",
+    20: "👑 Main finale 20 : distribue 4 gorgées.",
     19: "🍺 Main finale 19 : choisis un duo, ils boivent ensemble.",
-    18: "🔥 Main finale 18 : distribue 10 gorgées.",
+    18: "🔥 Main finale 18 : distribue 3 gorgées.",
     17: "🃏 Main finale 17 : le dernier à parler boit.",
-    16: "💀 Main finale 16 : double shot.",
+    16: "💀 Main finale 16 : un shot.",
     15: "🍺 Main finale 15 : bois avec le voisin de ton choix.",
     14: "🚨 Main finale 14 : le plus sobre boit.",
-    13: "😈 Main finale 13 : tu bois à chaque rire pendant 3 minutes.",
-    12: "☠️ Main finale 12 : verre cul sec.",
-    11: "🔥 Main finale 11 : double shot.",
-    10: "🍺 Main finale 10 : shot simple."
+    13: "😈 Main finale 13 : jusqu'à ta prochaine main, tu bois 1 gorgée à chaque rire.",
+    12: "☠️ Main finale 12 : demi-verre cul sec.",
+    11: "🔥 Main finale 11 : un shot.",
+    10: "🍺 Main finale 10 : 5 gorgées."
   };
-  return map[score] || "💀 Main faible : shot.";
+  return map[score] || "💀 Main faible : 4 gorgées.";
 }
 
 // Bonus de victoire selon le score (multiplicateur, texte).
 export function winBonus(player, dealer, cardCount) {
   if (player === 21 && cardCount >= 5) return { mult: 4, text: "👑 21 en 5 cartes : immunité totale 3 tours." };
-  if (player === 21 && cardCount === 4) return { mult: 3, text: "💀 21 en 4 cartes : choisis une victime pour un double shot." };
+  if (player === 21 && cardCount === 4) return { mult: 3, text: "💀 21 en 4 cartes : choisis une victime pour un shot." };
   if (player === 21 && dealer === 20) return { mult: 5, text: "👑 21 contre 20 : CASINO JACKPOT, tout le monde boit sauf toi." };
-  if (player === 20 && dealer === 19) return { mult: 4, text: "🔥 20 contre 19 : distribue 15 gorgées." };
-  if (player === 21 && cardCount === 3) return { mult: 2, text: "🔥 21 en 3 cartes : distribue 15 gorgées." };
+  if (player === 20 && dealer === 19) return { mult: 4, text: "🔥 20 contre 19 : distribue 8 gorgées." };
+  if (player === 21 && cardCount === 3) return { mult: 2, text: "🔥 21 en 3 cartes : distribue 8 gorgées." };
   if (player === 19 && dealer === 18) return { mult: 3, text: "🍺 19 contre 18 : choisis deux victimes." };
   return { mult: 2, text: "🔥 Victoire : distribue des gorgées." };
 }
@@ -85,14 +85,14 @@ export function resolveHand(hand, dealer, naturals = null) {
 
   if (naturals) {
     if (naturals.playerBJ && naturals.dealerBJ) return { outcome: "push", text: "🃏 Double blackjack : égalité, chacun boit 2 gorgées." };
-    if (naturals.playerBJ) return { outcome: "win", mult: 3, text: "🃏 VRAI BLACKJACK : distribue 20 gorgées.", big: true };
+    if (naturals.playerBJ) return { outcome: "win", mult: 3, text: "🃏 VRAI BLACKJACK : distribue 10 gorgées.", big: true };
     return { outcome: "lose", text: "🏦 Blackjack de la banque : tout le monde boit." };
   }
   if (hand.surrendered) return { outcome: "surrender", text: "🏳️ Abandon : la moitié de ta mise est rendue, tu bois 2 gorgées." };
   if (p > 21) return { outcome: "lose", text: bustSanction(p) };
   if (d > 21) {
     return d > 25
-      ? { outcome: "win", mult: 3, text: "☠️ La banque explose (plus de 25) : tout le monde cul sec.", big: true }
+      ? { outcome: "win", mult: 3, text: "☠️ La banque explose (plus de 25) : tout le monde boit 3 gorgées.", big: true }
       : { outcome: "win", mult: 2, text: "🔥 La banque saute : shot collectif." };
   }
   if (p > d) {

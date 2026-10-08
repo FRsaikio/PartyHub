@@ -8,7 +8,8 @@
 // applyAction(state, type, payload, me, ctx) modifie `state` ou lève une Error.
 // ctx = { rng, partyMode, drinkLevel, alcohol }.
 
-import { QUESTIONS, RARE_QUESTIONS, PUNISHMENTS, BONUS } from "./never-content.js";
+import { punishment as drawPunishment, forGroup } from "../../../punishments.js";
+import { QUESTIONS, RARE_QUESTIONS, BONUS } from "./never-content.js";
 
 export const roundsFor = duration => ({ short: 8, medium: 15, long: 25, infinite: 999 }[duration] || 15);
 export const RARE_CHANCE = 0.08;
@@ -79,9 +80,7 @@ function reveal(s, ctx) {
     } else s.streak[p.name] = 0;
   });
 
-  const punishment = ctx.alcohol === false
-    ? pick(["Ceux qui l'ont déjà fait font un mini-gage.", "Ceux qui l'ont déjà fait racontent une vérité.", "Ceux qui l'ont déjà fait font une imitation."], ctx.rng)
-    : pick(PUNISHMENTS[level(ctx)] || PUNISHMENTS.normal, ctx.rng);
+  const punishment = forGroup("Ceux qui l'ont fait", drawPunishment({ level: ctx.drinkLevel, alcohol: ctx.alcohol !== false, rng: ctx.rng }));
   const bonusPool = BONUS.did[level(ctx)] || BONUS.did.normal;
   s.result = {
     count, total: entries.length, did: didList, never: entries.filter(([, a]) => !a.did).map(([n]) => n),

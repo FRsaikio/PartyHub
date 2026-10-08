@@ -14,7 +14,8 @@
 // applyAction(state, type, payload, me, ctx) modifie `state` en place ou lève une Error.
 // ctx = { rng, drinkLevel, alcohol }.
 
-import { MISSIONS, SECRET_WORDS, LOSER_PUNISHMENTS, WINNER_REWARDS } from "./traitor-content.js";
+import { punishment as drawPunishment } from "../../../punishments.js";
+import { MISSIONS, SECRET_WORDS, WINNER_REWARDS } from "./traitor-content.js";
 
 export const MIN_PLAYERS = 4;
 export const traitorsFor = count => (count <= 6 ? 1 : count <= 11 ? 2 : 3);
@@ -82,10 +83,7 @@ function startDay(s, ctx) {
 // ---------- Fin de partie ----------
 
 function punishment(ctx) {
-  const rng = ctx.rng;
-  if (ctx.alcohol === false) return pick(["Les perdants font un gros gage 😇", "Les perdants racontent une vérité", "Les perdants font une imitation ridicule", "Le groupe choisit un gage pour les perdants"], rng);
-  const level = ctx.drinkLevel === "extreme" ? "danger" : ctx.drinkLevel;
-  return pick(LOSER_PUNISHMENTS[level] || LOSER_PUNISHMENTS.normal, rng);
+  return drawPunishment({ level: ctx.drinkLevel, alcohol: ctx.alcohol !== false, rng: ctx.rng });
 }
 
 function checkWinner(s) {

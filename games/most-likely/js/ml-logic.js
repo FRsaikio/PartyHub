@@ -7,7 +7,8 @@
 // applyAction(state, type, payload, me, ctx) modifie `state` ou lève une Error.
 // ctx = { rng, partyMode, drinkLevel, alcohol }.
 
-import { QUESTIONS, MORE_QUESTIONS, PENALTIES } from "./ml-content.js";
+import { QUESTIONS, MORE_QUESTIONS } from "./ml-content.js";
+import { punishment as drawPunishment } from "../../../punishments.js";
 
 export const roundsFor = duration => ({ short: 5, medium: 10, long: 15, infinite: 999 }[duration] || 10);
 
@@ -58,9 +59,7 @@ function startRound(s, ctx) {
 }
 
 function penalty(ctx) {
-  if (ctx.alcohol === false) return pick(["Mini-gage choisi par le groupe 😇", "Vérité obligatoire", "Imitation ridicule", "Danse de 10 secondes"], ctx.rng);
-  const level = ctx.drinkLevel === "extreme" ? "danger" : ctx.drinkLevel;
-  return pick(PENALTIES[level] || PENALTIES.normal, ctx.rng);
+  return drawPunishment({ level: ctx.drinkLevel, alcohol: ctx.alcohol !== false, rng: ctx.rng });
 }
 
 export const pending = s => (s.phase === "vote" ? s.players.filter(p => !s.votes[p.name]).map(p => p.name) : []);

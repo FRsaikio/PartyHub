@@ -33,13 +33,13 @@ const PUNISHMENTS = {
   "Quinte flush royale": "👑 BAD BEAT HELL : tout le monde boit avec toi.",
   "Quinte flush": "☠️ Le gagnant choisit ta punition.",
   "Carré": "🍺 Simple shot malgré la défaite.",
-  "Full": "💣 Défi humiliation + shot.",
+  "Full": "💣 Gage choisi par la table + 2 gorgées.",
   "Couleur": "🍺 Demi-verre cul sec.",
-  "Suite": "🔥 Distribue 10 gorgées.",
+  "Suite": "🔥 Distribue 5 gorgées.",
   "Brelan": "🔥 Shot collectif avec les perdants.",
   "Double paire": "🍺 Bois avec ton voisin.",
   "Paire": "🍺 5 gorgées.",
-  "Carte haute": "💀 DOUBLE SHOT."
+  "Carte haute": "💀 Un shot."
 };
 export const punishmentFor = handName => PUNISHMENTS[handName] || "🍺 5 gorgées.";
 

@@ -96,7 +96,7 @@ function settle(table, credit) {
       returned += back + (hand.surrendered ? Math.floor(hand.bet / 2) : 0); // l'abandon est rendu au moment de l'action
       if (r.outcome === "lose") anyLoss = true;
       if (r.outcome === "win" && r.big) big = true;
-      const doubleNote = !hand.doubled ? "" : r.outcome === "win" ? " 💪 Double réussi." : r.outcome === "lose" ? " 💀 Double raté : double shot en plus." : "";
+      const doubleNote = !hand.doubled ? "" : r.outcome === "win" ? " 💪 Double réussi." : r.outcome === "lose" ? " 💀 Double raté : 2 gorgées en plus." : "";
       lines.push(`${prefix}${r.text}${doubleNote}`);
       if (back) credit(key, back);
     });

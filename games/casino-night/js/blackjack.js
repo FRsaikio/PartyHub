@@ -354,7 +354,7 @@ export function initBlackjack(ctx) {
         lines.push(`${prefix}${r.text}`);
       } else {
         anyLoss = true;
-        lines.push(`${prefix}${r.text}${h.doubled ? " 💀 Double raté : double shot en plus." : ""}`);
+        lines.push(`${prefix}${r.text}${h.doubled ? " 💀 Double raté : 2 gorgées en plus." : ""}`);
       }
     });
 
