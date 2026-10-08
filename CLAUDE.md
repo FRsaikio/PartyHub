@@ -61,6 +61,10 @@ There is no build step, package manager, linter, or test suite. Serve the repo r
 
 All refreshed games (Monopoly, Survivor, Mission Traître, Bombe, Chaos Kings, Roulette, Most Likely, Je n'ai jamais, Action ou Vérité, poker) are streamed on the TV through their own page with `?tv=1&spectator=1&embed=1` (see `wantsStream` in tv.js). Each one starts a fresh game when its room field's `session` differs from `activeGame.startedAt`, and every write goes through `runTransaction` with the host re-read from the room (`hostNameOf`).
 
+**Blind test** (`games/blind-test/`, room field `blindtest`)
+- `bt-logic.js` is pure (testable in Node). `bt-deezer.js` reads public Deezer playlists through JSONP (api.deezer.com has no CORS) and builds the rounds (track + 4 choices) on the host's phone at start. Preview links expire after ~15 min, so the state keeps only `trackId` and the playing device asks `freshPreview()` each round.
+- Music plays on the TV (the TV page writes a `blindTv` heartbeat every 15 s; the TV iframe has `allow="autoplay"`), otherwise on the host's phone when no heartbeat change was seen for 40 s. Answer time is measured locally from when each phone received the round.
+
 **Script loading quirks**
 - Most games use `<script type="module">` with static imports from `../../firebase.js`. Every game page is now an ES module; Poker lives one level deeper (`games/casino-night/poker/`) so its paths use `../../../`.
 - `GAME_CONFIG["verite-ou-bois"]` is a legacy alias kept for old rooms; it points to `games/truth-or-drink/`.

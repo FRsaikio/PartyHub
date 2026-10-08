@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blind test · PartyHub</title>
+  <meta name="theme-color" content="#08061a" />
+  <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
+  <link rel="stylesheet" href="../../neon-club.css" />
+  <link rel="stylesheet" href="../../neon-game.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="background"></div>
+
+  <main class="app bt-app">
+
+    <div class="game-header bt-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>Blind <span class="bt-accent">test</span></h2>
+        <p class="muted">Écoute l'extrait, trouve la bonne réponse avant les autres.</p>
+      </div>
+      <span id="btRound" class="bt-round">Avant-partie</span>
+    </div>
+
+    <button id="btSound" class="btn primary bt-sound" type="button" hidden>🔊 Activer le son</button>
+
+    <div class="bt-layout">
+      <section id="btStage" class="bt-stage" aria-live="polite"></section>
+
+      <section class="bt-side">
+        <div id="btHost" class="bt-host" hidden></div>
+        <div class="bt-box">
+          <span class="bt-box-title">🏆 Classement</span>
+          <div id="btBoard" class="bt-board"></div>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <script src="../../partyhub-fx.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

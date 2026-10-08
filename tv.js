@@ -27,6 +27,7 @@ const GAME_CONFIG = {
   "verite-ou-bois": { label: "Action ou Vérité", url: "games/truth-or-drink/truth-or-drink.html" },
   traitor: { label: "Mission Traître", url: "games/mission-traitre/mission-traitre.html" },
   monopolit: { label: "Monopoly", url: "games/monopolit/index.html" },
+  "blind-test": { label: "Blind test", url: "games/blind-test/index.html" },
   "casino-night": { label: "Casino Night", url: "games/casino-night/index.html" },
   "poker-night": { label: "Poker Night", url: "games/casino-night/poker/index.html" }
 };
@@ -727,7 +728,7 @@ function renderGameStream(activeId, data, title){
         <strong>📺 ${escapeHtml(title || data.activeGame?.label || data.selectedGame || "Live PartyHub")}</strong>
         <span>Mode émission TV · vue publique</span>
       </div>
-      <iframe class="tv-game-stream" src="${url}" title="PartyHub live game" loading="eager"></iframe>
+      <iframe class="tv-game-stream" src="${url}" title="PartyHub live game" loading="eager" allow="autoplay"></iframe>
     </div>
   `;
   return true;
@@ -742,8 +743,8 @@ function renderLiveGame(data){
   const labelLower = String(label || "").toLowerCase();
   // Casino Night a sa propre vue TV (classement + annonces), pas de page intégrée :
   // l'intégrer créerait un faux portefeuille « TV » dans la room.
-  // Survivor, Mission Traître, la Bombe, Chaos Kings, la Roulette, Most Likely, Je n'ai jamais et Action ou Vérité : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
-  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || activeId === "chaos-kings" || activeId === "roulette" || activeId === "most-likely" || activeId === "never-have-i-ever" || activeId === "truth-or-drink" || activeId === "verite-ou-bois" || labelLower.includes("poker") || labelLower.includes("monopoly");
+  // Survivor, Mission Traître, la Bombe, Chaos Kings, la Roulette, Most Likely, Je n'ai jamais, Action ou Vérité et le Blind test : la page du jeu a sa propre vue TV (?tv=1), en lecture seule (aucun rôle affiché).
+  const wantsStream = activeId === "monopolit" || activeId === "poker-night" || activeId === "survivor" || activeId === "traitor" || activeId === "bomb" || activeId === "chaos-kings" || activeId === "roulette" || activeId === "most-likely" || activeId === "never-have-i-ever" || activeId === "truth-or-drink" || activeId === "verite-ou-bois" || activeId === "blind-test" || labelLower.includes("poker") || labelLower.includes("monopoly");
   if(wantsStream && renderGameStream(activeId, data, label)) return;
 
   if(data.roomStatus !== "in-game" && !data.gameStarted){

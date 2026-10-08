@@ -7,7 +7,7 @@ import { db, doc, onSnapshot, updateDoc, runTransaction, deleteField } from "./f
 // contenu à tous les téléphones. Le casino (portefeuilles, tables de blackjack et de poker
 // où des jetons sont encore posés) est gardé.
 export const GAME_FIELDS = [
-  "survivor", "traitor", "bomb", "kings", "roulette", "mostLikely", "never", "truth", "monopoly",
+  "survivor", "traitor", "bomb", "kings", "roulette", "mostLikely", "never", "truth", "monopoly", "blindtest", "blindTv",
   // anciennes versions des jeux
   "survivorState", "traitorState", "bombTimerState", "chaosKingsState", "chaosKingsTarget", "chaosKingsStats",
   "rouletteState", "rouletteRecentActions", "mostLikelyState", "neverHaveIEverState", "truthOrDrinkState",
