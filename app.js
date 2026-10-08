@@ -233,6 +233,83 @@ function v22RenderProgress(profile = currentProfile) {
 
 let latestLobbyData = null;
 
+// ---------- Playlist ----------
+// Avec « Playlist » cochée, l'hôte touche les jeux dans l'ordre : room.playlist.games = [{ id, label }],
+// room.playlist.next = index du prochain. À la fin d'un jeu, le bouton « Jeu suivant » (game-common.js)
+// ramène tout le monde au lobby avec playlist.launchAt : le lobby affiche un compte à rebours de
+// 5 s, puis le téléphone de l'hôte lance le jeu suivant.
+let playlist = [];
+let playlistNext = 0;
+let handledLaunchAt = 0;
+let launchTimer = null;
+
+async function savePlaylist(next) {
+  playlist = next;
+  syncSelectedCards();
+  updatePreview();
+  if (!currentRoom || !isHost) return;
+  try {
+    await updateDoc(getRoomRef(currentRoom), { "playlist.games": next, "playlist.next": 0 });
+  } catch (error) {
+    console.error("Playlist :", error);
+    showError("Impossible d'enregistrer la playlist.");
+  }
+}
+
+function hideCountdown() {
+  clearInterval(launchTimer);
+  launchTimer = null;
+  document.getElementById("playlistCountdown")?.remove();
+}
+
+function handlePlaylistLaunch(data) {
+  const at = Number(data.playlist?.launchAt) || 0;
+  const item = playlist[playlistNext];
+  if (!at || data.gameStarted || !item || Date.now() - at > 60000) { hideCountdown(); return; }
+  if (at === handledLaunchAt) return;
+  handledLaunchAt = at;
+  hideCountdown();
+  const box = document.createElement("div");
+  box.id = "playlistCountdown";
+  box.className = "playlist-countdown";
+  const title = document.createElement("strong");
+  const info = document.createElement("span");
+  box.append(Object.assign(document.createElement("small"), { textContent: `⏭️ Playlist · jeu ${playlistNext + 1}/${playlist.length}` }), title, info);
+  title.textContent = item.label;
+  if (isHost) {
+    const actions = document.createElement("div");
+    const now = Object.assign(document.createElement("button"), { className: "btn primary", type: "button", textContent: "Lancer maintenant" });
+    const cancel = Object.assign(document.createElement("button"), { className: "btn secondary", type: "button", textContent: "Annuler" });
+    now.addEventListener("click", () => launchFromPlaylist());
+    cancel.addEventListener("click", async () => {
+      hideCountdown();
+      try { await updateDoc(getRoomRef(currentRoom), { "playlist.launchAt": deleteField() }); } catch { /* sans gravité */ }
+    });
+    actions.append(now, cancel);
+    box.append(actions);
+  }
+  document.body.appendChild(box);
+  let left = 5;
+  info.textContent = `Lancement dans ${left} s…`;
+  launchTimer = setInterval(() => {
+    left -= 1;
+    info.textContent = left > 0 ? `Lancement dans ${left} s…` : "C'est parti !";
+    if (left <= 0) { clearInterval(launchTimer); launchTimer = null; if (isHost) launchFromPlaylist(); }
+  }, 1000);
+}
+
+async function launchFromPlaylist() {
+  const index = playlistNext < playlist.length ? playlistNext : 0;
+  const item = playlist[index];
+  hideCountdown();
+  if (!item || !isHost) return;
+  refreshSelectedGameFromId(item.id);
+  syncSelectedCards();
+  updatePreview();
+  await startSelectedGame({ "playlist.next": index + 1, "playlist.launchAt": deleteField() });
+}
+
+
 function minutesText(min) {
   if (!min) return "—";
   const h = Math.floor(min / 60);
@@ -790,6 +867,9 @@ function listenToRoom(roomCode) {
     drinkLevel.value = data.drinkLevel === "danger" ? "extreme" : (data.drinkLevel || "normal");
     gameDuration.value = data.gameDuration || "medium";
     autoRotation.checked = data.autoRotation ?? false;
+    playlist = Array.isArray(data.playlist?.games) ? data.playlist.games.filter(g => GAME_CONFIG[g?.id]) : [];
+    playlistNext = Number(data.playlist?.next) || 0;
+    handlePlaylistLaunch(data);
 
     roomCodeDisplay.textContent = currentRoom;
 
@@ -836,6 +916,12 @@ function listenToRoom(roomCode) {
 }
 
 function syncSelectedCards() {
+  document.querySelectorAll(".game-card").forEach(card => {
+    const index = playlist.findIndex(g => g.id === card.dataset.game);
+    if (autoRotation.checked && index >= 0) card.dataset.order = String(index + 1);
+    else delete card.dataset.order;
+  });
+  document.body.classList.toggle("playlist-mode", autoRotation.checked);
   document.querySelectorAll(".game-card").forEach(card => {
     const gameId = card.dataset.game;
     const fallbackName = card.querySelector("strong")?.textContent;
@@ -986,7 +1072,8 @@ function updatePreview() {
   modeText.textContent = alcoholMode.checked ? "Activé" : "Désactivé";
   drinkText.textContent = drinkLevel.options[drinkLevel.selectedIndex]?.text || "Normal";
   durationText.textContent = gameDuration.options[gameDuration.selectedIndex]?.text || "Moyenne";
-  rotationText.textContent = autoRotation.checked ? "Activée" : "Désactivée";
+  rotationText.textContent = !autoRotation.checked ? "Désactivée"
+    : playlist.length ? playlist.map((g, i) => `${i + 1}. ${g.label}`).join(" → ") : "Touche les jeux dans l'ordre";
 }
 
 async function updateRoomSettings(activityMessage = null) {
@@ -1304,6 +1391,12 @@ document.querySelectorAll(".game-card").forEach(card => {
       return;
     }
 
+    if (autoRotation.checked) {
+      const inList = playlist.some(g => g.id === gameId);
+      await savePlaylist(inList ? playlist.filter(g => g.id !== gameId) : [...playlist, { id: gameId, label: GAME_CONFIG[gameId].label }].slice(0, 12));
+      return;
+    }
+
     refreshSelectedGameFromId(gameId);
 
     syncSelectedCards();
@@ -1381,6 +1474,15 @@ startGameBtn.addEventListener("click", async () => {
     return;
   }
 
+  // Playlist : on lance le prochain jeu de la liste (ou le premier si elle est finie).
+  if (autoRotation.checked && playlist.length) {
+    await launchFromPlaylist();
+    return;
+  }
+  await startSelectedGame();
+});
+
+async function startSelectedGame(extra = {}) {
   startGameBtn.disabled = true;
 
   try {
@@ -1423,14 +1525,15 @@ startGameBtn.addEventListener("click", async () => {
         at: Date.now()
       },
       updatedAt: serverTimestamp(),
-      activity: [`🚀 La soirée est lancée : ${selectedGame}`, ...activityListItems()].slice(0, ACTIVITY_LIMIT)
+      activity: [`🚀 La soirée est lancée : ${selectedGame}`, ...activityListItems()].slice(0, ACTIVITY_LIMIT),
+      ...extra
     });
   } catch (error) {
     console.error("Erreur lancement partie :", error);
     showError("Impossible de lancer la soirée pour le moment.");
     startGameBtn.disabled = false;
   }
-});
+}
 
 function activityListItems() {
   return Array.from(activityList.children).map(li => li.textContent);
@@ -1520,6 +1623,13 @@ if (soundToggleBtn) {
 }
 
 if (endPartyBtn) endPartyBtn.addEventListener("click", v22ShowEndParty);
+// Fin de playlist (bouton « Voir le bilan » d'un jeu) : on ouvre le bilan une fois revenu au lobby.
+try {
+  if (localStorage.getItem("partyhubOpenRecap") === "1") {
+    localStorage.removeItem("partyhubOpenRecap");
+    setTimeout(() => { if (lobbyScreen.classList.contains("active")) v22ShowEndParty(); }, 1500);
+  }
+} catch { /* stockage indisponible */ }
 if (showRecapOnTvBtn) showRecapOnTvBtn.addEventListener("click", async () => {
   if (!isHost || !currentRoom) return;
   try {

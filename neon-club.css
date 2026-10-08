@@ -1708,3 +1708,68 @@ select option {
     grid-template-columns: 1fr;
   }
 }
+
+/* Playlist : numéro d'ordre sur les cartes de jeux et compte à rebours du jeu suivant */
+.game-card {
+  position: relative;
+}
+
+.game-card[data-order]::after {
+  content: attr(data-order);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--nc-pink);
+  color: #fff;
+  font: 800 14px var(--nc-font-display);
+  box-shadow: 0 0 16px var(--nc-pink-glow);
+}
+
+.playlist-mode .game-card:not([data-order]) {
+  opacity: 0.7;
+}
+
+.playlist-countdown {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 6000;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: min(420px, calc(100vw - 32px));
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: rgba(8, 6, 26, 0.96);
+  border: 1.5px solid var(--nc-pink);
+  box-shadow: 0 0 40px var(--nc-pink-glow);
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.playlist-countdown small {
+  color: var(--nc-cyan);
+  font: 800 12px var(--nc-font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.playlist-countdown strong {
+  font: 800 24px var(--nc-font-display);
+}
+
+.playlist-countdown span {
+  color: var(--nc-text-2);
+  font-weight: 700;
+}
+
+.playlist-countdown div {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}

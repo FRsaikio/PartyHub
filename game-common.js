@@ -1,6 +1,6 @@
 // Fonctions partagées par les mini-jeux.
 
-import { db, doc, onSnapshot, updateDoc, runTransaction, deleteField } from "./firebase.js";
+import { db, doc, getDoc, onSnapshot, updateDoc, runTransaction, deleteField } from "./firebase.js";
 
 // Champs de partie laissés dans le doc de la room par chaque jeu. On les efface au retour
 // au lobby : sinon la room grossit à chaque jeu joué, et chaque mise à jour renvoie tout ce
@@ -220,6 +220,8 @@ export async function recordGameEnd({ roomCode, gameId, state, isHost, myName })
     }
   }
 
+  showPlaylistNext({ roomCode, isHost, key }).catch(error => console.warn("Playlist :", error));
+
   if (!myName || !summary.players.includes(myName)) return;
   const guard = `partyhubReward:${roomCode}:${key}`;
   try {
@@ -234,4 +236,54 @@ export async function recordGameEnd({ roomCode, gameId, state, isHost, myName })
   } catch (error) {
     console.warn("XP de fin de partie non enregistrée", error);
   }
+}
+
+// ---------- Playlist : bouton « Jeu suivant » en fin de partie ----------
+// Si l'hôte a construit une playlist dans le lobby (room.playlist), un bandeau apparaît en fin de
+// partie : l'hôte ramène tout le monde au lobby, qui lance le jeu suivant après 5 s ; après le
+// dernier jeu, le bilan de la soirée s'ouvre (et s'affiche sur la TV).
+let playlistShownFor = "";
+async function showPlaylistNext({ roomCode, isHost, key }) {
+  if (playlistShownFor === key || document.getElementById("phPlaylistNext")) return;
+  playlistShownFor = key;
+  const roomRef = doc(db, "rooms", roomCode);
+  const data = (await getDoc(roomRef)).data() || {};
+  const games = Array.isArray(data.playlist?.games) ? data.playlist.games : [];
+  if (!data.autoRotation || !games.length) return;
+  const next = Number(data.playlist?.next) || 0;
+  const item = games[next] || null;
+
+  const box = document.createElement("div");
+  box.id = "phPlaylistNext";
+  box.style.cssText = "position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:9500;display:grid;gap:8px;justify-items:center;width:min(440px,calc(100vw - 32px));padding:14px 16px;border-radius:20px;background:rgba(8,6,26,.96);border:1.5px solid #e01fa0;box-shadow:0 0 36px rgba(224,31,160,.45);color:#fff;font:700 15px Manrope,system-ui,sans-serif;text-align:center";
+  const label = document.createElement("span");
+  label.textContent = item ? `⏭️ Playlist · prochain jeu (${next + 1}/${games.length}) : ${item.label}` : "🏁 C'était le dernier jeu de la playlist !";
+  box.appendChild(label);
+  if (isHost) {
+    const go = document.createElement("button");
+    go.type = "button";
+    go.className = "btn primary";
+    go.textContent = item ? `Jeu suivant : ${item.label} ▶` : "Voir le bilan de la soirée 🏁";
+    go.addEventListener("click", async () => {
+      go.disabled = true;
+      const patch = {
+        gameStarted: false, roomStatus: "lobby", screen: "lobby", activeGame: null, gameState: {},
+        forceNavigation: { target: "lobby", at: Date.now() },
+        ...(item ? { "playlist.launchAt": Date.now() } : { "soiree.showAt": Date.now(), "playlist.next": 0 })
+      };
+      try { await lobbyWrite(updateDoc(roomRef, patch)); } catch (error) { console.error("Playlist :", error); }
+      try {
+        localStorage.setItem("partyhubReturnLobby", "true");
+        if (!item) localStorage.setItem("partyhubOpenRecap", "1");
+      } catch { /* stockage indisponible */ }
+      window.location.href = "../../index.html";
+    });
+    box.appendChild(go);
+  } else {
+    const wait = document.createElement("small");
+    wait.style.opacity = ".75";
+    wait.textContent = "L'hôte lance la suite.";
+    box.appendChild(wait);
+  }
+  document.body.appendChild(box);
 }
