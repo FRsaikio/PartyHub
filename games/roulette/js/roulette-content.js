@@ -1,9 +1,10 @@
 // Actions de la Roulette par catégorie.
 //
 // {n} = gorgées de la case (selon le niveau d'alcool, ×2 en Furie / Mort subite) : c'est ce
-// nombre que le jeu ajoute au compteur, le texte doit donc le reprendre tel quel.
-// {h} = moitié arrondie (case TOUS : chacun boit {h}).
-// CHAOS est rangé par niveau d'alcool ; sans alcool, les textes viennent de GAGES_*.
+// nombre que le jeu ajoute au compteur, le texte doit donc le reprendre tel quel (BOIS : le
+// lanceur boit {n} ; DISTRIBUE : il répartit {n} ; TOUS : chacun boit {h}, la moitié arrondie).
+// CHAOS est rangé par niveau d'alcool (rien de compté automatiquement).
+// Sans alcool : BOIS pioche dans les gages communs (punishments.js), TOUS dans GAGES_TOUS.
 
 export const ACTIONS = {
   BOIS: [
@@ -16,14 +17,55 @@ export const ACTIONS = {
     "Bois {n} en tenant ton verre avec deux doigts 🤏",
     "Bois {n} pendant que le groupe compte à voix haute 📣",
     "Bois {n} et porte un toast à la soirée 🎉",
-    "Bois {n}, puis choisis la prochaine musique 🎵"
+    "Bois {n}, puis choisis la prochaine musique 🎵",
+    "Bois {n} les yeux fermés 🙈",
+    "Bois {n} en tenant sur un pied 🦩",
+    "Bois {n} au ralenti, le groupe fait le bruitage 🐢",
+    "Bois {n} en faisant ta meilleure grimace entre chaque gorgée 😝",
+    "Bois {n}, le petit doigt levé, très distingué 🫖",
+    "Bois {n} en disant « santé » dans une langue différente à chaque gorgée 🌐",
+    "Bois {n} pendant que tout le monde t'applaudit 👏",
+    "Bois {n}, puis fais une révérence au groupe 🎩",
+    "Bois {n} en regardant le plafond 🙃",
+    "Bois {n}, puis raconte en une phrase pourquoi tu mérites ça 😇",
+    "Bois {n} : la roue a parlé, pas de discussion 🎡",
+    "Bois {n} en faisant semblant d'être au restaurant 3 étoiles 🍷",
+    "Bois {n}, puis désigne le prochain qui doit raconter une anecdote 🗣️",
+    "Bois {n} en commentant toi-même comme un match de foot ⚽",
+    "Bois {n}, le groupe choisit avec quelle main ✋",
+    "Bois {n} en tenant ton verre au-dessus de ta tête entre chaque gorgée 🙌",
+    "Bois {n} pendant que ton voisin de gauche t'encourage comme un coach 📣",
+    "Bois {n} en imitant un animal choisi par le groupe 🐸",
+    "Bois {n}, puis donne un surnom au lanceur suivant 🏷️",
+    "Bois {n} en faisant un clin d'œil à chaque gorgée 😉",
+    "Bois {n} sans sourire, pendant que le groupe essaie de te faire craquer 😐",
+    "Bois {n}, puis fais tourner la roue du regard comme si tu la maudissais 😤",
+    "Bois {n} en chantant « la la la » entre chaque gorgée 🎶",
+    "Bois {n}, puis échange de place avec la personne de ton choix 🔀",
+    "Bois {n} en racontant ta pire chute (en 2 phrases max) 🤕",
+    "Bois {n} : santé à la personne qui t'a fait le plus rire ce soir 😂",
+    "Bois {n} en tenant ton verre avec les deux mains, comme un bébé 🍼",
+    "Bois {n}, puis lève-toi et crie « LA ROUE M'AIME » 📣",
+    "Bois {n} en faisant semblant que c'est le meilleur breuvage du monde 🤩",
+    "Bois {n} avant que ton voisin de droite ait fini de compter jusqu'à 10 ⏱️"
   ],
 
   DISTRIBUE: [
     "Distribue {n} comme tu veux 🎁",
     "Distribue {n} : régale-toi 😈",
     "Distribue {n}, mais pas toutes à la même personne 🎁",
-    "Distribue {n} à ceux qui t'ont fait boire 🔥"
+    "Distribue {n} à ceux qui t'ont fait boire 🔥",
+    "Distribue {n}, en commençant par la personne qui a le plus ri 😂",
+    "Distribue {n} : vengeance autorisée 🗡️",
+    "Distribue {n}, maximum 2 par personne 🎯",
+    "Distribue {n} en expliquant pourquoi chacun les mérite 🧑‍⚖️",
+    "Distribue {n} à ceux qui n'ont pas encore bu ce tour-ci 🎯",
+    "Distribue {n} : le groupe te regarde, choisis bien 👀",
+    "Distribue {n}, en finissant par toi-même si tu veux être gentil 😇",
+    "Distribue {n} comme un roi distribue ses faveurs 👑",
+    "Distribue {n} : tes voisins sont prioritaires 🤝",
+    "Distribue {n}, et annonce chaque victime avec une voix de présentateur 🎙️",
+    "Distribue {n} à la personne qui a le moins bu jusqu'ici, ou répartis si tu hésites 🏆"
   ],
 
   TOUS: [
@@ -32,7 +74,26 @@ export const ACTIONS = {
     "Tout le monde boit {h}, le dernier à lever son verre en reboit 1 🍻",
     "Tout le monde boit {h} sans les mains 🥤",
     "Tout le monde boit {h} en criant le nom du lanceur 📣",
-    "Waterfall : tout le monde boit {h}, dans l'ordre à partir du lanceur 🌊"
+    "Waterfall : tout le monde boit {h}, dans l'ordre à partir du lanceur 🌊",
+    "Tout le monde boit {h} debout 🧍",
+    "Tout le monde boit {h} en regardant son voisin de gauche dans les yeux 👀",
+    "Tout le monde boit {h} avec sa main faible 🍺",
+    "Tout le monde boit {h} après un « 3, 2, 1, SANTÉ ! » collectif 🎉",
+    "Tout le monde boit {h} bras dessus bras dessous avec ses voisins 🤝",
+    "Tout le monde boit {h} les yeux fermés 🙈",
+    "Tout le monde boit {h} en levant son verre bien haut 🙌",
+    "Tout le monde boit {h}, en commençant par la personne la plus jeune 🍼",
+    "Tout le monde boit {h} en silence : le premier qui parle en reboit 1 🤫",
+    "Tout le monde boit {h} au ralenti 🐢",
+    "Tout le monde boit {h} sur un pied 🦩",
+    "Tout le monde boit {h} en faisant un toast à la roue 🎡",
+    "Tout le monde boit {h} en disant « santé » dans une autre langue 🌐",
+    "Tout le monde boit {h} pendant que le lanceur fait le DJ (beatbox obligatoire) 🥁",
+    "Tout le monde boit {h} en tenant son verre avec deux doigts 🤏",
+    "Tout le monde boit {h}, le dernier à finir fait 10 squats 🦵",
+    "Tout le monde boit {h} et change de place 🔀",
+    "Tout le monde boit {h} en trinquant avec le lanceur 🥂",
+    "Tout le monde boit {h}, puis applaudit le lanceur 👏"
   ],
 
   CHAOS: {
@@ -43,7 +104,25 @@ export const ACTIONS = {
       "Jusqu'au prochain tour du lanceur, interdiction de dire « oui » : 1 gorgée par oubli 🚫",
       "Le dernier à toucher son nez boit 2 gorgées 👃",
       "Le plus jeune boit 1 gorgée, le plus âgé aussi 🎂",
-      "Ceux qui ont un téléphone à moins de 20 % de batterie boivent 1 gorgée 🔋"
+      "Ceux qui ont un téléphone à moins de 20 % de batterie boivent 1 gorgée 🔋",
+      "Ceux qui portent du noir boivent 1 gorgée 🖤",
+      "Le dernier à lever la main boit 2 gorgées ✋",
+      "Le lanceur désigne un « roi » : il distribue 2 gorgées 👑",
+      "Tout le monde montre ses chaussettes : les plus moches boivent 1 gorgée 🧦",
+      "Ceux qui ont des lunettes boivent 1 gorgée 👓",
+      "Le lanceur pose une question : le dernier à répondre boit 2 gorgées ❓",
+      "Pierre-feuille-ciseaux géant : les perdants boivent 1 gorgée ✂️",
+      "Le lanceur choisit deux personnes qui trinquent et boivent 1 gorgée chacune 🥂",
+      "Ceux qui ont déjà fait un tour de roue sans boire boivent 1 gorgée 😇",
+      "Tout le monde boit 1 gorgée, sauf le lanceur qui distribue 2 gorgées 🎁",
+      "Le dernier à crier « CHAOS » boit 2 gorgées 📣",
+      "Le lanceur imite quelqu'un : celui qui devine distribue 2 gorgées 🎭",
+      "Les gens nés en été boivent 1 gorgée ☀️",
+      "Le groupe vote pour la personne la plus calme : elle boit 2 gorgées 😴",
+      "Mini waterfall de 3 secondes lancé par le lanceur 🌊",
+      "Le lanceur devient « maître des pouces » jusqu'à son prochain tour : le dernier à l'imiter boit 1 gorgée 👍",
+      "Celui qui a la plus petite main boit 1 gorgée 🤚",
+      "Tout le monde se tape dans la main, le dernier boit 2 gorgées ✋"
     ],
     normal: [
       "Double peine : le lanceur boit 3 gorgées ET en distribue 3 💀",
@@ -53,7 +132,24 @@ export const ACTIONS = {
       "Le dernier à toucher son nez boit 3 gorgées 👃",
       "Jusqu'au prochain tour du lanceur, interdiction de prononcer un prénom : 2 gorgées par oubli 🤐",
       "Le lanceur désigne un binôme : jusqu'à son prochain tour, ils boivent toujours ensemble 🔗",
-      "Waterfall de 5 secondes lancé par le lanceur 🌊"
+      "Waterfall de 5 secondes lancé par le lanceur 🌊",
+      "Ceux qui ont leur téléphone en main boivent 3 gorgées 📱",
+      "Le lanceur pose une question piège : ceux qui répondent boivent 2 gorgées ❓",
+      "Le lanceur choisit une victime : pierre-feuille-ciseaux, le perdant boit 4 gorgées ✂️",
+      "Les deux voisins du lanceur boivent 3 gorgées 🤝",
+      "Le groupe vote pour la personne la plus bavarde : elle boit 3 gorgées 🗣️",
+      "Le dernier à lever son verre boit 4 gorgées ⬆️",
+      "Le lanceur devient le roi jusqu'à son prochain tour : chaque fois qu'il boit, tout le monde boit 1 gorgée 👑",
+      "Tout le monde boit 2 gorgées, sauf le lanceur 😈",
+      "Le lanceur invente une règle jusqu'à son prochain tour : 2 gorgées par oubli 📜",
+      "Duel de regard entre le lanceur et la personne en face : le perdant boit 4 gorgées 👀",
+      "Ceux qui n'ont pas encore bu depuis 2 tours boivent 3 gorgées ⏳",
+      "Le lanceur choisit une personne qui finit sa phrase par « … roulette » jusqu'à son prochain tour : 2 gorgées par oubli 🎡",
+      "Les 2 personnes qui ont le moins bu boivent 3 gorgées 🏆",
+      "Inversion : le lanceur boit les gorgées de la dernière punition de quelqu'un d'autre 🔄",
+      "Le lanceur et son voisin de droite échangent leurs verres pour une gorgée 🔀",
+      "Le premier qui rit dans les 30 prochaines secondes boit 4 gorgées 😐",
+      "Le lanceur fait un toast : ceux qui ne trinquent pas assez vite boivent 2 gorgées 🥂"
     ],
     hard: [
       "Le lanceur prend un shot, ou tout le monde boit 3 gorgées : le groupe vote 🗳️",
@@ -62,35 +158,76 @@ export const ACTIONS = {
       "Le dernier à se lever boit un shot 🧍",
       "Waterfall de 8 secondes lancé par le lanceur 🌊",
       "Jusqu'au prochain tour du lanceur, quiconque le regarde dans les yeux boit 2 gorgées 👀",
-      "Le groupe choisit la punition du lanceur : shot ou moitié de verre cul sec 🗳️"
+      "Le groupe choisit la punition du lanceur : shot ou moitié de verre cul sec 🗳️",
+      "Les deux voisins du lanceur prennent un shot 🤝",
+      "Le lanceur choisit une victime : bras de fer, le perdant prend un shot 💪",
+      "Ceux qui ont leur téléphone en main prennent un shot 📱",
+      "Le dernier à toucher le sol prend un shot ⬇️",
+      "Tout le monde boit 4 gorgées, sauf le lanceur 😈",
+      "Le lanceur devient le roi jusqu'à son prochain tour : chaque fois qu'il boit, tout le monde boit 2 gorgées 👑",
+      "Le groupe vote pour le plus sobre : il prend un shot 🧐",
+      "Le lanceur et la personne en face : un shot chacun, le dernier à finir boit 3 gorgées de plus 🏁",
+      "Moitié de verre cul sec pour le lanceur, ou un shot pour ses deux voisins : il choisit 🍺",
+      "Le premier qui rit dans les 30 prochaines secondes prend un shot 😐",
+      "Le lanceur pose une question piège : ceux qui répondent boivent 4 gorgées ❓",
+      "Les 2 personnes qui ont le moins bu prennent un shot 🏆",
+      "Le lanceur distribue un shot et 4 gorgées 🎁",
+      "Inversion totale : la personne qui a le plus bu distribue 6 gorgées 🔄",
+      "Tout le monde change de place, le dernier assis prend un shot 🔀",
+      "Le lanceur choisit un binôme : jusqu'à son prochain tour, ils boivent toujours ensemble, en double 🔗",
+      "Duel de regard entre le lanceur et la personne en face : le perdant prend un shot 👀",
+      "Le lanceur invente une règle jusqu'à son prochain tour : 3 gorgées par oubli 📜"
     ],
     extreme: [
       "Cul sec de ton verre, lanceur 💀",
       "2 shots pour le lanceur, ou 1 shot pour tout le monde : le groupe vote 🗳️",
       "Double peine : shot pour le lanceur ET pour la personne de son choix ☠️",
       "Waterfall de 10 secondes, personne ne s'arrête avant le lanceur 🌊",
-      "Le dernier à se lever boit un shot 🧍",
+      "Le dernier à se lever fait cul sec 🧍",
       "Le groupe choisit la punition du lanceur parmi : 2 shots, cul sec, 8 gorgées ☠️",
-      "Jusqu'au prochain tour du lanceur, il boit 1 gorgée à chaque fois que quelqu'un rit 😂"
+      "Jusqu'au prochain tour du lanceur, il boit 1 gorgée à chaque fois que quelqu'un rit 😂",
+      "Les deux voisins du lanceur font cul sec 🤝",
+      "Le lanceur choisit une victime : bras de fer, le perdant fait cul sec, le gagnant prend un shot 💪",
+      "Tout le monde prend un shot, sauf le lanceur 😈",
+      "Le lanceur devient le roi jusqu'à son prochain tour : chaque fois qu'il boit, tout le monde prend 3 gorgées 👑",
+      "Le dernier à toucher le sol fait cul sec ⬇️",
+      "Le groupe vote pour le plus sobre : il prend 2 shots 🧐",
+      "Le lanceur et la personne en face : cul sec ensemble, sans se quitter des yeux 👀",
+      "Shot + moitié de verre cul sec pour le lanceur 💀",
+      "Les 2 personnes qui ont le moins bu font cul sec 🏆",
+      "Le lanceur distribue 2 shots et 6 gorgées 🎁",
+      "Le premier qui rit dans les 30 prochaines secondes prend 2 shots 😐",
+      "Waterfall de 12 secondes : le lanceur commence, son voisin de droite décide quand ça s'arrête 🌊",
+      "Tout le monde change de place, le dernier assis fait cul sec 🔀",
+      "Le lanceur choisit un binôme : un shot chacun, puis ils boivent ensemble jusqu'au prochain tour du lanceur 🔗",
+      "Le lanceur pose une question piège : ceux qui répondent prennent un shot ❓",
+      "Le lanceur invente une règle jusqu'à son prochain tour : 5 gorgées par oubli 📜",
+      "Roulette russe : le lanceur désigne 3 personnes, le groupe en choisit une qui fait cul sec 🎯",
+      "Shot collectif : tout le monde trinque et prend un shot 🥃"
     ]
   }
 };
 
-// Sans alcool : gages à la place des gorgées.
-export const GAGES_BOIS = [
-  "Gage : fais 10 squats 🦵",
-  "Gage : imite quelqu'un de la soirée jusqu'à ce qu'on devine 🎭",
-  "Gage : parle avec un accent jusqu'à ton prochain tour 🎤",
-  "Gage : danse 15 secondes sans musique 💃",
-  "Gage : fais un compliment sincère à chacun 💐",
-  "Gage : chante un refrain choisi par le groupe 🎵",
-  "Gage : fais la planche 30 secondes 🧱"
-];
-
+// Sans alcool : gages collectifs pour la case TOUS (BOIS pioche dans les gages communs).
 export const GAGES_TOUS = [
   "Tout le monde fait 10 squats 🦵",
   "Tout le monde change de place 🔀",
   "Photo de groupe avec la grimace la plus moche possible 🤳",
   "Tout le monde chante le refrain de la chanson en cours 🎵",
-  "Tout le monde imite son voisin de gauche pendant 10 secondes 🎭"
+  "Tout le monde imite son voisin de gauche pendant 10 secondes 🎭",
+  "Tout le monde fait 10 jumping jacks 🤸",
+  "Tout le monde danse 15 secondes, le meilleur choisit la musique suivante 💃",
+  "Tout le monde parle avec un accent jusqu'au prochain tour 🎤",
+  "Tout le monde fait la planche 20 secondes, le premier qui craque fait 10 pompes 🧱",
+  "Tout le monde fait un compliment à son voisin de droite 💐",
+  "Tout le monde imite un animal en même temps 🐒",
+  "Statue ! Le premier qui bouge dans les 20 prochaines secondes fait un gage 🗿",
+  "Tout le monde se tape dans la main, le dernier fait 10 squats ✋",
+  "Tout le monde raconte sa pire honte en une phrase 😳",
+  "Concours de grimaces : le lanceur désigne le gagnant 😝",
+  "Tout le monde chuchote jusqu'au prochain tour 🤫",
+  "Tout le monde fait une ola, le lanceur commence 🌊",
+  "Tout le monde garde les bras en l'air 20 secondes 🙌",
+  "Tout le monde se lève et fait un tour sur soi-même 🌀",
+  "Câlin collectif (pour ceux qui veulent) 🫂"
 ];
