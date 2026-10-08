@@ -73,6 +73,10 @@ const GAME_CONFIG = {
     label: "Blind test",
     url: "games/blind-test/index.html"
   },
+  pyramide: {
+    label: "La Pyramide",
+    url: "games/pyramide/index.html"
+  },
   "casino-night": {
     label: "Casino Night",
     url: "games/casino-night/index.html"

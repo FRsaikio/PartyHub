@@ -1,0 +1,590 @@
+/* =========================================================
+   La Pyramide — Néon Club (cartes blanches, dos néon, or au sommet)
+   Base : neon-club.css + neon-game.css.
+   ========================================================= */
+
+:root {
+  --pc-gold: #f5c451;
+  --pc-red: #e11d48;
+}
+
+.pc-app {
+  width: min(1280px, 100%);
+}
+
+.pc-header {
+  align-items: center;
+}
+
+.pc-accent {
+  color: var(--pc-gold);
+  text-shadow: 0 0 24px rgba(245, 196, 81, 0.5);
+}
+
+.pc-round {
+  margin-left: auto;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 196, 81, 0.45);
+  background: rgba(245, 196, 81, 0.1);
+  color: var(--pc-gold);
+  font: 800 13px var(--nc-font-display);
+  white-space: nowrap;
+}
+
+.pc-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.pc-main,
+.pc-side {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* ---------- Cartes ---------- */
+
+.pc-card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: 52px;
+  aspect-ratio: 5 / 7;
+  padding: 0;
+  border-radius: 8px;
+  border: 0;
+  background: #fbfaff;
+  color: #14102b;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  font-family: var(--nc-font-display);
+  line-height: 1;
+}
+
+.pc-card b {
+  font-size: 1.15em;
+  font-weight: 800;
+}
+
+.pc-card i {
+  font-style: normal;
+  font-size: 1.2em;
+}
+
+.pc-card.red { color: var(--pc-red); }
+.pc-card.black { color: #14102b; }
+
+.pc-card.down {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 6px, transparent 6px 12px),
+    linear-gradient(150deg, #e01fa0, #6d28d9 60%, #22d3ee);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25) inset, 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+.pc-card.current {
+  outline: 3px solid var(--pc-gold);
+  box-shadow: 0 0 28px rgba(245, 196, 81, 0.8);
+  transform: translateY(-4px) scale(1.08);
+}
+
+.pc-card.big {
+  width: 96px;
+  font-size: 26px;
+  animation: pc-flip 0.45s ease-out;
+}
+
+.pc-card.fresh {
+  outline: 3px solid var(--nc-cyan);
+  box-shadow: 0 0 26px rgba(34, 211, 238, 0.8);
+}
+
+button.pc-card {
+  cursor: pointer;
+}
+
+button.pc-card:hover,
+button.pc-card:focus-visible {
+  transform: translateY(-4px);
+  outline: 3px solid var(--nc-cyan);
+}
+
+/* ---------- Pyramide ---------- */
+
+.pc-pyramid {
+  display: grid;
+  gap: 8px;
+  padding: 18px 12px;
+  border-radius: var(--nc-radius-lg);
+  background: radial-gradient(ellipse at 50% 100%, rgba(245, 196, 81, 0.12), transparent 70%), var(--nc-surface);
+  border: 1px solid var(--nc-line);
+}
+
+.pc-pyramid[hidden] {
+  display: none;
+}
+
+.pc-row {
+  display: grid;
+  grid-template-columns: 42px 1fr 42px;
+  align-items: center;
+}
+
+.pc-row-sips {
+  color: var(--pc-gold);
+  font: 800 12px var(--nc-font-display);
+}
+
+.pc-row-cards {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ---------- Scène ---------- */
+
+.pc-card-box {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  padding: 22px 18px;
+  border-radius: var(--nc-radius-lg);
+  background: linear-gradient(160deg, rgba(245, 196, 81, 0.07), rgba(224, 31, 160, 0.08)), var(--nc-surface);
+  border: 1px solid var(--nc-line-strong);
+  box-shadow: var(--nc-shadow);
+  text-align: center;
+}
+
+.pc-card-box h3 {
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font: 800 clamp(19px, 3.2vw, 28px) var(--nc-font-display);
+}
+
+.pc-kicker {
+  color: var(--pc-gold);
+  font: 800 12px var(--nc-font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pc-lead {
+  margin: 0;
+  max-width: 560px;
+  color: var(--nc-text-2);
+  font-weight: 700;
+}
+
+.pc-card-box .muted {
+  margin: 0;
+}
+
+.pc-hand {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pc-hand .pc-card {
+  width: 64px;
+  font-size: 18px;
+}
+
+.pc-hand.small .pc-card {
+  width: 38px;
+  font-size: 12px;
+}
+
+.pc-current {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  text-align: left;
+}
+
+.pc-current .pc-kicker,
+.pc-current h3 {
+  display: block;
+}
+
+.pc-alert {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--nc-radius);
+  border: 2px solid var(--nc-pink);
+  background: rgba(224, 31, 160, 0.14);
+  animation: pc-shake 0.4s;
+}
+
+.pc-alert.hot {
+  border-color: var(--pc-gold);
+  background: rgba(245, 196, 81, 0.12);
+}
+
+.pc-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.pc-targets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.pc-target,
+.pc-pick {
+  min-height: var(--nc-tap);
+  padding: 8px 10px;
+  border-radius: var(--nc-radius-sm);
+  border: 1.5px solid var(--nc-line-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--nc-text);
+  font: 700 14px var(--nc-font-body);
+  cursor: pointer;
+}
+
+.pc-target > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pc-target:hover {
+  border-color: var(--nc-pink);
+}
+
+.pc-pick.selected {
+  border-color: var(--pc-gold);
+  background: rgba(245, 196, 81, 0.16);
+}
+
+.pc-rows-pick {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  width: min(360px, 100%);
+}
+
+.pc-rows-pick .pc-pick {
+  font: 800 16px var(--nc-font-display);
+}
+
+.pc-attacks {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.pc-attack {
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: var(--nc-radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid var(--nc-line-strong);
+}
+
+.pc-attack small {
+  color: var(--nc-muted);
+}
+
+.pc-attack.st-pending { border-left-color: var(--nc-cyan); }
+.pc-attack.st-challenged { border-left-color: var(--pc-gold); }
+.pc-attack.st-drunk { border-left-color: #8b5cf6; }
+.pc-attack.st-truth { border-left-color: #22c55e; }
+.pc-attack.st-lie { border-left-color: #ff4d6d; }
+
+.pc-recall {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  width: min(440px, 100%);
+}
+
+.pc-slot {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.pc-slot .pc-card {
+  width: 56px;
+}
+
+.pc-select {
+  width: 100%;
+  min-height: 40px;
+  border-radius: var(--nc-radius-sm);
+  border: 1.5px solid var(--nc-line-strong);
+  background: var(--nc-surface-2);
+  color: var(--nc-text);
+  font: 700 14px var(--nc-font-body);
+}
+
+/* Fin */
+.pc-awards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.pc-award {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border-radius: var(--nc-radius);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--nc-line);
+}
+
+.pc-award small {
+  color: var(--nc-muted);
+  font-weight: 700;
+}
+
+.pc-hands {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.pc-hand-line {
+  display: grid;
+  grid-template-columns: minmax(70px, 1fr) auto minmax(90px, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--nc-radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  text-align: left;
+}
+
+/* ---------- Colonne de droite ---------- */
+
+.pc-host,
+.pc-box {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--nc-radius-lg);
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+}
+
+.pc-host {
+  border-color: rgba(224, 31, 160, 0.45);
+}
+
+.pc-host[hidden] {
+  display: none;
+}
+
+.pc-host-title,
+.pc-box-title,
+.pc-box summary {
+  font: 800 13px var(--nc-font-display);
+  color: var(--nc-text-2);
+  cursor: pointer;
+}
+
+.pc-rules {
+  border-color: rgba(245, 196, 81, 0.4);
+}
+
+.pc-rules ol {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding-left: 20px;
+  color: var(--nc-text-2);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.pc-rules strong {
+  color: var(--nc-text);
+}
+
+.pc-log ol {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: var(--nc-muted);
+  font-size: 13px;
+}
+
+.pc-board {
+  display: grid;
+  gap: 6px;
+}
+
+.pc-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--nc-radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pc-member.me {
+  outline: 1.5px solid var(--nc-pink);
+}
+
+.pc-member strong {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pc-drinks {
+  color: var(--pc-gold);
+  font: 800 14px var(--nc-font-display);
+}
+
+.pc-ready {
+  color: #4ade80;
+  font-weight: 800;
+}
+
+.pc-avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--nc-surface-2);
+  font-size: 17px;
+}
+
+.pc-avatar.big {
+  width: 80px;
+  height: 80px;
+  font-size: 42px;
+  box-shadow: 0 0 30px rgba(245, 196, 81, 0.5);
+}
+
+.pc-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pc-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  z-index: 9999;
+  transform: translateX(-50%);
+  max-width: min(92vw, 440px);
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: rgba(8, 6, 26, 0.95);
+  border: 1.5px solid var(--nc-line-strong);
+  font-weight: 800;
+  text-align: center;
+  transition: opacity 0.4s;
+}
+
+.pc-toast.tone-gold { border-color: var(--pc-gold); }
+.pc-toast.tone-bad { border-color: #ff4d6d; }
+.pc-toast.leaving { opacity: 0; }
+
+@keyframes pc-flip {
+  from { transform: rotateY(90deg) scale(0.9); }
+  to { transform: none; }
+}
+
+@keyframes pc-shake {
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@media (max-width: 860px) {
+  .pc-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pc-header .muted {
+    display: none;
+  }
+
+  .pc-pyramid {
+    padding: 12px 6px;
+    gap: 5px;
+  }
+
+  .pc-row {
+    grid-template-columns: 30px 1fr 30px;
+  }
+
+  .pc-row-cards {
+    gap: 4px;
+  }
+
+  .pc-row-cards .pc-card {
+    width: 34px;
+    font-size: 11px;
+    border-radius: 5px;
+  }
+
+  .pc-card-box {
+    padding: 18px 12px;
+  }
+
+  .pc-current {
+    gap: 12px;
+  }
+
+  .pc-card.big {
+    width: 76px;
+    font-size: 21px;
+  }
+
+  .pc-awards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Vue TV ---------- */
+
+.pc-tv .pc-host,
+.pc-tv #backToLobbyBtn,
+.pc-tv .pc-log {
+  display: none !important;
+}
+
+.pc-tv .pc-app {
+  width: min(1700px, 100%);
+}
+
+.pc-tv .pc-row-cards .pc-card {
+  width: 70px;
+  font-size: 20px;
+}
+
+.pc-embed .pc-header {
+  display: none;
+}
