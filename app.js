@@ -412,8 +412,24 @@ async function syncProfileFromForm() {
   return currentProfile;
 }
 
+// #errorMsg est sur l'écran d'accueil : dans le lobby, il est caché. On affiche donc aussi
+// le message en bandeau, sinon un clic refusé (« Seul le host… ») semble ne rien faire.
+let lobbyToastTimer = null;
 function showError(message) {
   if (errorMsg) errorMsg.textContent = message;
+  if (!message || !lobbyScreen?.classList.contains("active")) return;
+  let toast = document.getElementById("lobbyToast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "lobbyToast";
+    toast.className = "lobby-toast";
+    toast.setAttribute("role", "alert");
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(lobbyToastTimer);
+  lobbyToastTimer = setTimeout(() => toast.classList.remove("show"), 3500);
 }
 
 function clearError() {
@@ -1245,6 +1261,13 @@ document.querySelectorAll(".game-card").forEach(card => {
     const gameId =
       card.dataset.game ||
       getGameIdFromLabel(card.querySelector("strong").textContent);
+
+    // Carte d'un jeu inconnu de ce script : la page affichée est plus récente que le JS
+    // gardé en cache. On recharge pour récupérer la bonne version.
+    if (!GAME_CONFIG[gameId]) {
+      window.location.reload();
+      return;
+    }
 
     refreshSelectedGameFromId(gameId);
 
