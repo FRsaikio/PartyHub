@@ -93,9 +93,9 @@ function chaosGain(ctx) {
 
 // ---------- Quantités selon le niveau d'alcool ----------
 
-// Les cartes sont écrites pour le niveau « Hard » : on adapte les gorgées et les culs secs au
+// Les cartes sont écrites pour un niveau entre Normal et Hard : on adapte les gorgées et les culs secs au
 // niveau du lobby. Sans alcool, les gorgées deviennent des pompes et le cul sec un gros gage.
-const SIP_SCALE = { soft: n => Math.max(1, Math.ceil(n / 2)), normal: n => Math.max(1, n - 1), hard: n => n, extreme: n => Math.round(n * 1.5) };
+const SIP_SCALE = { soft: n => Math.max(1, Math.ceil(n / 2)), normal: n => Math.max(1, n - 1), hard: n => Math.round(n * 1.25), extreme: n => Math.round(n * 1.5) };
 const DRINK_VERBS = { boit: "fait", bois: "fais", boivent: "font", boire: "faire", buvez: "faites", buvant: "faisant" };
 
 export function adaptDrinks(text, ctx = {}) {

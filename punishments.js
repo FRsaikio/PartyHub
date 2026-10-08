@@ -15,7 +15,7 @@ export const LEVELS = ["soft", "normal", "hard", "extreme"];
 export const normalizeLevel = level => (level === "danger" ? "extreme" : LEVELS.includes(level) ? level : "normal");
 
 // Gorgées « de base » d'un niveau, et la grosse punition du niveau.
-const SIPS = { soft: 1, normal: 2, hard: 3, extreme: 4 };
+const SIPS = { soft: 1, normal: 2, hard: 4, extreme: 5 };
 const BIG = { soft: "3 gorgées", normal: "5 gorgées", hard: "un shot", extreme: "2 shots" };
 const plural = n => `${n} gorgée${n > 1 ? "s" : ""}`;
 
@@ -146,7 +146,47 @@ const DRINK = {
     "Le dernier à toucher le sol boit un shot : tu lances le décompte ⬇️",
     "Bois 5 gorgées, puis tout le monde boit 1 gorgée en ton honneur 🎉",
     "Prends un shot servi par ton voisin de gauche 🥃",
-    "Bois 6 gorgées en criant « JE SUIS UNE LÉGENDE » à la fin 🏆"
+    "Bois 6 gorgées en criant « JE SUIS UNE LÉGENDE » à la fin 🏆",
+    "Prends un shot, puis distribue 4 gorgées 🥃",
+    "Shot sans grimacer : si tu grimaces, 3 gorgées de plus 😐",
+    "Cul sec de la moitié de ton verre, puis 2 gorgées 🍺",
+    "Bois 8 gorgées 💀",
+    "Bois 7 gorgées sans poser ton verre 🍻",
+    "Shot + 3 gorgées 🔥",
+    "Le groupe vote : shot pour toi, ou shot pour ton voisin de gauche 🗳️",
+    "Prends un shot, et le groupe choisit qui t'accompagne 🥃",
+    "Cul sec des trois quarts de ton verre 🍺",
+    "Shot, ou 8 gorgées : le groupe choisit 🗳️",
+    "Waterfall de 8 secondes : tu commences et tu décides quand ça s'arrête 🌊",
+    "Bois 6 gorgées et distribues-en 6 🔁",
+    "Prends un shot les yeux fermés, servi par la personne de ton choix 🙈",
+    "Shot, ou 20 pompes 💪",
+    "Bois 7 gorgées en tenant sur un pied 🦩",
+    "Prends un shot, puis fais un discours de 10 secondes 🎤",
+    "Cul sec de la moitié de ton verre sans les mains 🥤",
+    "Shot pour toi, 3 gorgées pour tout le monde 🎉",
+    "Prends un shot en trinquant avec tout le monde 🥂",
+    "Bois 8 gorgées, pas plus de 2 entre chaque respiration 💨",
+    "Le dernier à lever son verre prend un shot : tu lances le signal ⬆️",
+    "Shot, puis choisis qui boit 4 gorgées 🫵",
+    "Raconte ton pire râteau, ou prends un shot 💔",
+    "Prends un shot servi par le joueur qui a le plus bu 🏆",
+    "Bois 7 gorgées en regardant le groupe : le premier qui rit en boit 3 👀",
+    "Shot les mains dans le dos, servi par ton voisin de droite 🤲",
+    "Cul sec de la moitié de ton verre, puis porte un toast 🥂",
+    "Prends un shot et distribue-en un 🥃",
+    "Bois 10 gorgées, ou un shot : à toi de voir 💀",
+    "Shot, et ton voisin de gauche boit 3 gorgées par solidarité 🤝",
+    "Prends un shot en criant ton cri de guerre 📣",
+    "Bois 6 gorgées sans les mains, paille interdite 🥤",
+    "Le groupe choisit le contenu de ton shot (rien de dégoûtant) 🎲",
+    "Shot, ou 30 secondes de planche 🧱",
+    "Bois 8 gorgées pendant que le groupe compte 📣",
+    "Cul sec de la moitié de ton verre, puis distribue 4 gorgées 🔥",
+    "Shot, puis tu inventes la règle du prochain tour 📜",
+    "Prends un shot en tenant sur un pied 🦩",
+    "Bois 7 gorgées et distribues-en 3 🔁",
+    "Shot ou vérité : le groupe pose la question, tu choisis après l'avoir entendue 😈"
   ],
   extreme: [
     "Cul sec de ton verre 💀",
@@ -188,7 +228,47 @@ const DRINK = {
     "Shot, puis 3 gorgées pour chacun de tes voisins 🤝",
     "Double shot… ou cul sec de ton verre : le groupe choisit 🗳️",
     "Prends un shot en regardant la personne de ton choix dans les yeux : si elle rit, elle en prend un aussi 👀",
-    "Cul sec de ton verre, puis porte un toast à la soirée 🥂"
+    "Cul sec de ton verre, puis porte un toast à la soirée 🥂",
+    "Cul sec de ton verre, puis 3 gorgées 💀",
+    "Prends 2 shots, puis distribue 4 gorgées ☠️",
+    "Cul sec de ton verre sans les mains 🥤",
+    "Shot + moitié de ton verre cul sec 💀",
+    "Le groupe vote : 2 shots pour toi, ou cul sec de ton verre 🗳️",
+    "Bois 12 gorgées, pas plus de 3 entre chaque respiration 💨",
+    "Cul sec de ton verre, et le dernier à te dire « santé » prend un shot 🥂",
+    "2 shots les yeux fermés, servis par la personne de ton choix 🙈",
+    "Prends un shot, et chacun de tes voisins en prend un aussi 🤝",
+    "Distribue un shot à trois personnes différentes ☠️",
+    "Cul sec de ton verre en regardant le groupe : le premier qui rit prend un shot 👀",
+    "2 shots, ou 30 pompes 💪",
+    "Cul sec de ton verre, puis distribue 5 gorgées 🔥",
+    "Shot + 6 gorgées 💀",
+    "Waterfall de 12 secondes, tout le monde suit 🌊",
+    "2 shots en trinquant avec tout le monde 🥂",
+    "Le dernier à lever son verre fait cul sec : tu lances le signal ⬆️",
+    "Cul sec de ton verre pendant que le groupe chante 🎶",
+    "Prends 2 shots, puis choisis qui boit 6 gorgées 🫵",
+    "Le groupe choisit le contenu de tes 2 shots (rien de dégoûtant) 🎲",
+    "Shot les mains dans le dos + 4 gorgées 🤲",
+    "Cul sec de ton verre, ou ton pire secret + un shot 😳",
+    "2 shots servis par le joueur qui a le plus bu 🏆",
+    "Bois 10 gorgées sans poser ton verre 🍻",
+    "Shot, puis tout le monde boit 3 gorgées en ton honneur 🎉",
+    "Cul sec de ton verre, puis invente une règle jusqu'à ton prochain tour 📜",
+    "2 shots en criant ton cri de guerre 📣",
+    "Shot + 4 gorgées pour toi et pour la victime de ton choix ☠️",
+    "Le groupe vote : cul sec pour toi, ou un shot pour tout le monde 🗳️",
+    "Cul sec de ton verre sans reprendre ta respiration 💨",
+    "2 shots, ou cul sec de ton verre + 3 gorgées 💀",
+    "Prends un shot, puis 30 secondes de planche 🧱",
+    "Fais faire cul sec à la personne de ton choix… et prends un shot 😈",
+    "Cul sec de ton verre, tenu avec deux doigts 🤏",
+    "Prends 2 shots, puis donne un surnom à chaque joueur 🏷️",
+    "Shot, puis lance un waterfall de 6 secondes 🌊",
+    "Cul sec de ton verre sur un roulement de tambour du groupe 🥁",
+    "Bois 12 gorgées et distribues-en 6 🔁",
+    "Prends 2 shots, puis choisis la prochaine musique 🎵",
+    "Le dernier à toucher son nez fait cul sec : tu lances le signal 👃"
   ]
 };
 
@@ -235,7 +315,19 @@ const DUO = {
     "Choisis un complice : waterfall de 6 secondes à deux 🌊",
     "Toi et la personne de ton choix buvez 5 gorgées, puis vous en distribuez 3 chacun 🔁",
     "Toi et la personne la plus âgée de la pièce prenez un shot 🎂",
-    "Choisis un binôme : un shot chacun, servi par l'autre 🥃"
+    "Choisis un binôme : un shot chacun, servi par l'autre 🥃",
+    "Toi et la personne de ton choix prenez un shot, puis 2 gorgées chacun 🥃",
+    "Choisis un complice : cul sec de la moitié de vos verres, ensemble 🍺",
+    "Toi et tes deux voisins prenez un shot ensemble 🥃",
+    "Toi et la personne en face de toi : waterfall de 8 secondes 🌊",
+    "Choisis quelqu'un : bras de fer, le perdant prend un shot, le gagnant 4 gorgées 💪",
+    "Toi et le joueur qui a le plus bu prenez un shot 🏆",
+    "Choisis un binôme : 6 gorgées chacun, bras dessus bras dessous 🤝",
+    "Toi et la personne la plus jeune de la pièce prenez un shot 🍼",
+    "Choisis quelqu'un : un shot chacun, le dernier à finir boit 3 gorgées de plus 🏁",
+    "Toi et la dernière personne à avoir parlé buvez 6 gorgées 🗣️",
+    "Choisis un complice : jusqu'à ton prochain tour, vous buvez toujours ensemble, en double 🔗",
+    "Toi et ton voisin de droite : shot croisé, chacun sert l'autre 🔀"
   ],
   extreme: [
     "Choisis quelqu'un : cul sec ensemble 💀",
@@ -249,7 +341,19 @@ const DUO = {
     "Toi et ton voisin de gauche faites un waterfall de 10 secondes 🌊",
     "Choisis un binôme : shot servi par l'autre, bras dessus bras dessous 🥃",
     "Toi et la personne la plus jeune de la pièce prenez un shot 🍼",
-    "Choisis quelqu'un : vous buvez 8 gorgées chacun, le premier qui finit distribue un shot 🏁"
+    "Choisis quelqu'un : vous buvez 8 gorgées chacun, le premier qui finit distribue un shot 🏁",
+    "Toi et la personne de ton choix : cul sec ensemble, puis 3 gorgées chacun 💀",
+    "Choisis un complice : 2 shots chacun ☠️",
+    "Toi et tes deux voisins : cul sec ensemble 💀",
+    "Toi et la personne en face de toi : waterfall de 12 secondes 🌊",
+    "Choisis quelqu'un : bras de fer, le perdant fait cul sec, le gagnant prend un shot 💪",
+    "Toi et le joueur qui a le plus bu prenez 2 shots 🏆",
+    "Choisis un binôme : shot croisé, puis la moitié de vos verres cul sec 🔀",
+    "Toi et la personne la plus âgée de la pièce prenez 2 shots 🎂",
+    "Choisis quelqu'un : un shot chacun, le dernier à finir en reprend un 🏁",
+    "Toi et la dernière personne à avoir ri : cul sec 😂",
+    "Choisis 2 complices : un shot pour vous trois 🥃",
+    "Toi et ton voisin de gauche : cul sec bras dessus bras dessous 🤝"
   ]
 };
 
@@ -444,11 +548,14 @@ export function punishment({ level = "normal", alcohol = true, rng = Math.random
     if (roll < 0.8) return `${pick(DUELS, rng)} → le perdant fait un gage choisi par le groupe`;
     return fill(pick(RULES, rng));
   }
+  // Hard / Extrême : plus de « boire » et de complices, moins de gages et de règles.
+  const strong = lvl === "hard" || lvl === "extreme";
+  const [drink, duo, duel, gage] = strong ? [0.6, 0.75, 0.85, 0.95] : [0.55, 0.65, 0.75, 0.9];
   const roll = rng();
-  if (roll < 0.55) return pick(DRINK[lvl], rng);
-  if (roll < 0.65) return pick(DUO[lvl], rng);
-  if (roll < 0.75) return `${pick(DUELS, rng)} → le perdant boit ${BIG[lvl] === "2 shots" ? "un shot" : BIG[lvl]}`;
-  if (roll < 0.9) return `${pick(GAGES, rng)} — ou bois ${BIG[lvl]}`;
+  if (roll < drink) return pick(DRINK[lvl], rng);
+  if (roll < duo) return pick(DUO[lvl], rng);
+  if (roll < duel) return `${pick(DUELS, rng)} → le perdant boit ${BIG[lvl] === "2 shots" ? "un shot" : BIG[lvl]}`;
+  if (roll < gage) return `${pick(GAGES, rng)} — ou bois ${BIG[lvl]}`;
   return fill(pick(RULES, rng));
 }
 
