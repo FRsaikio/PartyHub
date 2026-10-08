@@ -14,8 +14,8 @@
 // applyAction(state, type, payload, me, ctx) modifie `state` ou lève une Error.
 // ctx = { rng, partyMode, drinkLevel, alcohol }.
 
-import { ACTIONS, GAGES_TOUS } from "./roulette-content.js";
-import { punishment as drawPunishment, normalizeLevel, CATALOG } from "../../../punishments.js";
+import { ACTIONS, GAGES_TOUS, TOUS_SPECIAL } from "./roulette-content.js";
+import { punishment as drawPunishment, drinkAction, normalizeLevel, CATALOG } from "../../../punishments.js";
 
 export const CATEGORIES = ["BOIS", "DISTRIBUE", "DUEL", "TOUS", "CHANCE", "CHAOS"];
 export const SEGMENT = 360 / CATEGORIES.length;
@@ -62,7 +62,12 @@ export function actionText(category, sips, ctx) {
     if (category === "DISTRIBUE") return `Distribue ${sips} gage${sips > 1 ? "s" : ""} (pompes, imitations…) 🎁`;
     return "";
   }
-  const pool = category === "CHAOS" ? ACTIONS.CHAOS[normalizeLevel(ctx.drinkLevel)] : ACTIONS[category];
+  const level = normalizeLevel(ctx.drinkLevel);
+  // Pour varier (pas que des gorgées) : la moitié des cases BOIS sont une punition spéciale du niveau
+  // (shot, waterfall, cul sec, yeux bandés…) et ~40 % des cases TOUS une vraie action de groupe.
+  if (category === "BOIS" && rng() < 0.5) return drinkAction({ level, rng });
+  if (category === "TOUS" && rng() < 0.4) return pick(TOUS_SPECIAL[level], rng);
+  const pool = category === "CHAOS" ? ACTIONS.CHAOS[level] : ACTIONS[category];
   if (!pool?.length) return "";
   return pick(pool, rng).replaceAll("{n}", gorgees(sips)).replaceAll("{h}", gorgees(Math.ceil(sips / 2)));
 }

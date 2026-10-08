@@ -149,7 +149,9 @@ export const ACTIONS = {
       "Inversion : le lanceur boit les gorgées de la dernière punition de quelqu'un d'autre 🔄",
       "Le lanceur et son voisin de droite échangent leurs verres pour une gorgée 🔀",
       "Le premier qui rit dans les 30 prochaines secondes boit 4 gorgées 😐",
-      "Le lanceur fait un toast : ceux qui ne trinquent pas assez vite boivent 2 gorgées 🥂"
+      "Le lanceur fait un toast : ceux qui ne trinquent pas assez vite boivent 2 gorgées 🥂",
+      "Chacun verse un petit fond de son verre dans celui du lanceur : il boit 3 gorgées 🧪",
+      "Le lanceur boit 3 gorgées les yeux bandés, verre préparé par son voisin 🙈"
     ],
     hard: [
       "Le lanceur prend un shot, ou tout le monde boit 3 gorgées : le groupe vote 🗳️",
@@ -176,7 +178,9 @@ export const ACTIONS = {
       "Tout le monde change de place, le dernier assis prend un shot 🔀",
       "Le lanceur choisit un binôme : jusqu'à son prochain tour, ils boivent toujours ensemble, en double 🔗",
       "Duel de regard entre le lanceur et la personne en face : le perdant prend un shot 👀",
-      "Le lanceur invente une règle jusqu'à son prochain tour : 3 gorgées par oubli 📜"
+      "Le lanceur invente une règle jusqu'à son prochain tour : 3 gorgées par oubli 📜",
+      "Chacun verse un petit fond d’alcool dans le verre du lanceur : moitié cul sec 🧪",
+      "Shot « surprise » préparé par le groupe pour le lanceur (un seul verre à shot) 🎲"
     ],
     extreme: [
       "Cul sec de ton verre, lanceur 💀",
@@ -203,9 +207,46 @@ export const ACTIONS = {
       "Le lanceur pose une question piège : ceux qui répondent prennent un shot ❓",
       "Le lanceur invente une règle jusqu'à son prochain tour : 5 gorgées par oubli 📜",
       "Roulette russe : le lanceur désigne 3 personnes, le groupe en choisit une qui fait cul sec 🎯",
-      "Shot collectif : tout le monde trinque et prend un shot 🥃"
+      "Shot collectif : tout le monde trinque et prend un shot 🥃",
+      "Chacun met ce qu’il veut dans le verre du lanceur (comestible !) : cul sec 🧪",
+      "Shot « suicide » pour le lanceur : un fond de 4 alcools dans un verre à shot ☠️"
     ]
   }
+};
+
+// Case TOUS « spéciale » (tirée ~40 % du temps) : vraies actions de groupe selon le niveau.
+export const TOUS_SPECIAL = {
+  soft: [
+    "Mini waterfall de 3 secondes : tout le monde suit le lanceur 🌊",
+    "Tout le monde boit 1 gorgée les yeux fermés 🙈",
+    "Tout le monde boit 1 gorgée en disant « je t’aime » à son voisin de droite ❤️",
+    "Tout le monde boit 1 gorgée en silence total, le lanceur essaie de faire rire 🤐",
+    "Tout le monde boit 1 gorgée en imitant la voix du lanceur 🎭"
+  ],
+  normal: [
+    "Waterfall général : le lanceur commence et décide quand ça s’arrête 🌊",
+    "Waterfall inversé : tout le monde boit, le lanceur dit « stop » le plus tard possible 🌊",
+    "Tout le monde boit 3 gorgées les yeux fermés 🙈",
+    "Tout le monde boit en même temps : le dernier à finir 3 gorgées en reprend 2 🏁",
+    "Tout le monde fait un mini cul sec (un quart du verre) sur « 3, 2, 1… SANTÉ ! » 🥂",
+    "Chacun verse un petit fond de son verre dans celui du lanceur : il boit 3 gorgées 🧪"
+  ],
+  hard: [
+    "Shot collectif : tout le monde trinque et prend un shot 🥃",
+    "Waterfall général de 8 secondes : personne ne s’arrête avant le lanceur 🌊",
+    "Tout le monde fait cul sec de la moitié de son verre sur « 3, 2, 1… SANTÉ ! » 🥂",
+    "Chacun verse un petit fond d’alcool dans le verre du lanceur : il en boit la moitié 🧪",
+    "Tout le monde prend un shot les yeux fermés, servi par son voisin de gauche 🙈",
+    "Tout le monde boit en même temps : le dernier à finir son shot reprend 3 gorgées 🏁"
+  ],
+  extreme: [
+    "Shot collectif + waterfall de 8 secondes 🥃🌊",
+    "Tout le monde fait cul sec de son verre sur « 3, 2, 1… SANTÉ ! » 💀",
+    "Chacun verse ce qu’il veut dans le verre du lanceur (alcool, jus, soda — comestible !) : cul sec 🧪",
+    "Tout le monde prend un shot, et le dernier à finir en prend un deuxième 🏁",
+    "Waterfall inversé de 12 secondes minimum, le lanceur dit « stop » 🌊",
+    "Shot « suicide » pour le lanceur (un fond de 4 alcools dans un verre à shot) pendant que tout le monde boit 3 gorgées ☠️"
+  ]
 };
 
 // Sans alcool : gages collectifs pour la case TOUS (BOIS pioche dans les gages communs).
