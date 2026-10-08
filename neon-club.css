@@ -1638,3 +1638,28 @@ select option {
     transition: none !important;
   }
 }
+
+/* Bandeau d'erreur du lobby (le message #errorMsg est sur l'écran d'accueil, caché dans le lobby) */
+.lobby-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  z-index: 9999;
+  max-width: min(92vw, 440px);
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: rgba(8, 6, 26, 0.95);
+  border: 1.5px solid #ff4d6d;
+  color: var(--nc-text);
+  font-weight: 800;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 10px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+.lobby-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
