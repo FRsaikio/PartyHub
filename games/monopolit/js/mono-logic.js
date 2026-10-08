@@ -9,6 +9,8 @@
 // applyAction(state, type, payload, me, ctx) modifie `state` ou lève une Error.
 // ctx = { rng, drinkLevel, alcohol }.
 
+import { CATALOG } from "../../../punishments.js";
+
 export const START_COINS = 15;
 export const PASS_START = 4;
 export const MAX_LEVEL = 3;
@@ -68,28 +70,8 @@ export const CHANCE = [
   { text: "Contrôle de police : prison chill, tu passes ton prochain tour.", effect: { jail: true } }
 ];
 
-export const CHALLENGES = [
-  "Cul sec de ton verre actuel.",
-  "Chante le refrain d'une chanson choisie par le groupe.",
-  "Bois sans utiliser les mains.",
-  "Fais 10 pompes puis bois une gorgée.",
-  "Parle avec un accent jusqu'à ton prochain tour.",
-  "Dis un compliment à chaque joueur en buvant entre chaque.",
-  "Imite un animal choisi par le groupe pendant 10 secondes.",
-  "Choisis quelqu'un qui boit avec toi.",
-  "Danse 20 secondes sans musique.",
-  "Raconte ton pire râteau.",
-  "Bois en tenant sur un pied.",
-  "Fais deviner un film en le mimant.",
-  "Bois 3 gorgées en tournant sur toi-même.",
-  "Laisse la personne à ta droite choisir ta sanction.",
-  "Mélange préparé par le groupe (petite quantité).",
-  "Cul sec puis crie « JE SUIS UNE LÉGENDE ».",
-  "Fais une déclaration d'amour dramatique à la bouteille.",
-  "Raconte une anecdote gênante ou bois 4 gorgées.",
-  "Bois une gorgée à chaque fois que quelqu'un rit pendant 2 minutes.",
-  "Échange ta boisson avec la personne en face."
-];
+// Défis de la case « Défi » : des gages sans alcool (catalogue commun). Refusé ou raté = gorgées.
+export const CHALLENGES = CATALOG.GAGES;
 
 const pick = (list, rng) => list[Math.floor(rng() * list.length)];
 const say = (s, text) => { s.log = [text, ...(s.log || [])].slice(0, 40); };

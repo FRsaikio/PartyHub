@@ -173,8 +173,8 @@ shieldBtn.addEventListener("click", () => {
 loanBtn.addEventListener("click", () => {
   wallet.add(LOAN);
   sound.chip();
-  toast(`🏦 Le casino te prête ${LOAN} jetons… contre un cul sec !`, "pink");
-  wallet.announce(`a emprunté ${LOAN} jetons au casino (cul sec obligatoire) !`, "pink");
+  toast(`🏦 Le casino te prête ${LOAN} jetons… contre 3 gorgées !`, "pink");
+  wallet.announce(`a emprunté ${LOAN} jetons au casino (3 gorgées obligatoires) !`, "pink");
 });
 
 // ---------- Contexte partagé avec les tables ----------

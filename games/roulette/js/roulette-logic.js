@@ -14,7 +14,8 @@
 // applyAction(state, type, payload, me, ctx) modifie `state` ou lève une Error.
 // ctx = { rng, partyMode, drinkLevel, alcohol }.
 
-import { ACTIONS } from "./roulette-content.js";
+import { ACTIONS, GAGES_BOIS, GAGES_TOUS } from "./roulette-content.js";
+import { punishment as drawPunishment, normalizeLevel } from "../../../punishments.js";
 
 export const CATEGORIES = ["BOIS", "DISTRIBUE", "DUEL", "TOUS", "CHANCE", "CHAOS"];
 export const SEGMENT = 360 / CATEGORIES.length;
@@ -48,17 +49,22 @@ export function baseSips(drinkLevel) {
   return { soft: 2, normal: 3, hard: 5, extreme: 7, danger: 7 }[drinkLevel] || 3;
 }
 
-// Adapte le texte d'une action au niveau d'alcool (repris de l'ancienne version).
-export function adaptText(action, ctx) {
+const gorgees = n => `${n} gorgée${n > 1 ? "s" : ""}`;
+
+// Texte de la case tirée. {n} / {h} reprennent les gorgées réellement comptées par le jeu.
+// Sans alcool : gages à la place des gorgées.
+export function actionText(category, sips, ctx) {
+  const rng = ctx.rng || Math.random;
   if (ctx.alcohol === false) {
-    return action.replaceAll("Shot", "Mini-gage").replaceAll("shot", "mini-gage").replaceAll("Cul-sec", "Gros gage")
-      .replaceAll("cul-sec", "gros gage").replaceAll("cul sec", "gros gage").replaceAll("Waterfall", "Défi collectif")
-      .replaceAll("boit", "fait un gage").replaceAll("Bois", "Fais un gage");
+    if (category === "BOIS") return pick(GAGES_BOIS, rng);
+    if (category === "TOUS") return pick(GAGES_TOUS, rng);
+    if (category === "CHAOS") return drawPunishment({ alcohol: false, rng });
+    if (category === "DISTRIBUE") return `Distribue ${sips} gage${sips > 1 ? "s" : ""} (pompes, imitations…) 🎁`;
+    return "";
   }
-  if (ctx.drinkLevel === "soft") return action.replaceAll("Shot soft 🥃", "2 gorgées 🍺").replaceAll("Mini cul-sec 🍺", "2 gorgées 🍺");
-  if (ctx.drinkLevel === "hard") return action.replaceAll("3 gorgées", "5 gorgées").replaceAll("2 gorgées", "4 gorgées").replaceAll("Shot soft 🥃", "Shot complet 🥃").replaceAll("Mini cul-sec 🍺", "Cul sec 🍺");
-  if (ctx.drinkLevel === "extreme" || ctx.drinkLevel === "danger") return action.replaceAll("3 gorgées", "SHOT ☠️").replaceAll("2 gorgées", "4 gorgées 💀").replaceAll("Shot soft 🥃", "DOUBLE SHOT ☠️").replaceAll("Mini cul-sec 🍺", "CUL SEC COMPLET 💀");
-  return action;
+  const pool = category === "CHAOS" ? ACTIONS.CHAOS[normalizeLevel(ctx.drinkLevel)] : ACTIONS[category];
+  if (!pool?.length) return "";
+  return pick(pool, rng).replaceAll("{n}", gorgees(sips)).replaceAll("{h}", gorgees(Math.ceil(sips / 2)));
 }
 
 // ---------- Partie ----------
@@ -102,10 +108,6 @@ function spin(s, ctx) {
   s.rotation = s.rotation + 1440 + delta;
 
   const rareKey = rng() < 0.1 ? pick(Object.keys(RARE), rng) : null;
-  const pool = (ACTIONS[ctx.partyMode] || ACTIONS.Party)[category] || [];
-  const fresh = pool.filter(a => !s.recent.includes(a));
-  const raw = pick(fresh.length ? fresh : pool, rng) || "";
-  s.recent = [raw, ...s.recent].slice(0, 30);
 
   // Multiplicateur de gorgées : Furie (×2) et Mort subite (×2) se cumulent.
   const mult = (s.furie > 0 ? 2 : 1) * (s.sudden ? 2 : 1);
@@ -118,7 +120,7 @@ function spin(s, ctx) {
   const sips = baseSips(ctx.drinkLevel) * mult;
   s.spin = {
     id: s.turn, by, category, startRotation, rotation: s.rotation, rare: rareKey, mult,
-    text: category === "DUEL" || category === "CHANCE" ? "" : adaptText(raw, ctx),
+    text: category === "DUEL" || category === "CHANCE" ? "" : actionText(category, baseSips(ctx.drinkLevel) * mult, ctx),
     sips, victims: [], resolved: false, protectedBy: null
   };
 

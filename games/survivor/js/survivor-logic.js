@@ -12,7 +12,8 @@
 // applyAction(state, type, payload, me, ctx) modifie `state` en place, ou lève une Error
 // dont le message s'affiche au joueur. ctx = { now, rng, mode, drinkLevel, alcohol }.
 
-import { PHYSICAL_CHALLENGES, PUNISHMENTS } from "./survivor-content.js";
+import { punishment as drawPunishment } from "../../../punishments.js";
+import { PHYSICAL_CHALLENGES } from "./survivor-content.js";
 
 export const START_LIVES = 3;
 // Flambeaux de départ selon la taille de la tribu (la room accepte 20 joueurs) :
@@ -67,10 +68,7 @@ function shuffle(list, rng) {
 }
 
 export function punishmentFor(ctx) {
-  const rng = ctx.rng || Math.random;
-  if (ctx.alcohol === false) return pick(["Gage choisi par le groupe 😇", "Vérité obligatoire", "Imitation ridicule", "Danse de 10 secondes", "Compliment forcé à quelqu'un"], rng);
-  const level = ctx.drinkLevel === "extreme" ? "danger" : ctx.drinkLevel;
-  return pick(PUNISHMENTS[level] || PUNISHMENTS.normal, rng);
+  return drawPunishment({ level: ctx.drinkLevel, alcohol: ctx.alcohol !== false, rng: ctx.rng || Math.random });
 }
 
 // ---------- Nouvelle partie ----------
@@ -177,7 +175,7 @@ function finishChallenge(s, winner, loser, ctx) {
   s.phase = "challengeResult";
   say(s, [
     c.winner ? `🏆 ${c.winner} remporte l'épreuve${s.mods.noImmunity ? "" : " et l'immunité"}` : "Personne ne remporte l'épreuve",
-    c.loser ? `🍻 ${c.loser} boit : ${c.punishment}` : ""
+    c.loser ? `🍻 ${c.loser} → ${c.punishment}` : ""
   ].filter(Boolean).join(" · "));
 }
 
@@ -252,7 +250,7 @@ function closeCouncil(s, ctx) {
     }
     say(s, reveal.eliminated
       ? `🔥 La tribu a parlé : ${loser} quitte l'île et rejoint le jury.`
-      : `💔 ${loser} perd ${flames(loss)} (${flames(p.lives)} restant${p.lives > 1 ? "s" : ""}) et boit : ${reveal.punishment}`);
+      : `💔 ${loser} perd ${flames(loss)} (${flames(p.lives)} restant${p.lives > 1 ? "s" : ""}) → ${reveal.punishment}`);
   } else {
     say(s, "🗿 Aucun vote valable : personne ne perd de flambeau ce soir.");
   }

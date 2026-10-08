@@ -14,41 +14,41 @@ const randomSymbol = () => pick(BAG);
 
 // Combos spéciaux : texte + gain (multiplicateur de la mise) + effets éventuels.
 const COMBOS = {
-  "7️⃣7️⃣7️⃣": { text: "☠️ 777 INFERNAL : tout le monde cul sec sauf toi.", mult: 10, jackpot: true },
-  "💀💀💀": { text: "💀 Cul sec + relance obligatoire.", mult: 3 },
+  "7️⃣7️⃣7️⃣": { text: "☠️ 777 INFERNAL : tout le monde boit 4 gorgées sauf toi.", mult: 10, jackpot: true },
+  "💀💀💀": { text: "💀 Demi-verre cul sec + relance obligatoire.", mult: 3 },
   "🔥🔥🔥": { text: "🔥 Tout le monde prend un shot.", mult: 4 },
-  "🍺🍺🍺": { text: "🍺 Distribue 20 gorgées.", mult: 3 },
+  "🍺🍺🍺": { text: "🍺 Distribue 8 gorgées.", mult: 3 },
   "👑👑👑": { text: "👑 Couronne noire : immunité + tu voles 300 jetons au plus riche.", mult: 3, steal: 300 },
-  "💣💣💣": { text: "💣 Bombe totale : défi humiliation ou double shot.", mult: 3 },
-  "😈😈😈": { text: "😈 Mode démon : tu bois à chaque rire pendant 7 minutes.", mult: 3 },
-  "🚨🚨🚨": { text: "🚨 Contrôle casino : le dernier à toucher son téléphone fait cul sec.", mult: 3 },
+  "💣💣💣": { text: "💣 Bombe totale : gage choisi par le groupe ou un shot.", mult: 3 },
+  "😈😈😈": { text: "😈 Mode démon : pendant 1 minute, tu bois 1 gorgée à chaque rire.", mult: 3 },
+  "🚨🚨🚨": { text: "🚨 Contrôle casino : le dernier à toucher son téléphone boit 4 gorgées.", mult: 3 },
   "🃏🃏🃏": { text: "🃏 Joker maudit : invente une règle, mais tu subis aussi la prochaine sanction.", mult: 3 },
-  "💣🔥💀": { text: "☠️ TRIPLE CHAOS : shot + défi + relance forcée.", mult: 1.5 },
+  "💣🔥💀": { text: "☠️ TRIPLE CHAOS : un shot + relance forcée.", mult: 1.5 },
   "👑💀👑": { text: "👑 VIP empoisonné : choisis une victime, elle boit avec toi.", mult: 1.5 },
-  "🚨🔥💀": { text: "🚨 Dernier à lever son téléphone : double shot.", mult: 1.5 },
-  "🃏🍺💀": { text: "🍺 Choisis un duo : ils finissent un verre ensemble.", mult: 1.5 },
-  "💣👑💀": { text: "💀 ALL IN TRAP : utilise une protection ou cul sec.", mult: 1.5, trap: true },
+  "🚨🔥💀": { text: "🚨 Dernier à lever son téléphone : un shot.", mult: 1.5 },
+  "🃏🍺💀": { text: "🍺 Choisis un duo : ils boivent 3 gorgées ensemble.", mult: 1.5 },
+  "💣👑💀": { text: "💀 ALL IN TRAP : utilise une protection ou demi-verre cul sec.", mult: 1.5, trap: true },
   "🔥💀🔥": { text: "🔥 Casino meltdown : tout le monde boit, toi tu relances.", mult: 1.5 },
   "7️⃣💀7️⃣": { text: "☠️ Faux jackpot : +500 jetons, mais tu prends un shot.", mult: 1, bonus: 500 },
-  "7️⃣👑7️⃣": { text: "👑 Jackpot royal : tu voles 500 jetons au plus riche et distribues 10 gorgées.", mult: 1.5, steal: 500 }
+  "7️⃣👑7️⃣": { text: "👑 Jackpot royal : tu voles 500 jetons au plus riche et distribues 5 gorgées.", mult: 1.5, steal: 500 }
 };
 
 // Sanctions en cas de combinaison perdante. `pay` = alternative en jetons.
 const FAILS = [
-  { text: "💀 Mauvaise combinaison : shot immédiat." },
-  { text: "🔥 Double shot pour le lanceur." },
-  { text: "🍺 Bois avec ton voisin de gauche." },
-  { text: "🍺 Bois avec ton voisin de droite." },
-  { text: "😈 Tu bois à chaque prénom entendu pendant 2 minutes." },
-  { text: "💣 Défi humiliation obligatoire." },
-  { text: "🚨 Le plus sobre boit avec toi." },
+  { text: "💀 Mauvaise combinaison : 1 gorgée." },
+  { text: "🔥 2 gorgées pour le lanceur." },
+  { text: "🍺 1 gorgée avec ton voisin de gauche." },
+  { text: "🍺 1 gorgée avec ton voisin de droite." },
+  { text: "😈 Pendant 1 minute, tu bois 1 gorgée à chaque prénom prononcé." },
+  { text: "💣 Gage choisi par le groupe." },
+  { text: "🚨 Le plus sobre boit 1 gorgée avec toi." },
   { text: "🃏 Choisis quelqu’un : il partage ta sanction." },
-  { text: "👑 Le joueur avec le plus de jetons te donne une punition." },
-  { text: "🔥 Tout le monde vote : tu bois ou tu fais boire ? Égalité = les deux." },
-  { text: "💀 Rejoue tout de suite. Si tu reperds : cul sec." },
-  { text: "😈 Tu finis chaque phrase par « casino » pendant 5 minutes. Oubli = gorgée." },
-  { text: "🚨 Le dernier à crier JACKPOT boit avec toi." },
-  { text: "💣 Perds 200 jetons ou prends un double shot.", pay: 200, alt: "Prendre le double shot" }
+  { text: "👑 Le joueur avec le plus de jetons te donne un gage." },
+  { text: "🔥 Tout le monde vote : tu bois 2 gorgées ou tu en distribues 2 ? Égalité = les deux." },
+  { text: "💀 Rejoue tout de suite. Si tu reperds : 3 gorgées." },
+  { text: "😈 Jusqu'à ton prochain spin, tu finis chaque phrase par « casino ». Oubli = 1 gorgée." },
+  { text: "🚨 Le dernier à crier JACKPOT boit 1 gorgée avec toi." },
+  { text: "💣 Perds 200 jetons ou bois 3 gorgées.", pay: 200, alt: "Boire les 3 gorgées" }
 ];
 
 const SYMBOL_HEIGHT_VAR = "--slot-symbol-h";
@@ -155,7 +155,7 @@ export function initSlots(ctx) {
         if (payout >= bet.amount * 4) ctx.wallet.announce(`a gagné ${formatChips(payout)} jetons à la machine à sous`, "gold");
       }
 
-      // Le piège « utilise une protection ou cul sec ».
+      // Le piège « utilise une protection ou demi-verre cul sec ».
       const choices = rule.trap ? ctx.sanctionChoices() : [];
       showResult(resultBox, { title: `${result.join("  ")}`, lines, tone: rule.jackpot ? "gold" : "win", choices });
       return;
@@ -174,7 +174,7 @@ export function initSlots(ctx) {
         label: `Payer ${formatChips(fail.pay)} jetons`,
         variant: "primary",
         onClick: () => {
-          if (!ctx.wallet.canAfford(fail.pay)) return ctx.toast("Pas assez de jetons : c'est le double shot.", "lose");
+          if (!ctx.wallet.canAfford(fail.pay)) return ctx.toast("Pas assez de jetons : c'est les 3 gorgées.", "lose");
           ctx.wallet.add(-fail.pay);
           ctx.toast(`💸 -${formatChips(fail.pay)} jetons : sanction évitée.`, "info");
         }

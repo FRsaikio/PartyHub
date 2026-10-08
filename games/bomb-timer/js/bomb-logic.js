@@ -13,7 +13,8 @@
 // applyAction(state, type, payload, me, ctx) modifie `state` ou lève une Error.
 // ctx = { rng, partyMode, drinkLevel, alcohol }.
 
-import { CATEGORIES, MORE_CATEGORIES, QUESTIONS, PUNISHMENTS, MODIFIERS } from "./bomb-content.js";
+import { punishment as drawPunishment } from "../../../punishments.js";
+import { CATEGORIES, MORE_CATEGORIES, QUESTIONS, MODIFIERS } from "./bomb-content.js";
 
 export const MODES = {
   categories: { icon: "🗂️", name: "Catégories", text: "Une catégorie par bombe : chacun donne une réponse différente à voix haute, puis passe. Le groupe peut contester." },
@@ -137,8 +138,7 @@ function handTo(s, to, remaining, ctx) {
 }
 
 function punishmentFor(ctx) {
-  if (ctx.alcohol === false) return pick(["Fais un gros gage 😇", "Raconte une vérité", "Le groupe choisit un mini-gage", "Fais une imitation", "Danse 10 secondes"], ctx.rng);
-  return pick(PUNISHMENTS[ctx.partyMode] || PUNISHMENTS.Party, ctx.rng);
+  return drawPunishment({ level: ctx.drinkLevel, alcohol: ctx.alcohol !== false, rng: ctx.rng });
 }
 
 function explode(s, ctx) {

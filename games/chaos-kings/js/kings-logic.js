@@ -91,6 +91,32 @@ function chaosGain(ctx) {
   return { Chill: 5, Party: 9, Chaos: 14, Hardcore: 19 }[ctx.partyMode] || 9;
 }
 
+// ---------- Quantités selon le niveau d'alcool ----------
+
+// Les cartes sont écrites pour le niveau « Hard » : on adapte les gorgées et les culs secs au
+// niveau du lobby. Sans alcool, les gorgées deviennent des pompes et le cul sec un gros gage.
+const SIP_SCALE = { soft: n => Math.max(1, Math.ceil(n / 2)), normal: n => Math.max(1, n - 1), hard: n => n, extreme: n => Math.round(n * 1.5) };
+const DRINK_VERBS = { boit: "fait", bois: "fais", boivent: "font", boire: "faire", buvez: "faites", buvant: "faisant" };
+
+export function adaptDrinks(text, ctx = {}) {
+  if (!text) return text;
+  const level = ctx.drinkLevel === "danger" ? "extreme" : SIP_SCALE[ctx.drinkLevel] ? ctx.drinkLevel : "normal";
+  let t = String(text).replace(/(\d+) gorgées?/g, (_, n) => {
+    const v = SIP_SCALE[level](Number(n));
+    return `${v} gorgée${v > 1 ? "s" : ""}`;
+  });
+  if (ctx.alcohol === false) {
+    t = t.replace(/\b(boit|bois|boivent|boire|buvez|buvant)\b(\s+(?:chacun\s+|aussi\s+|encore\s+|tous\s+)?)(\d+) gorgées?/g, (_, verb, mid, n) => `${DRINK_VERBS[verb]}${mid}${n} pompe${n > 1 ? "s" : ""}`)
+      .replace(/(\d+) gorgées?/g, (_, n) => `${n} pompe${n > 1 ? "s" : ""}`)
+      .replace(/verre cul sec/g, "gros gage choisi par le groupe");
+  } else if (level === "soft") {
+    t = t.replace(/\bfait un verre cul sec/g, "boit 3 gorgées").replace(/\bfais un verre cul sec/g, "bois 3 gorgées").replace(/(un )?verre cul sec/g, "3 gorgées");
+  } else if (level === "normal") {
+    t = t.replace(/(un )?verre cul sec/g, "un demi-verre cul sec");
+  }
+  return t;
+}
+
 // ---------- Pioche ----------
 
 function draw(s, ctx) {
@@ -103,7 +129,7 @@ function draw(s, ctx) {
   const mech = card.special ? null : MECHANICS[card.key] || null;
   s.turn += 1;
   s.drawn = {
-    code, by: s.current, mech, scenario: { text: scenario.text, consequence: scenario.consequence },
+    code, by: s.current, mech, scenario: { text: adaptDrinks(scenario.text, ctx), consequence: adaptDrinks(scenario.consequence, ctx) },
     target: null, mate: null, rule: null, reflex: mech === "reflex" ? {} : null, loser: null, done: !mech || mech === "master"
   };
   const st = stat(s, s.current);
@@ -116,14 +142,14 @@ function draw(s, ctx) {
   s.rare = null;
   const turns = { soft: 2, normal: 3, hard: 4, extreme: 5, danger: 5 }[ctx.drinkLevel] || 3;
   const addEffect = () => {
-    const text = pick(chaosEffects[ctx.partyMode] || chaosEffects.Party, rng);
+    const text = adaptDrinks(pick(chaosEffects[ctx.partyMode] || chaosEffects.Party, rng), ctx);
     s.effects = [{ text, turns }, ...s.effects].slice(0, 5);
     say(s, `⚡ Effet actif : ${text}`);
   };
   if (s.chaos >= 100) { addEffect(); s.chaos = 35; }
   const rareChance = { Chill: 0.04, Party: 0.08, Chaos: 0.14, Hardcore: 0.2 }[ctx.partyMode] || 0.08;
   if (rng() < rareChance) {
-    s.rare = pick(rareEvents[ctx.partyMode] || rareEvents.Party, rng);
+    s.rare = adaptDrinks(pick(rareEvents[ctx.partyMode] || rareEvents.Party, rng), ctx);
     say(s, `💀 Événement rare : ${s.rare}`);
   }
 
@@ -151,7 +177,7 @@ function draw(s, ctx) {
 // ---------- Actions ----------
 
 export function applyAction(s, type, payload = {}, me = {}, ctx = {}) {
-  ctx = { rng: Math.random, partyMode: "Party", drinkLevel: "normal", ...ctx };
+  ctx = { rng: Math.random, partyMode: "Party", drinkLevel: "normal", alcohol: true, ...ctx };
   const drawn = s.drawn;
   // Le joueur qui a pioché décide ; l'hôte peut le faire à la place d'un absent.
   const isDrawer = Boolean(drawn) && (drawn.by === me.name || me.host);

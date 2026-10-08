@@ -7,7 +7,8 @@
 // applyAction(state, type, payload, me, ctx) modifie `state` ou lève une Error.
 // ctx = { rng, partyMode, alcohol }.
 
-import { TRUTHS, PUNISHMENTS } from "./truth-content.js";
+import { punishment as drawPunishment } from "../../../punishments.js";
+import { TRUTHS } from "./truth-content.js";
 import { DARES } from "./dare-content.js";
 
 export const lapsFor = duration => ({ short: 2, medium: 3, long: 5, infinite: 999 }[duration] || 3);
@@ -62,8 +63,7 @@ function drawPrompt(s, kind, ctx) {
 }
 
 function punishmentFor(ctx) {
-  if (ctx.alcohol === false) return pick(["Mini-gage choisi par le groupe 😇", "Imitation de 10 secondes", "Compliment gênant à quelqu'un", "Danse de 10 secondes"], ctx.rng);
-  return pick(PUNISHMENTS[ctx.partyMode] || PUNISHMENTS.Party, ctx.rng);
+  return drawPunishment({ level: ctx.drinkLevel, alcohol: ctx.alcohol !== false, rng: ctx.rng });
 }
 
 // Les juges : tous les joueurs sauf la cible.
@@ -89,7 +89,7 @@ function closeJudging(s, ctx) {
 }
 
 export function applyAction(s, type, payload = {}, me = {}, ctx = {}) {
-  ctx = { rng: Math.random, partyMode: "Party", alcohol: true, ...ctx };
+  ctx = { rng: Math.random, partyMode: "Party", drinkLevel: "normal", alcohol: true, ...ctx };
   const isTarget = me.name === s.current || me.host; // l'hôte peut jouer pour un absent
   if (["start", "close", "end", "restart"].includes(type) && !me.host) throw new Error("Seul l'hôte peut faire ça.");
 

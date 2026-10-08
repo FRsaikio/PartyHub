@@ -33,7 +33,7 @@ const partyMode = (() => {
   const k = String(savedData?.selectedPartyMode || "Party").toLowerCase();
   return k === "chill" ? "Chill" : k === "chaos" ? "Chaos" : k === "hardcore" ? "Hardcore" : "Party";
 })();
-const settings = { partyMode, alcohol: savedData?.alcoholMode !== false };
+const settings = { partyMode, drinkLevel: savedData?.drinkLevel || "normal", alcohol: savedData?.alcoholMode !== false };
 
 if (spectator) document.body.classList.add("tr-tv");
 if (params.get("embed") === "1") document.body.classList.add("tr-embed");
