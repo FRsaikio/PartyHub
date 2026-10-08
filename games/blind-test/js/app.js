@@ -5,7 +5,7 @@
 import { db, doc, onSnapshot, runTransaction, updateDoc } from "../../../firebase.js";
 import { resolveIsHost, lobbyWrite, watchHost, hostNameOf } from "../../../game-common.js";
 import { safeImageSrc } from "../../../html-safe.js";
-import { newGame, applyAction, pending, current, ANSWER_WINDOW } from "./bt-logic.js";
+import { newGame, applyAction, pending, current, ANSWER_WINDOW, ROUND_CHOICES } from "./bt-logic.js";
 import { THEMES, buildRounds, freshPreview } from "./bt-deezer.js";
 
 // ---------- Qui joue ----------
@@ -235,7 +235,7 @@ function render() {
   if (!state) return;
   const s = state;
   roundEl.textContent = s.phase === "intro" ? "Avant-partie" : s.phase === "end" ? "Terminé" : `Extrait ${s.index + 1}/${s.rounds.length}`;
-  const key = [s.session, s.phase, s.index, s.theme, s.answers?.[myName] !== undefined, isHost, busy, tvAlive()].join("|");
+  const key = [s.session, s.phase, s.index, (s.themes || []).join(), s.maxRounds, s.answers?.[myName] !== undefined, isHost, busy, tvAlive()].join("|");
   if (key !== stageKey || s.phase === "listen") {
     const fresh = key.split("|").slice(0, 3).join() !== stageKey.split("|").slice(0, 3).join();
     stageKey = key;
@@ -247,19 +247,26 @@ function render() {
   renderHost();
 }
 
+const themesOf = s => (s.themes?.length ? s.themes : ["mix"]).filter(k => THEMES[k]);
+
 function stageIntro(s) {
-  const theme = THEMES[s.theme] || THEMES.mix;
+  const chosen = themesOf(s);
   const card = h("div", "bt-card",
     h("span", "bt-kicker", "🎧 Blind test"),
     h("h3", "", "Écoutez, trouvez, soyez le plus rapide"),
     h("p", "bt-lead", `${s.maxRounds} extraits de 30 s. 4 propositions sur ton téléphone : plus tu réponds vite, plus tu marques (de 500 à 1000 points).`),
     h("p", "muted", isTv ? "🔊 La musique sort de cet écran TV." : tvAlive() ? "🔊 La musique sortira de l'écran TV." : "🔊 Pas d'écran TV : la musique sortira du téléphone de l'hôte (branche-le sur une enceinte !)."));
   if (isHost && !spectator) {
-    card.append(h("strong", "", "Choisis le thème :"), h("div", "bt-themes", Object.entries(THEMES).map(([key, t]) => {
-      const b = button(`${t.icon} ${t.name}`, () => mutate("theme", { theme: key }), `bt-theme${s.theme === key ? " selected" : ""}`);
-      return b;
-    })));
-  } else card.append(h("p", "bt-lead", `Thème : ${theme.icon} ${theme.name}`));
+    card.append(
+      h("strong", "", "Thèmes (coche-en autant que tu veux) :"),
+      h("div", "bt-themes", Object.entries(THEMES).map(([key, t]) =>
+        button(`${chosen.includes(key) ? "✓ " : ""}${t.icon} ${t.name}`, () => mutate("theme", { theme: key }), `bt-theme${chosen.includes(key) ? " selected" : ""}`))),
+      h("strong", "", "Nombre d'extraits :"),
+      h("div", "bt-counts", ROUND_CHOICES.map(n =>
+        button(String(n), () => mutate("count", { count: n }), `bt-theme${s.maxRounds === n ? " selected" : ""}`))));
+  } else {
+    card.append(h("div", "bt-chips", chosen.map(k => h("span", "bt-chip", `${THEMES[k].icon} ${THEMES[k].name}`))));
+  }
   return card;
 }
 
@@ -344,7 +351,7 @@ function renderHost() {
     preparing = true;
     render();
     try {
-      const rounds = await buildRounds(s.theme, s.maxRounds);
+      const rounds = await buildRounds(themesOf(s), s.maxRounds);
       await mutate("start", { rounds });
     } catch (error) {
       toast(error.message || "Impossible de charger la musique.", "bad");

@@ -72,8 +72,10 @@ const shuffle = list => {
 };
 
 // Prépare `count` manches : un morceau + 4 propositions (1 bonne, 3 du même thème).
-export async function buildRounds(themeKey, count) {
-  const keys = themeKey === "mix" ? Object.keys(THEMES).filter(k => k !== "mix") : [themeKey];
+// `themeKeys` : un ou plusieurs thèmes (« mix » = tous) ; les manches alternent entre eux.
+export async function buildRounds(themeKeys, count) {
+  const wanted = [].concat(themeKeys || "mix").filter(k => THEMES[k]);
+  const keys = !wanted.length || wanted.includes("mix") ? Object.keys(THEMES).filter(k => k !== "mix") : wanted;
   const pools = [];
   for (const key of keys) {
     const theme = THEMES[key];
@@ -95,11 +97,11 @@ export async function buildRounds(themeKey, count) {
   // du thème peuvent servir de mauvaises propositions.
   pools.forEach(p => { p.queue = [...p.tracks]; });
   const rounds = [];
-  let guard = 0;
-  while (rounds.length < count && guard++ < count * 10) {
-    const pool = pools[rounds.length % pools.length];
+  let turn = 0;
+  while (rounds.length < count && pools.some(p => p.queue.length)) {
+    const pool = pools[turn++ % pools.length];
     const pick = pool.queue.pop();
-    if (!pick) { if (pools.every(p => !p.queue.length)) break; continue; }
+    if (!pick) continue;
     const others = shuffle(pool.tracks.filter(x => x.label !== pick.label)).slice(0, 3);
     if (others.length < 3) continue;
     const choices = shuffle([pick.label, ...others.map(o => o.label)]);
