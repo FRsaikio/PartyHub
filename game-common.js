@@ -5,12 +5,13 @@ import { db, doc, onSnapshot, updateDoc, runTransaction, deleteField } from "./f
 // Champs de partie laissés dans le doc de la room par chaque jeu. On les efface au retour
 // au lobby : sinon la room grossit à chaque jeu joué, et chaque mise à jour renvoie tout ce
 // contenu à tous les téléphones. Le casino (portefeuilles, tables de blackjack et de poker
-// où des jetons sont encore posés) et le Monopoly sont gardés.
+// où des jetons sont encore posés) est gardé.
 export const GAME_FIELDS = [
-  "survivor", "traitor", "bomb", "kings", "roulette", "mostLikely", "never", "truth",
+  "survivor", "traitor", "bomb", "kings", "roulette", "mostLikely", "never", "truth", "monopoly",
   // anciennes versions des jeux
   "survivorState", "traitorState", "bombTimerState", "chaosKingsState", "chaosKingsTarget", "chaosKingsStats",
   "rouletteState", "rouletteRecentActions", "mostLikelyState", "neverHaveIEverState", "truthOrDrinkState",
+  "monopolitState", "monopolyState",
   "casino.bjTable"
 ];
 
