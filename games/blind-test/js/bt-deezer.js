@@ -3,13 +3,17 @@
 // JSONP (balise <script> + callback). Les liens d'extraits expirent au bout de ~15 min, donc
 // on ne garde que l'identifiant du morceau et on redemande un lien frais au moment de jouer.
 
+import { frName } from "./bt-fr.js";
+
 export const THEMES = {
   // kind : « work » = deviner le film / la série (nom tiré du titre), « album » = deviner le jeu
   // (nom tiré du titre ou de l'album), « music » = deviner l'artiste et le titre.
+  // Les noms d'œuvres passent par la table française de bt-fr.js ; strict = seules les réponses
+  // de la table sont gardées (Disney : on fait deviner le film, pas la chanson).
   films: { icon: "🎬", name: "Musiques de films", kind: "work", playlists: [1602126835, 8531512122] },
   series: { icon: "📺", name: "Séries & génériques TV", kind: "work", playlists: [3721524742, 13511043423] },
   cartoons: { icon: "🧸", name: "Dessins animés", kind: "work", playlists: [9976576142, 8390630182] },
-  disney: { icon: "🏰", name: "Disney", kind: "work", playlists: [613860315, 14511914743, 15784223101, 11837822681, 5232222102] },
+  disney: { icon: "🏰", name: "Disney", kind: "work", strict: true, playlists: [613860315, 14511914743, 15784223101, 11837822681, 5232222102] },
   games: { icon: "🎮", name: "Jeux vidéo", kind: "album", playlists: [7747193762, 15408880043, 15528893401, 15808711181, 15534525903, 11930555961] },
   hits: { icon: "🔥", name: "Hits du moment", kind: "music", playlists: [53362031, 13520387843, 15449273061, 11915740641] },
   y2010: { icon: "📱", name: "Années 2010", kind: "music", playlists: [6294884764, 8179583022, 4428520242] },
@@ -117,44 +121,58 @@ export async function buildRounds(themeKeys, count) {
   const keys = !wanted.length || wanted.includes("mix") ? Object.keys(THEMES).filter(k => k !== "mix") : wanted;
   // Toutes les playlists sont demandées en même temps (le grand mix en compte une vingtaine).
   const loaded = await Promise.all(keys.map(async key => {
-    const theme = THEMES[key];
-    const lists = await Promise.all(theme.playlists.map(id => playlistTracks(id).catch(() => [])));
-    const seen = new Set();
-    const tracks = [];
-    lists.flat().forEach(t => {
-      const label = labelFor(t, theme.kind);
-      const k = label.toLowerCase();
-      if (!label || seen.has(k)) return;
-      seen.add(k);
-      tracks.push({ t, label });
-    });
-    return { key, theme, tracks: shuffle(tracks) };
+    const lists = await Promise.all(THEMES[key].playlists.map(id => playlistTracks(id).catch(() => [])));
+    return { key, answers: shuffle(answersFor(THEMES[key], lists.flat())) };
   }));
-  const pools = loaded.filter(p => p.tracks.length >= 4);
+  const pools = loaded.filter(p => p.answers.length >= 4);
   if (!pools.length) return [];
-  // Chaque thème : une file de morceaux à faire deviner (sans répétition) ; tous les morceaux
-  // du thème peuvent servir de mauvaises propositions.
-  pools.forEach(p => { p.queue = [...p.tracks]; });
+  // Chaque thème : une file de réponses à faire deviner ; toutes les réponses du thème peuvent
+  // servir de mauvaises propositions. Une même réponse ne tombe qu'une fois par partie.
+  pools.forEach(p => { p.queue = [...p.answers]; });
+  const used = new Set();
   const rounds = [];
   let turn = 0;
   while (rounds.length < count && pools.some(p => p.queue.length)) {
     const pool = pools[turn++ % pools.length];
     const pick = pool.queue.pop();
-    if (!pick) continue;
-    const others = shuffle(pool.tracks.filter(x => x.label !== pick.label)).slice(0, 3);
+    if (!pick || used.has(pick.key)) continue;
+    const others = shuffle(pool.answers.filter(x => x.key !== pick.key)).slice(0, 3);
     if (others.length < 3) continue;
+    used.add(pick.key);
+    const t = pick.tracks[Math.floor(Math.random() * pick.tracks.length)];
     const choices = shuffle([pick.label, ...others.map(o => o.label)]);
     rounds.push({
-      trackId: pick.t.id,
+      trackId: t.id,
       theme: pool.key,
-      title: pick.t.title,
-      artist: pick.t.artist?.name || "",
-      cover: pick.t.album?.cover_medium || "",
+      title: t.title,
+      artist: t.artist?.name || "",
+      cover: t.album?.cover_medium || "",
       choices,
       answer: choices.indexOf(pick.label)
     });
   }
   return rounds;
+}
+
+// Regroupe les morceaux d'un thème par réponse : [{ key, label, tracks }]. Pour les œuvres, la
+// réponse passe par la table des noms français (bt-fr.js) : plusieurs chansons d'un même film
+// donnent une seule réponse, et les morceaux impossibles à deviner sont écartés.
+export function answersFor(theme, tracks) {
+  const groups = new Map();
+  tracks.forEach(t => {
+    let label = labelFor(t, theme.kind);
+    if (theme.kind !== "music") {
+      const fr = frName(label);
+      if (fr === null || (fr === undefined && theme.strict)) return;
+      if (fr) label = fr;
+    }
+    if (!label) return;
+    const key = label.normalize("NFC").toLowerCase().replace(/[’‘]/g, "'").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    if (!groups.has(key)) groups.set(key, { key, label, tracks: [] });
+    const group = groups.get(key);
+    if (!group.tracks.some(x => x.id === t.id)) group.tracks.push(t);
+  });
+  return [...groups.values()];
 }
 
 // Lien d'extrait frais (les liens expirent au bout de ~15 min).
