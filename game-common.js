@@ -1,6 +1,23 @@
 // Fonctions partagées par les mini-jeux.
 
-import { db, doc, onSnapshot, updateDoc, runTransaction } from "./firebase.js";
+import { db, doc, onSnapshot, updateDoc, runTransaction, deleteField } from "./firebase.js";
+
+// Champs de partie laissés dans le doc de la room par chaque jeu. On les efface au retour
+// au lobby : sinon la room grossit à chaque jeu joué, et chaque mise à jour renvoie tout ce
+// contenu à tous les téléphones. Le casino (portefeuilles, tables de blackjack et de poker
+// où des jetons sont encore posés) et le Monopoly sont gardés.
+export const GAME_FIELDS = [
+  "survivor", "traitor", "bomb", "kings", "roulette", "mostLikely", "never", "truth",
+  // anciennes versions des jeux
+  "survivorState", "traitorState", "bombTimerState", "chaosKingsState", "chaosKingsTarget", "chaosKingsStats",
+  "rouletteState", "rouletteRecentActions", "mostLikelyState", "neverHaveIEverState", "truthOrDrinkState",
+  "casino.bjTable"
+];
+
+// Patch Firestore qui efface ces champs (à fusionner dans un updateDoc).
+export function gameCleanupPatch() {
+  return Object.fromEntries(GAME_FIELDS.map(field => [field, deleteField()]));
+}
 
 // Retour lobby de l'hôte : on prévient la room, mais on n'attend jamais plus
 // de `maxWait` ms la réponse de Firestore avant de changer de page (sinon le
