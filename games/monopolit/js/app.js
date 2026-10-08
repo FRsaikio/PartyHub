@@ -260,7 +260,9 @@ function renderPanel() {
         h("li", "", "Achète les lieux. Les visiteurs te paient en jetons… et boivent."),
         h("li", "", "Tout un quartier de la même couleur = loyers ×2. Rénove tes lieux (⭐→⭐⭐⭐) pour les faire grimper."),
         h("li", "", `À la fin des ${s.maxRounds < 999 ? `${s.maxRounds} tours` : "tours"}, le plus riche (jetons + lieux) gagne.`)),
-      s.players.length > 0 ? h("p", "muted", `${s.players.length} joueurs${(roomPlayers.filter(p => !p.fake).length > 10) ? " (10 max, les autres regardent)" : ""}.`) : null);
+      h("p", "muted", s.players.length < 2
+        ? `${s.players.length} joueur dans la room : il en faut au moins 2 (les joueurs test ne comptent pas).`
+        : `${s.players.length} joueurs${(roomPlayers.filter(p => !p.fake).length > 10) ? " (10 max, les autres regardent)" : ""}.`));
     return;
   }
   if (s.phase === "end") {
