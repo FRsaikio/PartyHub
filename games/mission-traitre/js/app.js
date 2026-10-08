@@ -4,6 +4,7 @@
 
 import { db, doc, onSnapshot, runTransaction, updateDoc } from "../../../firebase.js";
 import { resolveIsHost, lobbyWrite, watchHost, hostNameOf, recordGameEnd } from "../../../game-common.js";
+import { initHowTo } from "../../../how-to-play.js";
 import { safeImageSrc } from "../../../html-safe.js";
 import { newGame, applyAction, alive, aliveTraitors, pending, targetsFor, MIN_PLAYERS } from "./traitor-logic.js";
 
@@ -504,3 +505,6 @@ $("backToLobbyBtn").addEventListener("click", async () => {
 });
 
 render();
+
+// Règles du jeu au lancement (bouton ❓ pour les revoir).
+initHowTo("traitor", { spectator });

@@ -4,6 +4,7 @@
 
 import { db, doc, onSnapshot, runTransaction, updateDoc } from "../../../firebase.js";
 import { resolveIsHost, lobbyWrite, watchHost, hostNameOf, recordGameEnd } from "../../../game-common.js";
+import { initHowTo } from "../../../how-to-play.js";
 import { safeImageSrc } from "../../../html-safe.js";
 import { newGame, applyAction, pending, judgesOf, maxTurns } from "./truth-logic.js";
 
@@ -335,3 +336,6 @@ $("backToLobbyBtn").addEventListener("click", async () => {
   localStorage.setItem("partyhubReturnLobby", "true");
   window.location.href = "../../index.html";
 });
+
+// Règles du jeu au lancement (bouton ❓ pour les revoir).
+initHowTo("truth", { spectator });
