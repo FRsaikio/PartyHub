@@ -8,7 +8,8 @@ import {
   serverTimestamp,
   arrayUnion,
   runTransaction,
-  deleteDoc
+  deleteDoc,
+  deleteField
 } from "./firebase.js";
 
 import {
@@ -23,6 +24,7 @@ import {
 
 import { escapeHtml, safeImageSrc, cleanPseudo } from "./html-safe.js";
 import { watchHost, gameCleanupPatch } from "./game-common.js";
+import { buildRecap } from "./game-summary.js";
 
 const MAX_PLAYERS = 20;
 const ACTIVITY_LIMIT = 6;
@@ -117,6 +119,10 @@ const endPartyOverlay = document.getElementById("endPartyOverlay");
 const closeEndPartyBtn = document.getElementById("closeEndPartyBtn");
 const endPartyStats = document.getElementById("endPartyStats");
 const endPartyAwards = document.getElementById("endPartyAwards");
+const endPartyRanking = document.getElementById("endPartyRanking");
+const endPartyTimeline = document.getElementById("endPartyTimeline");
+const showRecapOnTvBtn = document.getElementById("showRecapOnTvBtn");
+const newSoireeBtn = document.getElementById("newSoireeBtn");
 const copyEndSummaryBtn = document.getElementById("copyEndSummaryBtn");
 const v22Level = document.getElementById("v22Level");
 const v22XpText = document.getElementById("v22XpText");
@@ -221,39 +227,56 @@ function v22RenderProgress(profile = currentProfile) {
   if (v22BadgePreview) v22BadgePreview.textContent = badges.slice(-2).join(" • ") || "Aucun badge";
 }
 
-function v22BuildEndSummary() {
-  const playerCount = players.length;
-  const host = players.find(p => p.host)?.name || currentPlayer || "Host";
-  const topLevel = [...players].sort((a,b) => (b.level || 1) - (a.level || 1))[0]?.name || "Aucun";
-  const randomPlayer = players[Math.floor(Math.random() * Math.max(players.length, 1))]?.name || "À définir";
-  return {
-    stats: [
-      ["👥 Joueurs", playerCount],
-      ["🎮 Jeu final", selectedGame || "Aucun"],
-      ["🍻 Mode", selectedPartyMode || "Chill"],
-      ["👑 Host", host]
-    ],
-    awards: [
-      ["MVP de la soirée", topLevel, "meilleur niveau présent dans la room"],
-      ["Roi du chaos", randomPlayer, "désigné par PartyHub"],
-      ["Jeu signature", selectedGame || "À définir", "dernier jeu sélectionné"],
-      ["Room code légendaire", currentRoom || "----", "à garder pour les souvenirs"]
-    ]
-  };
+// ---------- Bilan de fin de soirée ----------
+// Construit à partir du journal de soirée (room.soiree.games), rempli à la fin de chaque partie
+// par recordGameEnd (game-common.js). L'hôte peut l'afficher en grand sur la TV.
+
+let latestLobbyData = null;
+
+function minutesText(min) {
+  if (!min) return "—";
+  const h = Math.floor(min / 60);
+  return h ? `${h} h ${String(min % 60).padStart(2, "0")}` : `${min} min`;
 }
 
-async function v22ShowEndParty() {
-  const summary = v22BuildEndSummary();
+function renderEndParty() {
+  const recap = buildRecap(latestLobbyData?.soiree);
+  const stats = [
+    ["🎮 Parties jouées", recap.count],
+    ["⏱️ Durée", minutesText(recap.minutes)],
+    ["❤️ Jeu préféré", recap.favorite ? `${recap.favorite.label} (×${recap.favorite.count})` : "—"],
+    ["👥 Joueurs", recap.ranking.length || players.length]
+  ];
   if (endPartyStats) {
-    endPartyStats.innerHTML = summary.stats.map(([label, value]) => `
+    endPartyStats.innerHTML = stats.map(([label, value]) => `
       <div class="v22-end-stat"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>
     `).join("");
   }
   if (endPartyAwards) {
-    endPartyAwards.innerHTML = summary.awards.map(([title, value, desc]) => `
-      <div class="v22-award"><b>${escapeHtml(title)}</b><strong>${escapeHtml(value)}</strong><small>${escapeHtml(desc)}</small></div>
-    `).join("");
+    endPartyAwards.innerHTML = recap.count
+      ? recap.awards.map(a => `
+        <div class="v22-award"><b>${escapeHtml(a.icon)} ${escapeHtml(a.title)}</b><strong>${escapeHtml(a.name)}</strong><small>${escapeHtml(a.value)}</small></div>
+      `).join("")
+      : `<div class="v22-award"><b>Aucune partie terminée pour l'instant</b><small>Le bilan se remplit à la fin de chaque jeu : gagnants, moments forts, gorgées comptées.</small></div>`;
   }
+  if (endPartyRanking) {
+    endPartyRanking.innerHTML = recap.ranking.length ? `<h3>🏅 Classement</h3><ol>${recap.ranking.map(p => `
+      <li><strong>${escapeHtml(p.name)}</strong><span>${p.wins} victoire${p.wins > 1 ? "s" : ""} · ${p.played} partie${p.played > 1 ? "s" : ""}${p.drinks ? ` · ${p.drinks} 🍺` : ""}</span></li>
+    `).join("")}</ol>` : "";
+  }
+  if (endPartyTimeline) {
+    endPartyTimeline.innerHTML = recap.timeline.length ? `<h3>🕒 Les parties</h3><ol>${recap.timeline.map(t => `
+      <li><strong>${escapeHtml(t.label)}</strong><span>${t.winners.length ? `🏆 ${escapeHtml(t.winners.join(", "))}` : "pas de gagnant"}${t.highlight ? ` · ${escapeHtml(t.highlight.icon)} ${escapeHtml(t.highlight.title)} : ${escapeHtml(t.highlight.name)}` : ""}</span></li>
+    `).join("")}</ol>` : "";
+  }
+  const hostOnly = isHost && Boolean(currentRoom);
+  if (showRecapOnTvBtn) showRecapOnTvBtn.hidden = !hostOnly || !recap.count;
+  if (newSoireeBtn) newSoireeBtn.hidden = !hostOnly || !recap.count;
+  return recap;
+}
+
+async function v22ShowEndParty() {
+  renderEndParty();
   endPartyOverlay?.classList.remove("hidden");
   v22Sound("end");
   try {
@@ -264,10 +287,16 @@ async function v22ShowEndParty() {
 }
 
 function v22EndSummaryText() {
-  const summary = v22BuildEndSummary();
-  return ["🏁 Résumé PartyHub", ...summary.stats.map(([l,v]) => `${l} : ${v}`), "", ...summary.awards.map(([t,v]) => `${t} : ${v}`)].join("\\n");
+  const recap = buildRecap(latestLobbyData?.soiree);
+  return [
+    `🏁 Bilan PartyHub — room ${currentRoom || "----"}`,
+    `🎮 ${recap.count} partie${recap.count > 1 ? "s" : ""} · ⏱️ ${minutesText(recap.minutes)}`,
+    "",
+    ...recap.awards.map(a => `${a.icon} ${a.title} : ${a.name} (${a.value})`),
+    "",
+    ...recap.ranking.map((p, i) => `${i + 1}. ${p.name} — ${p.wins} victoire${p.wins > 1 ? "s" : ""}`)
+  ].join("\n");
 }
-
 
 function setupAvatarSelect() {
   if (avatarSelect) {
@@ -740,6 +769,8 @@ function listenToRoom(roomCode) {
     }
 
     const data = snapshot.data();
+    latestLobbyData = data;
+    if (endPartyOverlay && !endPartyOverlay.classList.contains("hidden")) renderEndParty();
 
     currentRoom = data.roomCode;
     refreshSelectedGameFromId(data.selectedGameId || getGameIdFromLabel(data.selectedGame));
@@ -1489,6 +1520,27 @@ if (soundToggleBtn) {
 }
 
 if (endPartyBtn) endPartyBtn.addEventListener("click", v22ShowEndParty);
+if (showRecapOnTvBtn) showRecapOnTvBtn.addEventListener("click", async () => {
+  if (!isHost || !currentRoom) return;
+  try {
+    await updateDoc(getRoomRef(currentRoom), { "soiree.showAt": Date.now() });
+    showRecapOnTvBtn.textContent = "Affiché sur la TV ✅";
+    setTimeout(() => { showRecapOnTvBtn.textContent = "📺 Afficher sur la TV"; }, 2000);
+  } catch (error) {
+    console.error("Bilan TV :", error);
+    showError("Impossible d'afficher le bilan sur la TV.");
+  }
+});
+if (newSoireeBtn) newSoireeBtn.addEventListener("click", async () => {
+  if (!isHost || !currentRoom) return;
+  if (!confirm("Effacer le bilan et commencer une nouvelle soirée ?")) return;
+  try {
+    await updateDoc(getRoomRef(currentRoom), { soiree: deleteField() });
+  } catch (error) {
+    console.error("Nouvelle soirée :", error);
+    showError("Impossible de remettre le bilan à zéro.");
+  }
+});
 if (closeEndPartyBtn) closeEndPartyBtn.addEventListener("click", () => endPartyOverlay?.classList.add("hidden"));
 if (copyEndSummaryBtn) {
   copyEndSummaryBtn.addEventListener("click", async () => {

@@ -186,3 +186,52 @@ export function watchHost(roomCode, savedData, onChange = () => {}) {
     document.removeEventListener("visibilitychange", onVisible);
   };
 }
+
+// ---------- Fin de partie : journal de soirée + XP ----------
+
+// Appelée par chaque jeu quand son état passe en phase de fin.
+// - Le téléphone de l'hôte note la partie dans room.soiree.games (journal gardé au retour au
+//   lobby, lu par le récap de fin de soirée sur le lobby et la TV). Une partie n'est notée
+//   qu'une fois (clé = jeu + session + empreinte du résultat).
+// - Chaque joueur gagne de l'XP sur SON profil : +20 pour avoir joué, +30 pour une victoire.
+//   Un seul gain par partie et par téléphone (garde dans localStorage).
+const recordedKeys = new Set();
+export async function recordGameEnd({ roomCode, gameId, state, isHost, myName }) {
+  if (!roomCode || !state || state.phase !== "end") return;
+  const { summarize, gameKey } = await import("./game-summary.js");
+  const summary = summarize(gameId, state);
+  if (!summary) return;
+  const key = gameKey(gameId, state, summary);
+
+  if (isHost && !recordedKeys.has(key)) {
+    recordedKeys.add(key);
+    const roomRef = doc(db, "rooms", roomCode);
+    try {
+      await runTransaction(db, async t => {
+        const data = (await t.get(roomRef)).data() || {};
+        const games = Array.isArray(data.soiree?.games) ? data.soiree.games : [];
+        if (games.some(g => g.key === key)) return;
+        const entry = { key, gameId, at: Date.now(), ...summary };
+        t.update(roomRef, { "soiree.games": [...games, entry].slice(-40) });
+      });
+    } catch (error) {
+      recordedKeys.delete(key);
+      console.warn("Journal de soirée : partie non notée", error);
+    }
+  }
+
+  if (!myName || !summary.players.includes(myName)) return;
+  const guard = `partyhubReward:${roomCode}:${key}`;
+  try {
+    if (localStorage.getItem(guard)) return;
+    localStorage.setItem(guard, "1");
+  } catch { /* stockage indisponible : on donne quand même l'XP */ }
+  const won = summary.winners.includes(myName);
+  try {
+    const { updateProfileStats, addProfileXP } = await import("./profile.js");
+    await updateProfileStats({ gamesFinished: 1, wins: won ? 1 : 0, [`wins_${gameId}`]: won ? 1 : 0, [`played_${gameId}`]: 1 }, `${summary.label} terminé${won ? " : victoire 🏆" : ""}`);
+    await addProfileXP(won ? 50 : 20, won ? `Victoire : ${summary.label}` : `Partie jouée : ${summary.label}`);
+  } catch (error) {
+    console.warn("XP de fin de partie non enregistrée", error);
+  }
+}

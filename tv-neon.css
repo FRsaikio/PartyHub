@@ -1015,3 +1015,103 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Bilan de soirée en plein écran ---------- */
+
+.tv-recap {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: grid;
+  place-items: center;
+  padding: 3vh 3vw;
+  background: radial-gradient(ellipse at 50% 0%, rgba(224, 31, 160, 0.25), transparent 60%), rgba(4, 3, 14, 0.94);
+  backdrop-filter: blur(16px);
+}
+
+.tv-recap-card {
+  display: grid;
+  gap: 2.4vh;
+  width: min(1500px, 100%);
+  max-height: 94vh;
+  overflow: hidden;
+}
+
+.tv-recap-kicker {
+  color: var(--nc-cyan);
+  font: 800 clamp(14px, 1.4vw, 22px) var(--nc-font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tv-recap-card h2 {
+  margin: 0;
+  font: 800 clamp(28px, 3.6vw, 60px) var(--nc-font-display);
+}
+
+.tv-recap-podium {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  align-items: end;
+  gap: 1.5vw;
+}
+
+.tv-recap-step {
+  display: grid;
+  justify-items: center;
+  gap: 0.6vh;
+  padding: 2vh 1vw;
+  border-radius: 24px;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line-strong);
+  text-align: center;
+}
+
+.tv-recap-step span { font-size: clamp(32px, 4vw, 72px); }
+.tv-recap-step strong { font: 800 clamp(20px, 2.4vw, 40px) var(--nc-font-display); }
+.tv-recap-step small { color: var(--nc-muted); font-size: clamp(14px, 1.2vw, 20px); }
+.tv-recap-step.step-1 { order: 2; min-height: 26vh; border-color: var(--nc-yellow); box-shadow: 0 0 50px rgba(245, 196, 81, 0.35); }
+.tv-recap-step.step-2 { order: 1; min-height: 20vh; }
+.tv-recap-step.step-3 { order: 3; min-height: 16vh; }
+
+.tv-recap-awards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2vw;
+}
+
+.tv-recap-award {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+  padding: 1.6vh 1.2vw;
+  border-radius: 18px;
+  background: var(--nc-surface);
+  border: 1px solid var(--nc-line);
+}
+
+.tv-recap-award > span { font-size: clamp(28px, 2.6vw, 48px); }
+.tv-recap-award div { display: grid; gap: 2px; }
+.tv-recap-award small { color: var(--nc-muted); font-weight: 700; font-size: clamp(13px, 1vw, 18px); }
+.tv-recap-award strong { font: 800 clamp(18px, 1.6vw, 28px) var(--nc-font-display); }
+.tv-recap-award em { color: var(--nc-yellow); font-style: normal; font-weight: 700; }
+
+.tv-recap-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8vw;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tv-recap-timeline li {
+  display: grid;
+  padding: 1vh 1vw;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--nc-line);
+  font-size: clamp(13px, 1vw, 18px);
+}
+
+.tv-recap-timeline span { color: var(--nc-muted); }

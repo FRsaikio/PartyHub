@@ -3,7 +3,7 @@
 // transaction qui applique ml-logic.js.
 
 import { db, doc, onSnapshot, runTransaction, updateDoc } from "../../../firebase.js";
-import { resolveIsHost, lobbyWrite, watchHost, hostNameOf } from "../../../game-common.js";
+import { resolveIsHost, lobbyWrite, watchHost, hostNameOf, recordGameEnd } from "../../../game-common.js";
 import { safeImageSrc } from "../../../html-safe.js";
 import { newGame, applyAction, pending } from "./ml-logic.js";
 
@@ -148,6 +148,8 @@ function applyState(next) {
   if (state && (next?.v || 0) < (state.v || 0) && next.session === state.session) return;
   const before = state;
   state = next;
+  // Fin de partie : journal de soirée (hôte) + XP du joueur.
+  if (next.phase === "end" && !spectator) recordGameEnd({ roomCode, gameId: "mostLikely", state: next, isHost, myName });
   if (before && before.round !== next.round) { pickVote = null; pickBet = null; }
   if (before && !spectator && next.phase === "vote" && before.phase !== "vote") { navigator.vibrate?.([60, 40, 60]); }
   render();

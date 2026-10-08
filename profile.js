@@ -196,6 +196,20 @@ export async function addProfileXP(amount, reason = "Action PartyHub") {
   if ((stats.casinoGames || 0) >= 3) badges.add("Shark du casino");
   if ((stats.monopolyGames || 0) >= 3) badges.add("Rentier du Monopoly");
 
+  // Victoires et parties terminées (notées par recordGameEnd dans game-common.js).
+  if ((stats.wins || 0) >= 1) badges.add("Première victoire");
+  if ((stats.wins || 0) >= 10) badges.add("Habitué du podium");
+  if ((stats.wins || 0) >= 25) badges.add("Inarrêtable");
+  if ((stats.gamesFinished || 0) >= 20) badges.add("Marathonien des soirées");
+  const GAME_BADGES = {
+    blindtest: "Oreille absolue", pyramid: "Roi du bluff", mostLikely: "Devin officiel", never: "Pronostiqueur fou",
+    truth: "Sans peur", survivor: "Survivant ultime", traitor: "Maître du double jeu", bomb: "Démineur d'élite",
+    roulette: "Chouchou de la roue", monopoly: "Magnat de la nuit"
+  };
+  Object.entries(GAME_BADGES).forEach(([game, badge]) => {
+    if ((stats[`wins_${game}`] || 0) >= 3) badges.add(badge);
+  });
+
   return saveProfile({
     ...profile,
     xp: nextXp,

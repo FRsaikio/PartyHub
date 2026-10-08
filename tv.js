@@ -8,6 +8,7 @@ import {
   serverTimestamp
 } from "./firebase.js";
 import { safeImageSrc } from "./html-safe.js";
+import { buildRecap } from "./game-summary.js";
 
 const params = new URLSearchParams(window.location.search);
 const roomCode =
@@ -826,7 +827,37 @@ function renderLiveGame(data){
     </div>
   `;
 }
+// ---------- Bilan de soirée en plein écran ----------
+// Affiché quand l'hôte appuie sur « Afficher sur la TV » dans le bilan du lobby (soiree.showAt),
+// tant qu'aucun jeu n'est lancé et pendant 15 minutes au plus. Masqué au prochain jeu.
+let recapShownFor = 0;
+function renderRecap(data){
+  const showAt = Number(data.soiree?.showAt) || 0;
+  let box = document.getElementById("tvRecap");
+  const visible = showAt && !data.gameStarted && Date.now() - showAt < 15 * 60 * 1000;
+  if(!visible){ if(box) box.remove(); recapShownFor = 0; return; }
+  if(box && recapShownFor === showAt && box.dataset.count === String((data.soiree.games || []).length)) return;
+  recapShownFor = showAt;
+  const recap = buildRecap(data.soiree);
+  if(!box){ box = document.createElement("section"); box.id = "tvRecap"; box.className = "tv-recap"; document.body.appendChild(box); }
+  box.dataset.count = String((data.soiree.games || []).length);
+  const podium = recap.ranking.slice(0, 3);
+  box.innerHTML = `
+    <div class="tv-recap-card">
+      <span class="tv-recap-kicker">🏁 Bilan de la soirée · room ${escapeHtml(roomCode)}</span>
+      <h2>${recap.count} partie${recap.count > 1 ? "s" : ""}${recap.minutes ? ` · ${recap.minutes >= 60 ? `${Math.floor(recap.minutes / 60)} h ${String(recap.minutes % 60).padStart(2, "0")}` : `${recap.minutes} min`}` : ""}${recap.favorite ? ` · ❤️ ${escapeHtml(recap.favorite.label)}` : ""}</h2>
+      <div class="tv-recap-podium">${podium.map((p, i) => `
+        <div class="tv-recap-step step-${i + 1}"><span>${["🥇", "🥈", "🥉"][i]}</span><strong>${escapeHtml(p.name)}</strong><small>${p.wins} victoire${p.wins > 1 ? "s" : ""}</small></div>`).join("")}</div>
+      <div class="tv-recap-awards">${recap.awards.map(a => `
+        <div class="tv-recap-award"><span>${escapeHtml(a.icon)}</span><div><small>${escapeHtml(a.title)}</small><strong>${escapeHtml(a.name)}</strong><em>${escapeHtml(a.value)}</em></div></div>`).join("")}</div>
+      <ol class="tv-recap-timeline">${recap.timeline.map(t => `
+        <li><strong>${escapeHtml(t.label)}</strong><span>${t.winners.length ? `🏆 ${escapeHtml(t.winners.join(", "))}` : "—"}</span></li>`).join("")}</ol>
+    </div>`;
+  window.PartyHubFX?.confetti?.();
+}
+
 function render(data){
+  renderRecap(data);
   const previousGameLabel = lastGameLabel;
   const previousRoomStatus = lastRoomStatus;
   const previousPlayerCount = lastPlayerCount;
