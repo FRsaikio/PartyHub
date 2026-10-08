@@ -22,7 +22,7 @@ import {
 } from "./profile.js";
 
 import { escapeHtml, safeImageSrc, cleanPseudo } from "./html-safe.js";
-import { watchHost } from "./game-common.js";
+import { watchHost, gameCleanupPatch } from "./game-common.js";
 
 const MAX_PLAYERS = 20;
 const ACTIVITY_LIMIT = 6;
@@ -1412,7 +1412,9 @@ async function restoreLobbyFromGame() {
         activeGame: null,
         gameState: {},
         forceNavigation: { target: "lobby", at: Date.now() },
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
+        // La partie qu'on quitte est effacée de la room (elle reste légère).
+        ...gameCleanupPatch()
       });
     } catch (error) {
       console.error("Erreur retour lobby :", error);

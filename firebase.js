@@ -11,6 +11,7 @@ import {
   arrayUnion,
   runTransaction,
   deleteDoc,
+  deleteField,
   increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -38,5 +39,6 @@ export {
   arrayUnion,
   runTransaction,
   deleteDoc,
+  deleteField,
   increment
 };
