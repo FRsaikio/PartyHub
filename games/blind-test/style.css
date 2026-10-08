@@ -473,3 +473,29 @@ button.bt-choice:active {
 .bt-embed .bt-header {
   display: none;
 }
+
+.bt-counts {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  width: min(420px, 100%);
+}
+
+.bt-counts .bt-theme {
+  font: 800 16px var(--nc-font-display);
+}
+
+.bt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.bt-chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  background: rgba(34, 211, 238, 0.12);
+  font-weight: 800;
+}
