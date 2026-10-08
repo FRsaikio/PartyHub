@@ -25,7 +25,7 @@ export function newGame(players, session = 0, duration = "medium") {
   return {
     v: 0, session, phase: "intro", themes: ["mix"], maxRounds: roundsFor(duration),
     players: real.map(p => ({ name: p.name, avatar: p.avatar || "🎧" })),
-    rounds: [], index: -1, answers: {}, reveal: null,
+    rounds: [], spares: [], index: -1, answers: {}, reveal: null, playing: null, failed: null,
     scores: Object.fromEntries(real.map(p => [p.name, 0])),
     correct: Object.fromEntries(real.map(p => [p.name, 0])),
     fastest: {}, log: ["🎧 Blind test : écoutez, trouvez, le plus rapide gagne."]
@@ -33,6 +33,9 @@ export function newGame(players, session = 0, duration = "medium") {
 }
 
 export const current = s => s.rounds[s.index] || null;
+export const SPARES = 3; // manches de réserve, utilisées si un extrait ne se charge pas
+// Identifiant de la manche en cours (change aussi quand une manche est remplacée par une réserve).
+export const roundKey = s => (current(s) ? `${s.session}:${s.index}:${current(s).trackId}` : "");
 export const pending = s => (s.phase === "listen" ? s.players.filter(p => s.answers[p.name] === undefined).map(p => p.name) : []);
 
 function reveal(s) {
@@ -52,7 +55,7 @@ function reveal(s) {
 }
 
 export function applyAction(s, type, payload = {}, me = {}) {
-  const hostOnly = ["theme", "count", "start", "close", "next", "end", "restart"];
+  const hostOnly = ["theme", "count", "start", "close", "next", "end", "restart", "skip"];
   if (hostOnly.includes(type) && !me.host) throw new Error("Seul l'hôte peut faire ça.");
 
   switch (type) {
@@ -80,11 +83,27 @@ export function applyAction(s, type, payload = {}, me = {}) {
       const rounds = (payload.rounds || []).filter(r => r && r.trackId && Array.isArray(r.choices) && r.choices.length >= 2);
       if (rounds.length < 3) throw new Error("Pas assez de morceaux trouvés pour ces thèmes, essaie-en d'autres.");
       s.rounds = rounds.slice(0, s.maxRounds);
+      s.spares = rounds.slice(s.maxRounds, s.maxRounds + SPARES);
       s.index = 0;
       s.answers = {};
       s.reveal = null;
       s.phase = "listen";
       say(s, `🎧 C'est parti : ${s.rounds.length} extraits.`);
+      return;
+    }
+
+    // L'extrait de la manche ne se charge pas : on la remplace par une manche de réserve (ou on
+    // la retire s'il n'y en a plus). Personne ne marque de points sur une manche sans musique.
+    case "skip": {
+      if (s.phase !== "listen" || (payload.key && payload.key !== roundKey(s))) return;
+      const broken = current(s);
+      if (s.spares?.length) s.rounds[s.index] = s.spares.shift();
+      else s.rounds.splice(s.index, 1);
+      s.answers = {};
+      s.playing = null;
+      s.failed = null;
+      say(s, `⚠️ Extrait indisponible (${broken.title}) : manche remplacée.`);
+      if (s.index >= s.rounds.length) { s.phase = "end"; say(s, "🏁 Fin du blind test !"); }
       return;
     }
 
@@ -111,6 +130,8 @@ export function applyAction(s, type, payload = {}, me = {}) {
       s.index += 1;
       s.answers = {};
       s.reveal = null;
+      s.playing = null;
+      s.failed = null;
       s.phase = "listen";
       return;
     }
