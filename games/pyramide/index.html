@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Pyramide · PartyHub</title>
+  <meta name="theme-color" content="#08061a" />
+  <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
+  <link rel="stylesheet" href="../../neon-club.css" />
+  <link rel="stylesheet" href="../../neon-game.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="background"></div>
+
+  <main class="app pc-app">
+
+    <div class="game-header pc-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
+      <div>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>La <span class="pc-accent">Pyramide</span></h2>
+        <p class="muted">Mémorise tes cartes, donne des gorgées… et bluffe sans te faire prendre.</p>
+      </div>
+      <span id="pcRound" class="pc-round">Avant-partie</span>
+    </div>
+
+    <div class="pc-layout">
+      <div class="pc-main">
+        <section id="pcPyramid" class="pc-pyramid" hidden></section>
+        <section id="pcStage" class="pc-stage" aria-live="polite"></section>
+        <div id="pcHost" class="pc-host" hidden></div>
+      </div>
+
+      <aside class="pc-side">
+        <details id="pcRules" class="pc-box pc-rules">
+          <summary>📜 Règles</summary>
+          <ol>
+            <li><strong>Mémorise</strong> tes 4 cartes : elles se cachent ensuite pour toute la partie.</li>
+            <li>L'hôte <strong>retourne</strong> les cartes de la pyramide, de la base au sommet. Plus l'étage est haut, plus ça coûte de gorgées.</li>
+            <li>Tu as la <strong>même valeur</strong> que la carte retournée (couleur sans importance) ? <strong>Donne</strong> les gorgées de l'étage à quelqu'un. Tu peux aussi <strong>bluffer</strong> sans l'avoir ! Un seul don par carte retournée.</li>
+            <li>La cible <strong>boit</strong>… ou crie <strong>« Menteur ! »</strong>.</li>
+            <li>Accusé ? <strong>Touche ta carte</strong> de cette valeur parmi tes cartes cachées. Bonne carte : la cible boit <strong>double</strong>. Mauvaise carte (bluff ou trou de mémoire) : <strong>tu</strong> bois double.</li>
+            <li>La carte montrée est <strong>remplacée</strong> : tu vois la nouvelle 5 secondes, retiens-la !</li>
+            <li>Carte suivante sans réponse : la cible boit, et l'accusé qui n'a pas montré sa carte boit double.</li>
+            <li>À la fin, <strong>récite tes 4 cartes</strong> dans l'ordre : chaque erreur = 2 gorgées.</li>
+          </ol>
+        </details>
+        <div class="pc-box">
+          <span class="pc-box-title">🍺 Qui a bu</span>
+          <div id="pcBoard" class="pc-board"></div>
+        </div>
+        <details class="pc-box pc-log">
+          <summary>📜 Journal</summary>
+          <ol id="pcLog"></ol>
+        </details>
+      </aside>
+    </div>
+
+  </main>
+
+  <script src="../../partyhub-fx.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
