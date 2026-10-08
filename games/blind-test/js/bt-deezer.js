@@ -4,15 +4,20 @@
 // on ne garde que l'identifiant du morceau et on redemande un lien frais au moment de jouer.
 
 export const THEMES = {
+  // kind : « work » = deviner le film / la série (nom tiré du titre), « album » = deviner le jeu
+  // (nom tiré du titre ou de l'album), « music » = deviner l'artiste et le titre.
   films: { icon: "🎬", name: "Musiques de films", kind: "work", playlists: [1602126835, 8531512122] },
   series: { icon: "📺", name: "Séries & génériques TV", kind: "work", playlists: [3721524742, 13511043423] },
   cartoons: { icon: "🧸", name: "Dessins animés", kind: "work", playlists: [9976576142, 8390630182] },
-  disney: { icon: "🏰", name: "Disney", kind: "work", playlists: [613860315, 14511914743] },
-  games: { icon: "🎮", name: "Jeux vidéo", kind: "work", playlists: [7747193762] },
-  hits: { icon: "🔥", name: "Hits du moment", kind: "music", playlists: [53362031] },
+  disney: { icon: "🏰", name: "Disney", kind: "work", playlists: [613860315, 14511914743, 15784223101, 11837822681, 5232222102] },
+  games: { icon: "🎮", name: "Jeux vidéo", kind: "album", playlists: [7747193762, 15408880043, 15528893401, 15808711181, 15534525903, 11930555961] },
+  hits: { icon: "🔥", name: "Hits du moment", kind: "music", playlists: [53362031, 13520387843, 15449273061, 11915740641] },
+  y2010: { icon: "📱", name: "Années 2010", kind: "music", playlists: [6294884764, 8179583022, 4428520242] },
   retro: { icon: "🕺", name: "Années 80-90-2000", kind: "music", playlists: [7089916404, 10109031722] },
+  variete: { icon: "🥖", name: "Variété française", kind: "music", playlists: [7752025662, 7559081442, 6985188764, 6647148884, 6985222544] },
   rap: { icon: "🎤", name: "Rap français", kind: "music", playlists: [7708037842, 13154564983] },
-  pub: { icon: "📢", name: "Musiques de pub", kind: "music", playlists: [1267962552] },
+  party: { icon: "🪩", name: "Ambiance soirée", kind: "music", playlists: [10912118462, 6497180824] },
+  pub: { icon: "📢", name: "Musiques de pub", kind: "music", playlists: [1267962552, 1626915875, 9046419802, 8723696102, 8353886802] },
   mix: { icon: "🎲", name: "Grand mix", kind: "mix", playlists: [] }
 };
 
@@ -52,7 +57,41 @@ export function cleanTitle(title) {
     .trim() || String(title).trim();
 }
 
+// Albums de compilation : leur nom ne dit rien de l'œuvre.
+const COMPILATION = /collection|classic|greatest|game on|level \d|essential|covers|top \d|piano|symphony|celebrating|best of|hits|compilation|nessary|8-bit|all-stars|mario music|pure\.\.\.|dance|single|intégrale/i;
+
+// Nom de l'œuvre tiré de l'album : « Far Cry 5 (Original Game Soundtrack) » → « Far Cry 5 ».
+export function albumWork(album) {
+  const a = String(album || "");
+  if (!a || COMPILATION.test(a)) return null;
+  const name = a
+    .replace(/\s*[([][^)\]]*[)\]]/g, "")
+    .replace(/^(?:the )?music (?:of|from) /i, "")
+    .replace(/\s+-\s+(?:main\s+)?(?:theme|thème).*$/i, "")
+    .replace(/,?\s*-?\s*vol(?:ume)?\.?\s*\d+.*$/i, "")
+    .replace(/\s+(?:original|official)?\s*(?:video game|game)?\s*(?:soundtrack|score|ost)$/i, "")
+    .replace(/\s+(?:definitive|deluxe|special) edition$/i, "")
+    .replace(/\s+(?:original|official|standard)$/i, "")
+    .trim();
+  return name.length >= 2 ? name : null;
+}
+
+// Jeux vidéo / comédies musicales : on fait deviner le jeu ou le spectacle, pas le morceau.
+export function albumLabel(track) {
+  const strip = s => s.replace(/[®™]/g, "").trim();
+  const fromTitle = workName(track.title);
+  if (fromTitle) return strip(fromTitle);
+  const fromAlbum = albumWork(track.album?.title);
+  if (fromAlbum) return strip(fromAlbum);
+  let t = strip(String(track.title));
+  const dup = t.match(/^(.+?)\s+:\s+(.+)$/);
+  if (dup && dup[1] === dup[2]) t = dup[1];
+  t = t.replace(/\s*[([][^)\]]*[)\]]/g, "").split(/\s*:\s/)[0].split(/\s+-\s+/)[0];
+  return t.replace(/\s+(?:main\s+)?(?:theme|thème)$/i, "").trim() || cleanTitle(track.title);
+}
+
 export function labelFor(track, kind) {
+  if (kind === "album") return albumLabel(track);
   if (kind === "work") return workName(track.title) || cleanTitle(track.title);
   return `${track.artist?.name || "?"} – ${cleanTitle(track.title)}`;
 }
@@ -76,11 +115,10 @@ const shuffle = list => {
 export async function buildRounds(themeKeys, count) {
   const wanted = [].concat(themeKeys || "mix").filter(k => THEMES[k]);
   const keys = !wanted.length || wanted.includes("mix") ? Object.keys(THEMES).filter(k => k !== "mix") : wanted;
-  const pools = [];
-  for (const key of keys) {
+  // Toutes les playlists sont demandées en même temps (le grand mix en compte une vingtaine).
+  const loaded = await Promise.all(keys.map(async key => {
     const theme = THEMES[key];
-    const ids = theme.playlists;
-    const lists = await Promise.all(ids.map(id => playlistTracks(id).catch(() => [])));
+    const lists = await Promise.all(theme.playlists.map(id => playlistTracks(id).catch(() => [])));
     const seen = new Set();
     const tracks = [];
     lists.flat().forEach(t => {
@@ -90,8 +128,9 @@ export async function buildRounds(themeKeys, count) {
       seen.add(k);
       tracks.push({ t, label });
     });
-    if (tracks.length >= 4) pools.push({ key, theme, tracks: shuffle(tracks) });
-  }
+    return { key, theme, tracks: shuffle(tracks) };
+  }));
+  const pools = loaded.filter(p => p.tracks.length >= 4);
   if (!pools.length) return [];
   // Chaque thème : une file de morceaux à faire deviner (sans répétition) ; tous les morceaux
   // du thème peuvent servir de mauvaises propositions.
