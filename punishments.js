@@ -272,6 +272,129 @@ const DRINK = {
   ]
 };
 
+// ---------- Spéciales : cul sec, waterfall, mélanges, yeux bandés, défis… ----------
+// Tirées ~1 fois sur 3 pour que les punitions ne soient pas que des gorgées. Mélanges : toujours
+// « un fond » d'alcool par personne et des ingrédients comestibles ; shot « suicide » = verre à shot.
+
+const SPECIAL = {
+  soft: [
+    "Bois 2 gorgées les yeux bandés 🙈",
+    "Bois 2 gorgées en te bouchant le nez 👃",
+    "Bois 2 gorgées avec un glaçon dans la bouche 🧊",
+    "Bois 2 gorgées sans savoir ce qu’il y a dans ton verre : ton voisin y ajoute un soft en secret 🤫",
+    "Bois 2 gorgées en déclarant ton amour à quelqu’un de la pièce 💘",
+    "Bois 2 gorgées en imitant la voix de quelqu’un ici 🎭",
+    "Raconte un secret un peu gênant, puis bois 1 gorgée 😳",
+    "Fais un compliment très awkward à chaque personne, avec 1 gorgée à la fin 💐",
+    "Bois 2 gorgées en chantant une chanson ridicule 🎤",
+    "Bois 1 gorgée en regardant quelqu’un sans cligner des yeux 👀",
+    "Dis « je t’aime » à la personne de ton choix, puis bois 1 gorgée ❤️",
+    "Bois 2 gorgées à la paille tordue (ou en paille improvisée) 🥤",
+    "Bois 2 gorgées à la cuillère, une cuillère à la fois 🥄",
+    "Bois 2 gorgées en faisant tourner ton verre entre chaque 🌀",
+    "Bois 2 gorgées données par quelqu’un, comme un bébé 🍼",
+    "Récite l’alphabet à l’envers : à chaque erreur, 1 gorgée 🔤",
+    "Bois 2 gorgées en récitant les paroles d’une chanson sans te tromper 🎶",
+    "Mini waterfall de 3 secondes avec ton voisin de gauche 🌊",
+    "Tout le monde te regarde en silence pendant que tu bois 2 gorgées 🤐",
+    "Bois 2 gorgées en même temps que la personne de ton choix : le dernier qui finit en reboit 1 🏁",
+    "Fais rire quelqu’un pendant que tu bois 2 gorgées : s’il ne rit pas, tu en rebois 1 😂",
+    "Choisis quelqu’un qui te fait boire 2 gorgées à la cuillère 🥄",
+    "Bois 2 gorgées avec la musique à fond dans un casque 🎧",
+    "Tout le monde boit 1 gorgée sauf toi 😇"
+  ],
+  normal: [
+    "Petit shot de ce que tu bois déjà 🥃",
+    "Shot ou 5 gorgées : à toi de voir 🥃",
+    "Shot en regardant quelqu’un dans les yeux 👀",
+    "Shot les yeux bandés, servi par ton voisin 🙈",
+    "Shot en même temps que la personne de ton choix : le dernier qui finit reboit 2 gorgées 🏁",
+    "Shot préparé par la personne à ta gauche (un seul alcool, pas de mélange) 🥃",
+    "Lance un waterfall et tiens le plus longtemps possible 🌊",
+    "Waterfall : tout le monde boit, et c’est toi qui décides quand ça s’arrête 🌊",
+    "Waterfall inversé : tout le monde boit, tu dis « stop » le plus tard possible 🌊",
+    "Waterfall à deux avec la personne de ton choix : celui qui s’arrête en premier reboit 2 gorgées 🌊",
+    "Une seule personne prépare ta prochaine gorgée : un fond d’alcool + ce qu’elle veut (comestible !) 🧪",
+    "Le groupe invente ton cocktail (un fond d’alcool, le reste en soft) : bois-en 4 gorgées 🍹",
+    "Bois 4 gorgées sans savoir ce qu’il y a dedans : ton voisin a préparé le mélange 🤫",
+    "Bois 3 gorgées les yeux bandés, verre préparé par quelqu’un d’autre 🙈",
+    "Bois 3 gorgées en te bouchant le nez 👃",
+    "Mini cul sec : un quart de ton verre, en regardant quelqu’un dans les yeux 👀",
+    "Mini cul sec en disant une phrase ridicule en même temps 🤪",
+    "Bois 3 gorgées en déclarant ton amour à quelqu’un (avec le ton dramatique) 💘",
+    "Bois 3 gorgées en racontant un secret gênant 😳",
+    "Bois 3 gorgées en imitant la voix de quelqu’un ici, le groupe devine qui 🎭",
+    "Bois 3 gorgées en chantant une chanson ridicule choisie par le groupe 🎤",
+    "Bois 3 gorgées en tenant un gobelet en plastique avec la bouche uniquement 🥤",
+    "Bois 4 gorgées à la cuillère, gorgée par gorgée 🥄",
+    "6 gorgées en 1 minute : une à chaque « top » du groupe ⏱️",
+    "Bois 4 gorgées avant la fin d’un chrono de 10 secondes ⏱️",
+    "Bois en même temps que la personne de ton choix : le dernier qui finit reboit 3 gorgées 🏁",
+    "Jusqu’à ton prochain tour, 1 gorgée à chaque fois que tu ris 😂",
+    "Jusqu’à ton prochain tour, 1 gorgée à chaque fois que quelqu’un dit le mot interdit choisi par le groupe 🚫",
+    "Fais rire quelqu’un pendant que tu bois 3 gorgées : s’il ne rit pas, tu reprends 3 gorgées 😂",
+    "Choisis une personne qui te fait boire 4 gorgées à la cuillère 🥄",
+    "Tout le monde te regarde en silence pendant que tu bois 4 gorgées 🤐",
+    "Tout le monde boit 2 gorgées sauf toi… ou l’inverse : le groupe vote 🗳️",
+    "Bois 3 gorgées avec un glaçon dans la bouche 🧊",
+    "Bois 3 gorgées en récitant l’alphabet à l’envers 🔤"
+  ],
+  hard: [
+    "Cul sec de la moitié de ton verre en regardant quelqu’un dans les yeux 👀",
+    "Cul sec de la moitié de ton verre en disant une phrase ridicule 🤪",
+    "Tout le monde verse un petit fond d’alcool dans ton verre (pas plus qu’un demi-verre au total) : bois-le 🧪",
+    "Tout le monde met ce qu’il veut dans ton verre (alcool, jus, soda, sirop — comestible !) : moitié cul sec 🍹",
+    "Une seule personne te prépare un shot comme elle veut 🥃",
+    "Shot les yeux bandés : tu ne sais pas ce qu’il y a dedans 🙈",
+    "Shot en te bouchant le nez 👃",
+    "Shot avec un glaçon dans la bouche 🧊",
+    "Lance un waterfall de 8 secondes, tout le monde suit 🌊",
+    "Waterfall inversé : tout le monde boit, tu dis « stop » le plus tard possible, et tu finis par un shot 🌊",
+    "Waterfall à deux : celui qui s’arrête en premier prend un shot 🌊",
+    "Bois la moitié du verre de quelqu’un d’autre (s’il est d’accord) 🍺",
+    "Shot en déclarant ton amour à quelqu’un 💘",
+    "Shot en racontant un secret gênant 😳",
+    "Shot en imitant la voix de quelqu’un ici 🎭",
+    "Bois la moitié de ton verre à la cuillère, gorgée par gorgée 🥄",
+    "Bois la moitié de ton verre avant la fin d’un chrono de 10 secondes ⏱️",
+    "Shot en même temps que la personne de ton choix : le dernier qui finit reboit 3 gorgées 🏁",
+    "Jusqu’à ton prochain tour, 2 gorgées à chaque fois que tu ris 😂",
+    "Jusqu’à ton prochain tour, 2 gorgées à chaque mot interdit (choisi par le groupe) 🚫",
+    "Fais rire quelqu’un pendant que tu prends ton shot : s’il ne rit pas, tu bois 4 gorgées de plus 😂",
+    "Choisis une personne qui te fait boire ton shot à la cuillère 🥄",
+    "Tout le monde prend un shot sauf toi… ou toi seul en prends un : le groupe vote 🗳️",
+    "Le groupe invente ton verre (un fond d’alcool par personne, le reste en soft) : bois-en la moitié 🍹",
+    "Shot donné par quelqu’un, comme un bébé 🍼"
+  ],
+  extreme: [
+    "Cul sec de ton verre sous les applaudissements du groupe 👏",
+    "Cul sec de ton verre en une seule gorgée 💀",
+    "Cul sec en regardant quelqu’un dans les yeux 👀",
+    "Cul sec en disant une phrase ridicule en même temps 🤪",
+    "Cul sec du verre de quelqu’un d’autre (s’il est d’accord) 🍺",
+    "Cul sec d’un verre préparé par le groupe (un fond d’alcool par personne, le reste en soft) 🧪",
+    "Finis ton verre + un shot en plus ☠️",
+    "Finis les fonds de tous les verres de la table 🫗",
+    "Shot « suicide » : un fond de 4 alcools différents dans un verre à shot ☠️",
+    "Tout le monde verse ce qu’il veut dans ton verre (alcool, jus, soda, sirop — comestible !) : cul sec 🍹",
+    "Une seule personne prépare ton verre comme elle veut : cul sec 🧪",
+    "Tu bois un verre inventé par le groupe (ils choisissent les proportions, max 2 doses d’alcool) 🍹",
+    "Cul sec les yeux bandés, sans savoir ce qu’il y a dedans 🙈",
+    "Cul sec en te bouchant le nez 👃",
+    "Lance un waterfall et tiens le plus longtemps possible : personne ne s’arrête avant toi 🌊",
+    "Waterfall inversé de 12 secondes minimum : tu dis « stop » quand tu veux 🌊",
+    "Waterfall à deux : celui qui s’arrête en premier fait cul sec 🌊",
+    "Finis ton verre en moins de 5 secondes ⏱️",
+    "Finis ton verre avant la fin du chrono de 15 secondes du groupe ⏱️",
+    "Cul sec en même temps que la personne de ton choix : le dernier qui finit prend un shot 🏁",
+    "Cul sec en déclarant ton amour à quelqu’un 💘",
+    "Cul sec en chantant une chanson ridicule 🎤",
+    "Tout le monde prend un shot sauf toi… ou toi seul fais cul sec : le groupe vote 🗳️",
+    "Jusqu’à ton prochain tour, 3 gorgées à chaque fois que tu ris 😂",
+    "Cul sec à la paille tordue 🥤"
+  ]
+};
+
 // ---------- Boire avec un complice ----------
 
 const DUO = {
@@ -549,9 +672,11 @@ export function punishment({ level = "normal", alcohol = true, rng = Math.random
     return fill(pick(RULES, rng));
   }
   // Hard / Extrême : plus de « boire » et de complices, moins de gages et de règles.
+  // ~1 sur 3 : spéciale (cul sec, waterfall, mélange…). Hard / Extrême : plus de « boire », moins de gages.
   const strong = lvl === "hard" || lvl === "extreme";
-  const [drink, duo, duel, gage] = strong ? [0.6, 0.75, 0.85, 0.95] : [0.55, 0.65, 0.75, 0.9];
+  const [special, drink, duo, duel, gage] = strong ? [0.34, 0.66, 0.78, 0.87, 0.96] : [0.32, 0.6, 0.68, 0.78, 0.92];
   const roll = rng();
+  if (roll < special) return pick(SPECIAL[lvl], rng);
   if (roll < drink) return pick(DRINK[lvl], rng);
   if (roll < duo) return pick(DUO[lvl], rng);
   if (roll < duel) return `${pick(DUELS, rng)} → le perdant boit ${BIG[lvl] === "2 shots" ? "un shot" : BIG[lvl]}`;
@@ -569,4 +694,10 @@ export function forGroup(label, text) {
 export const sipsOf = (level, times = 1) => plural(SIPS[normalizeLevel(level)] * times);
 export const bigOf = level => BIG[normalizeLevel(level)];
 
-export const CATALOG = { DRINK, DUO, DUELS, GAGES, RULES };
+export const CATALOG = { DRINK, SPECIAL, DUO, DUELS, GAGES, RULES };
+
+// Une punition « boire » du niveau (spéciale ou classique), sans gage : pour la Roulette.
+export function drinkAction({ level = "normal", rng = Math.random } = {}) {
+  const lvl = normalizeLevel(level);
+  return rng() < 0.5 ? pick(SPECIAL[lvl], rng) : pick(DRINK[lvl], rng);
+}
