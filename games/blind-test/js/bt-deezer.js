@@ -10,17 +10,17 @@ export const THEMES = {
   // (nom tiré du titre ou de l'album), « music » = deviner l'artiste et le titre.
   // Les noms d'œuvres passent par la table française de bt-fr.js ; strict = seules les réponses
   // de la table sont gardées (Disney : on fait deviner le film, pas la chanson).
-  films: { icon: "🎬", name: "Musiques de films", kind: "work", playlists: [1602126835, 8531512122] },
-  series: { icon: "📺", name: "Séries & génériques TV", kind: "work", playlists: [3721524742, 13511043423] },
-  cartoons: { icon: "🧸", name: "Dessins animés", kind: "work", playlists: [9976576142, 8390630182] },
-  disney: { icon: "🏰", name: "Disney", kind: "work", strict: true, playlists: [613860315, 14511914743, 15784223101, 11837822681, 5232222102] },
-  games: { icon: "🎮", name: "Jeux vidéo", kind: "album", playlists: [7747193762, 15408880043, 15528893401, 15808711181, 15534525903, 11930555961] },
-  hits: { icon: "🔥", name: "Hits du moment", kind: "music", playlists: [53362031, 13520387843, 15449273061, 11915740641] },
-  y2010: { icon: "📱", name: "Années 2010", kind: "music", playlists: [6294884764, 8179583022, 4428520242] },
-  retro: { icon: "🕺", name: "Années 80-90-2000", kind: "music", playlists: [7089916404, 10109031722] },
+  films: { icon: "🎬", name: "Musiques de films", kind: "work", playlists: [1602126835, 8531512122, 10485891442, 8709966322] },
+  series: { icon: "📺", name: "Séries & génériques TV", kind: "work", playlists: [3721524742, 13511043423, 106164531, 6123074024, 6748737644] },
+  cartoons: { icon: "🧸", name: "Dessins animés", kind: "work", playlists: [9976576142, 8390630182, 8423563102] },
+  disney: { icon: "🏰", name: "Disney", kind: "work", strict: true, playlists: [613860315, 14511914743, 15784223101, 11837822681, 5232222102, 15596865623, 7406279144] },
+  games: { icon: "🎮", name: "Jeux vidéo", kind: "album", playlists: [7747193762, 15408880043, 15528893401, 15808711181, 15534525903, 11930555961, 7487403064] },
+  hits: { icon: "🔥", name: "Hits du moment", kind: "music", playlists: [53362031, 13520387843, 15449273061, 11915740641, 5394746182, 1363560485] },
+  y2010: { icon: "📱", name: "Années 2010", kind: "music", playlists: [6294884764, 8179583022, 4428520242, 12632900763, 14917741483, 5339620562] },
+  retro: { icon: "🕺", name: "Années 80-90-2000", kind: "music", playlists: [7089916404, 10109031722, 1268089951, 7273872044, 7273901224, 8360407222] },
   variete: { icon: "🥖", name: "Variété française", kind: "music", playlists: [7752025662, 7559081442, 6985188764, 6647148884, 6985222544] },
-  rap: { icon: "🎤", name: "Rap français", kind: "music", playlists: [7708037842, 13154564983] },
-  party: { icon: "🪩", name: "Ambiance soirée", kind: "music", playlists: [10912118462, 6497180824] },
+  rap: { icon: "🎤", name: "Rap français", kind: "music", playlists: [7708037842, 13154564983, 1999435002, 795088591, 10259601162, 1776727762] },
+  party: { icon: "🪩", name: "Ambiance soirée", kind: "music", playlists: [10912118462, 6497180824, 11543633544, 12711043801, 2459619162] },
   pub: { icon: "📢", name: "Musiques de pub", kind: "music", playlists: [1267962552, 1626915875, 9046419802, 8723696102, 8353886802] },
   mix: { icon: "🎲", name: "Grand mix", kind: "mix", playlists: [] }
 };
@@ -141,9 +141,9 @@ const shuffle = list => {
 export async function buildRounds(themeKeys, count) {
   const wanted = [].concat(themeKeys || "mix").filter(k => THEMES[k]);
   const keys = !wanted.length || wanted.includes("mix") ? Object.keys(THEMES).filter(k => k !== "mix") : wanted;
-  // Playlists chargées 6 par 6 (le grand mix en compte une trentaine) : sous la limite de Deezer.
+  // Playlists chargées 8 par 8 (le grand mix en compte une cinquantaine) : sous la limite de Deezer.
   const jobs = keys.flatMap(key => THEMES[key].playlists.map(id => ({ key, id })));
-  const lists = await mapLimit(jobs, 6, job => playlistTracks(job.id).catch(() => []));
+  const lists = await mapLimit(jobs, 8, job => playlistTracks(job.id).catch(() => []));
   const loaded = keys.map(key => ({
     key,
     answers: shuffle(answersFor(THEMES[key], jobs.flatMap((job, i) => (job.key === key ? lists[i] : []))))
@@ -186,7 +186,10 @@ export function answersFor(theme, tracks) {
   tracks.forEach(t => {
     let label = labelFor(t, theme.kind);
     if (theme.kind !== "music") {
-      const fr = frName(label);
+      let fr = frName(label);
+      // Disney : chanson inconnue de la table → on tente le film d'après l'album
+      // (« Vaiana 2 (Bande Originale Française du Film) », « Brother Bear Original Soundtrack »…).
+      if (fr === undefined && theme.strict) fr = frName(albumWork(t.album?.title) || "");
       if (fr === null || (fr === undefined && theme.strict)) return;
       if (fr) label = fr;
     }
