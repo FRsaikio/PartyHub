@@ -14,8 +14,8 @@
 // applyAction(state, type, payload, me, ctx) modifie `state` ou lève une Error.
 // ctx = { rng, partyMode, drinkLevel, alcohol }.
 
-import { ACTIONS, GAGES_BOIS, GAGES_TOUS } from "./roulette-content.js";
-import { punishment as drawPunishment, normalizeLevel } from "../../../punishments.js";
+import { ACTIONS, GAGES_TOUS } from "./roulette-content.js";
+import { punishment as drawPunishment, normalizeLevel, CATALOG } from "../../../punishments.js";
 
 export const CATEGORIES = ["BOIS", "DISTRIBUE", "DUEL", "TOUS", "CHANCE", "CHAOS"];
 export const SEGMENT = 360 / CATEGORIES.length;
@@ -56,7 +56,7 @@ const gorgees = n => `${n} gorgée${n > 1 ? "s" : ""}`;
 export function actionText(category, sips, ctx) {
   const rng = ctx.rng || Math.random;
   if (ctx.alcohol === false) {
-    if (category === "BOIS") return pick(GAGES_BOIS, rng);
+    if (category === "BOIS") return `Gage : ${pick(CATALOG.GAGES, rng)}`;
     if (category === "TOUS") return pick(GAGES_TOUS, rng);
     if (category === "CHAOS") return drawPunishment({ alcohol: false, rng });
     if (category === "DISTRIBUE") return `Distribue ${sips} gage${sips > 1 ? "s" : ""} (pompes, imitations…) 🎁`;
