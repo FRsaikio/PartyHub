@@ -751,22 +751,6 @@ function renderLiveGame(data){
     return;
   }
 
-  if(activeId === "monopolit"){
-    const state = data.monopolitState || data.monopolyState || data.gameState?.monopolit || data.gameState || {};
-    const players = state.players || getPlayers(data);
-    const rows = (Array.isArray(players) ? players : Object.values(players || {})).slice(0,8).map((p,i)=>`<li><strong>${escapeHtml(p.name || p.pseudo || `Joueur ${i+1}`)}</strong><span>${formatLiveValue(p.tokens ?? p.money ?? p.score ?? "-")} jetons</span></li>`).join("");
-    liveGameEl.innerHTML = `
-      <div class="tv-live-focus">
-        <span class="tv-live-kicker">🏠 Monopoly Party</span>
-        <h3>Tour : ${formatLiveValue(state.currentPlayerName || state.turnPlayerName || getPlayerNameFromIndex(data, state.currentPlayerIndex), "-")}</h3>
-        <p>Case : ${formatLiveValue(state.currentTileName || state.tileName || "-")}</p>
-        <ul class="tv-live-scoreboard">${rows || "<li>Joueurs en synchronisation...</li>"}</ul>
-        ${historyList(state.history || state.logs)}
-      </div>
-    `;
-    return;
-  }
-
   if(activeId === "casino-night" || labelLower.includes("casino")){
     // Portefeuilles partagés écrits par games/casino-night/js/wallet.js
     const casino = data.casino || {};

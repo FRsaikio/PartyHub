@@ -3,138 +3,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PartyHub - Monopoly Party</title>
+  <title>Monopoly Party · PartyHub</title>
   <meta name="theme-color" content="#08061a" />
   <link rel="icon" href="../../partyhub-logo-neon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@500;700;800&display=swap" />
   <link rel="stylesheet" href="../../neon-club.css" />
+  <link rel="stylesheet" href="../../neon-game.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div class="background"></div>
 
-  <main class="app">
-    <a class="back-partyhub-room" id="backPartyHubRoom" href="../../index.html">Retour à la room</a>
+  <main class="app mp-app">
 
-    <header class="hero">
+    <div class="game-header mp-header">
+      <button id="backToLobbyBtn" class="btn danger small" type="button">Retour lobby</button>
       <div>
-        <p class="eyebrow">PartyHub</p>
-        <h1>Monopoly <span>Party</span></h1>
-        <p class="subtitle">Un plateau inspiré des jeux de soirée : avance, achète des lieux, pioche des cartes et impose des défis.</p>
+        <span id="roomBadge" class="badge">Room</span>
+        <h2>Monopoly <span class="mp-gold">Party</span></h2>
+        <p class="muted">Achète les quartiers, rénove, et fais boire tous ceux qui passent chez toi.</p>
       </div>
-      <div class="hero-card">
-        <span class="status-dot"></span>
-        <strong>Partie en direct</strong>
-        <small>Synchronisée avec la room</small>
-      </div>
-    </header>
+      <span id="mpRound" class="mp-round">Avant-partie</span>
+    </div>
 
-    <section class="setup-panel" id="setupPanel">
-      <div class="panel-title">
-        <h2>Créer la partie</h2>
-        <p>Choisis les joueurs et le niveau. Tu peux aussi jouer en mode soft.</p>
-      </div>
-
-      <div class="setup-grid">
-        <label>
-          Nombre de joueurs
-          <select id="playerCount">
-            <option value="2">2 joueurs</option>
-            <option value="3">3 joueurs</option>
-            <option value="4" selected>4 joueurs</option>
-            <option value="5">5 joueurs</option>
-            <option value="6">6 joueurs</option>
-          </select>
-        </label>
-
-        <label>
-          Intensité
-          <select id="intensity">
-            <option value="soft">Soft</option>
-            <option value="classic" selected>Classique</option>
-            <option value="hard">Hardcore</option>
-          </select>
-        </label>
-
-        <label>
-          Durée max
-          <select id="maxRounds">
-            <option value="10">10 tours</option>
-            <option value="15" selected>15 tours</option>
-            <option value="20">20 tours</option>
-            <option value="999">Illimitée</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="name-list" id="nameList"></div>
-
-      <div class="setup-actions">
-        <button class="btn primary" id="startGameBtn">Lancer la partie</button>
-        <button class="btn ghost" id="randomNamesBtn">Noms random</button>
-      </div>
-    </section>
-
-    <section class="game hidden" id="gamePanel">
-      <aside class="sidebar left-card">
-        <div class="turn-card">
-          <p class="eyebrow">Tour actuel</p>
-          <h2 id="currentPlayerName">Joueur</h2>
-          <div class="dice-box">
-            <div class="dice" id="dice">?</div>
-            <button class="btn primary" id="rollBtn">Lancer le dé</button>
-          </div>
-          <p class="round" id="roundInfo">Tour 1</p>
-        </div>
-
-        <div class="players" id="playersList"></div>
-      </aside>
-
-      <section class="board-wrap">
-        <div class="board" id="board"></div>
-        <div class="center-panel">
-          <div class="logo-mark">MP</div>
-          <h2>Monopoly Party</h2>
-          <p>Objectif : finir avec le plus de jetons et survivre aux défis.</p>
-          <div class="mini-stats">
-            <span id="ownedCount">0 lieux achetés</span>
-            <span id="eventCount">0 événements</span>
-          </div>
+    <div class="mp-layout">
+      <section class="mp-board-wrap">
+        <div id="mpBoard" class="mp-board">
+          <div id="mpCenter" class="mp-center"></div>
         </div>
       </section>
 
-      <aside class="sidebar right-card">
-        <div class="action-card" id="actionCard">
-          <p class="eyebrow">Action</p>
-          <h2 id="actionTitle">Prêt ?</h2>
-          <p id="actionText">Lance le dé pour commencer la partie.</p>
-          <div class="action-buttons" id="actionButtons"></div>
+      <section class="mp-side">
+        <div id="mpPanel" class="mp-panel" aria-live="polite"></div>
+        <div id="mpHost" class="mp-host" hidden></div>
+        <div id="mpPlaces" class="mp-box mp-places" hidden></div>
+        <div class="mp-box">
+          <span class="mp-box-title">💰 Classement</span>
+          <div id="mpPlayers" class="mp-players"></div>
         </div>
+        <details class="mp-box mp-log">
+          <summary>📜 Journal</summary>
+          <ol id="mpLog"></ol>
+        </details>
+      </section>
+    </div>
 
-        <div class="log-card">
-          <div class="log-head">
-            <h3>Historique</h3>
-            <button class="tiny-btn" id="resetBtn">Reset</button>
-          </div>
-          <div class="log" id="log"></div>
-        </div>
-      </aside>
-    </section>
   </main>
 
-  <div class="modal hidden" id="cardModal">
-    <div class="modal-content">
-      <button class="modal-close" id="closeModal">×</button>
-      <p class="eyebrow" id="modalType">Carte</p>
-      <h2 id="modalTitle">Titre</h2>
-      <p id="modalText">Contenu</p>
-      <button class="btn primary" id="modalOk">OK</button>
-    </div>
-  </div>
-
   <script src="../../partyhub-fx.js"></script>
-<script src="script.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
