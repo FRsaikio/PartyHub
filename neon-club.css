@@ -1067,6 +1067,23 @@ select option {
   border-bottom: 0;
 }
 
+/* Réglage avec une petite aide sous le titre (ex. Playlist de jeux) */
+.setting-label {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.setting-hint {
+  color: var(--nc-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.setting-row .switch {
+  flex-shrink: 0;
+}
+
 .setting-row select {
   width: auto;
   min-width: 140px;
